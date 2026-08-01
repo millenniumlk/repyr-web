@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, Sparkles, Zap, ChevronLeft, ShieldCheck } from 'lucide-react';
+import { Check, Sparkles, Zap, ChevronLeft, ShieldCheck, Loader2, ExternalLink } from 'lucide-react';
 import { initializePaddle } from '@paddle/paddle-js';
 import type { Paddle } from '@paddle/paddle-js';
 import { useAuth } from '../lib/AuthContext';
@@ -9,10 +9,11 @@ import { supabase } from '../lib/supabase';
 
 const Subscription = () => {
   const navigate = useNavigate();
-  const { user, setSubscriptionTier } = useAuth();
+  const { user, subscriptionTier, setSubscriptionTier } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [paddle, setPaddle] = useState<Paddle | undefined>();
+  const [managing, setManaging] = useState(false);
 
   useEffect(() => {
     initializePaddle({ 
@@ -138,6 +139,79 @@ const Subscription = () => {
       setProcessingPlan(null);
     }, 2000);
   };
+
+  const handleManagePortal = async () => {
+    setManaging(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const response = await fetch('https://cqhsvdipojpqhucfrdfx.supabase.co/functions/v1/paddle-portal', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      });
+      
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || "Failed to load portal");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to open customer portal.");
+      setManaging(false);
+    }
+  };
+
+  if (subscriptionTier === 'Pro' || subscriptionTier === 'Plus') {
+    return (
+      <div className="max-w-3xl mx-auto pb-16 px-4 md:px-6 relative min-h-[80vh] flex flex-col items-center justify-center pt-10">
+        <div className="w-full max-w-md bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.08)] text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-indigo-500" />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Sparkles className="w-10 h-10 text-primary" strokeWidth={2} />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight mb-2 text-black">Active Subscription</h2>
+          <p className="text-gray-500 font-medium mb-8 text-[15px]">
+            You are currently on the <strong className="text-black">Repyr {subscriptionTier}</strong> plan.
+          </p>
+          
+          <button
+            onClick={handleManagePortal}
+            disabled={managing}
+            className="w-full py-4 rounded-full font-bold text-[16px] tracking-tight transition-transform active:scale-[0.98] flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-900 shadow-xl shadow-black/20 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {managing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Loading Portal...
+              </>
+            ) : (
+              <>
+                Manage Billing <ExternalLink className="w-4 h-4" />
+              </>
+            )}
+          </button>
+          
+          <p className="text-sm text-gray-400 mt-6 font-medium leading-relaxed">
+            Update payment methods, change your plan, or cancel via Paddle's secure portal.
+          </p>
+        </div>
+        <button 
+          onClick={() => navigate('/settings')}
+          className="mt-10 flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Back to Settings
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto pb-16 px-4 md:px-6 relative min-h-[80vh] flex flex-col">
