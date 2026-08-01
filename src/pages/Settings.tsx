@@ -80,6 +80,7 @@ const Settings = () => {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem('subscription_tier');
     if (isGuest) {
       setGuestMode(false);
     } else {
