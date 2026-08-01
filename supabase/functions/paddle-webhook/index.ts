@@ -32,8 +32,7 @@ serve(async (req) => {
       
       const priceId = data.items?.[0]?.price?.id;
       // Pro prices from frontend
-      const isPro = priceId === 'pri_01kyy11tk9bzmpe7jaj4sq74e2' || priceId === 'pri_01kyy14epj1ndxbe4gbwchfn37';
-      const tier = isPro ? 'Pro' : 'Plus';
+      const isProUser = priceId === 'pri_01kyy11tk9bzmpe7jaj4sq74e2' || priceId === 'pri_01kyy14epj1ndxbe4gbwchfn37';
       
       const endsAt = data.current_billing_period?.ends_at || null;
       
@@ -41,8 +40,8 @@ serve(async (req) => {
         await supabase
           .from('profiles')
           .update({ 
-            subscription_tier: tier,
-            subscription_expires: endsAt
+            is_pro: isProUser,
+            subscription_expires_at: endsAt
           })
           .eq('id', userId);
       }
@@ -54,8 +53,8 @@ serve(async (req) => {
         await supabase
           .from('profiles')
           .update({ 
-            subscription_tier: 'Trial',
-            subscription_expires: null
+            is_pro: false,
+            subscription_expires_at: null
           }) // Downgrade
           .eq('id', userId);
       }

@@ -56,11 +56,11 @@ const Settings = () => {
       }
 
       if (user) {
-        const { data } = await supabase.from('profiles').select('full_name, avatar_url, subscription_tier').eq('id', user.id).single();
+        const { data } = await supabase.from('profiles').select('full_name, avatar_url, is_pro').eq('id', user.id).single();
         if (data) {
           setProfile(data);
-          if (data.subscription_tier && data.subscription_tier !== 'Trial') {
-            currentTier = data.subscription_tier;
+          if (data.is_pro) {
+            currentTier = 'Pro';
           }
         }
       }
