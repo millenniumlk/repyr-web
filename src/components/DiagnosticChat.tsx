@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Sparkles, CheckCircle, Zap, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../lib/AuthContext';
 
 const DiagnosticChat = ({
   hasAccess,
@@ -16,8 +17,9 @@ const DiagnosticChat = ({
 }: any) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { subscriptionTier } = useAuth();
   
-  const trialTier = typeof window !== 'undefined' ? (localStorage.getItem('subscription_tier') || 'Trial') : 'Trial';
+  const trialTier = subscriptionTier || 'Trial';
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });

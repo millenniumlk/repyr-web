@@ -16,7 +16,7 @@ const VEHICLE_CATEGORIES = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, guestVehicle } = useAuth();
+  const { user, guestVehicle, subscriptionTier } = useAuth();
   
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -179,9 +179,8 @@ const Home = () => {
       
       // Check paywall limits
       const count = parseInt(localStorage.getItem('diagnostics_run_count') || '0', 10);
-      const tier = localStorage.getItem('subscription_tier') || 'Trial';
       
-      if (count >= 1 && tier === 'Trial') {
+      if (count >= 1 && subscriptionTier === 'Trial') {
         navigate('/settings/subscription');
         return;
       }
@@ -376,8 +375,7 @@ const Home = () => {
                 onClick={() => {
                   setIsVehicleSelectorOpen(false);
                   const count = parseInt(localStorage.getItem('diagnostics_run_count') || '0', 10);
-                  const tier = localStorage.getItem('subscription_tier') || 'Trial';
-                  if (count >= 1 && tier === 'Trial') {
+                  if (count >= 1 && subscriptionTier === 'Trial') {
                     navigate('/settings/subscription');
                   } else {
                     navigate('/garage/add');
