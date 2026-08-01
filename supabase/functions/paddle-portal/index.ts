@@ -42,15 +42,13 @@ serve(async (req) => {
     }
 
     // Call Paddle API to create a Customer Portal Session
-    const paddleResponse = await fetch('https://sandbox-api.paddle.com/customer-portal-sessions', {
+    const paddleResponse = await fetch(`https://sandbox-api.paddle.com/customers/${profile.paddle_customer_id}/portal-sessions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${paddleApiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        customer_id: profile.paddle_customer_id
-      })
+      body: JSON.stringify({})
     });
 
     if (!paddleResponse.ok) {
