@@ -41,7 +41,7 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { user, isGuest, setGuestMode, subscriptionTier } = useAuth();
+  const { user, isGuest, setGuestMode, subscriptionTier, isLoading: authLoading } = useAuth();
   
   const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,9 +77,9 @@ const Settings = () => {
     navigate('/auth');
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
-      <div className="flex justify-center items-center py-20">
+      <div className="flex justify-center items-center py-20 min-h-[80vh]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );

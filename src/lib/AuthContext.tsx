@@ -47,8 +47,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
       
       if (data?.subscription_tier) {
-         if (['Trial', 'Plus', 'Pro'].includes(data.subscription_tier)) {
-            setSubscriptionTierState(data.subscription_tier as 'Trial' | 'Plus' | 'Pro');
+         const rawTier = String(data.subscription_tier).trim();
+         const normalized = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
+         if (['Trial', 'Plus', 'Pro'].includes(normalized)) {
+            setSubscriptionTierState(normalized as 'Trial' | 'Plus' | 'Pro');
          }
       }
     } catch (e) {

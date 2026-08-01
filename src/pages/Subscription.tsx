@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase';
 
 const Subscription = () => {
   const navigate = useNavigate();
-  const { user, subscriptionTier, setSubscriptionTier } = useAuth();
+  const { user, subscriptionTier, setSubscriptionTier, isLoading } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [paddle, setPaddle] = useState<Paddle | undefined>();
@@ -167,6 +167,14 @@ const Subscription = () => {
       setManaging(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-[80vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (subscriptionTier === 'Pro' || subscriptionTier === 'Plus') {
     return (
