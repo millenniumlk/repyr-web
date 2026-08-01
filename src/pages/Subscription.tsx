@@ -17,11 +17,10 @@ const Subscription = () => {
   useEffect(() => {
     initializePaddle({ 
       environment: 'sandbox', 
-      token: 'test_88387b2007b5f5db687e3091f1f',
+      token: 'test_dc72fca4132c901c4b0d4f5d279',
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
-          // Fallback UI update until webhooks are ready
-          localStorage.setItem('subscription_tier', 'Pro'); // Safe fallback for both plans for now
+          // Backend webhook handles the DB update (profiles.subscription_tier)
           
           let needsCompleteProfile = false;
           const pendingChatRaw = localStorage.getItem('pending_guest_chat');
