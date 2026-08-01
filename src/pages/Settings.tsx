@@ -44,8 +44,9 @@ const Settings = () => {
   const { user, isGuest, setGuestMode } = useAuth();
   
   const [subscriptionTier, setSubscriptionTier] = useState<'Trial' | 'Plus' | 'Pro'>('Trial');
-  const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string, subscription_tier?: string } | null>(null);
+  const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string, subscription_tier?: string, paddle_customer_id?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -56,7 +57,7 @@ const Settings = () => {
       }
 
       if (user) {
-        const { data } = await supabase.from('profiles').select('full_name, avatar_url, subscription_tier').eq('id', user.id).single();
+        const { data } = await supabase.from('profiles').select('full_name, avatar_url, subscription_tier, paddle_customer_id').eq('id', user.id).single();
         if (data) {
           setProfile(data);
           if (data.subscription_tier && data.subscription_tier !== 'Trial') {
@@ -71,8 +72,28 @@ const Settings = () => {
     fetchProfile();
   }, [user]);
 
-  const handleManageSubscription = () => {
-    navigate('/settings/subscription');
+  const handleManageSubscription = async () => {
+    if (subscriptionTier !== 'Trial' && profile?.paddle_customer_id) {
+      setIsOpeningPortal(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('paddle-portal', {
+          body: { customer_id: profile.paddle_customer_id }
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.open(data.url, '_blank');
+        } else {
+          throw new Error('No URL returned');
+        }
+      } catch (err) {
+        console.error("Error opening portal:", err);
+        alert("Could not open customer portal at this time.");
+      } finally {
+        setIsOpeningPortal(false);
+      }
+    } else {
+      navigate('/settings/subscription');
+    }
   };
 
   const handleSupport = () => {
@@ -155,7 +176,7 @@ const Settings = () => {
             <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100 shadow-sm shadow-black/5">
               <ActionRow 
                 icon={subscriptionTier === 'Trial' ? Sparkles : CreditCard} 
-                title={subscriptionTier === 'Trial' ? "Upgrade to Repyr Pro" : "Manage Subscription"} 
+                title={isOpeningPortal ? "Opening Portal..." : (subscriptionTier === 'Trial' ? "Upgrade to Repyr Pro" : "Manage Subscription")} 
                 onClick={handleManageSubscription}
                 isAction={subscriptionTier === 'Trial'}
                 value={subscriptionTier}

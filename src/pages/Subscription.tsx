@@ -20,7 +20,8 @@ const Subscription = () => {
       token: 'test_dc72fca4132c901c4b0d4f5d279',
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
-          // Backend webhook handles the DB update (profiles.subscription_tier)
+          // Fallback UI update until webhooks are ready
+          localStorage.setItem('subscription_tier', 'Pro'); // Safe fallback for both plans for now
           
           let needsCompleteProfile = false;
           const pendingChatRaw = localStorage.getItem('pending_guest_chat');
