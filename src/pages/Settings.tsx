@@ -59,26 +59,22 @@ const Settings = () => {
   const handleManageSubscription = async () => {
     if (subscriptionTier !== 'Trial' && user) {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paddle-portal`, {
+        const { data, error } = await supabase.functions.invoke('paddle-portal', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json'
-          }
         });
         
-        if (response.ok) {
-          const result = await response.json();
-          if (result.url) {
-            window.location.href = result.url;
-            return;
-          }
+        if (error) {
+          console.error("Function error:", error);
+          alert("Failed to securely open the customer portal. Please contact support.");
+          return;
+        }
+
+        if (data?.url) {
+          window.location.href = data.url;
+          return;
         }
         
-        alert("Failed to securely open the customer portal. Please contact support.");
+        alert("Portal URL not found. Please contact support.");
       } catch (err) {
         console.error(err);
         alert("An error occurred while opening the portal.");
