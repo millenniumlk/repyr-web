@@ -40,18 +40,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchProfileTier = async (userId: string) => {
     try {
-      const { data } = await supabase
+      console.log("Fetching profile tier for user:", userId);
+      const { data, error } = await supabase
         .from('profiles')
         .select('subscription_tier')
         .eq('id', userId)
         .single();
       
+      console.log("DB returned data:", data, "error:", error);
+
       if (data?.subscription_tier) {
          const rawTier = String(data.subscription_tier).trim();
          const normalized = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
+         console.log("Normalized tier:", normalized);
          if (['Trial', 'Plus', 'Pro'].includes(normalized)) {
+            console.log("Setting tier to:", normalized);
             setSubscriptionTierState(normalized as 'Trial' | 'Plus' | 'Pro');
+         } else {
+            console.warn("Tier did not match expected values:", normalized);
          }
+      } else {
+         console.warn("No subscription_tier found in data.");
       }
     } catch (e) {
       console.error("Failed to fetch subscription tier", e);
