@@ -11,7 +11,7 @@ const Subscription = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [paddle, setPaddle] = useState<Paddle | undefined>();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const Subscription = () => {
              }
           }
       
-          setIsProcessing(false);
+          setProcessingPlan(null);
           
           if (needsCompleteProfile) {
              navigate('/complete-profile');
@@ -100,32 +100,29 @@ const Subscription = () => {
       alert("Billing system is loading. Please try again in a moment.");
       return;
     }
-    setIsProcessing(true);
+    setProcessingPlan(planName);
     
     const plan = plans.find(p => p.name === planName);
     const priceId = billingCycle === 'monthly' ? plan?.paddlePriceIdMonthly : plan?.paddlePriceIdYearly;
 
-    const checkoutOptions: any = {
-      items: [{ priceId: priceId, quantity: 1 }],
-    };
-
-    if (user?.email) {
-      checkoutOptions.customer = {
-        email: user.email,
-      };
+    if (!priceId) {
+      alert("Invalid price ID.");
+      setProcessingPlan(null);
+      return;
     }
 
-    if (user?.id) {
-      checkoutOptions.customData = {
-        userId: user.id,
-      };
+    try {
+      paddle.Checkout.open({
+        items: [{ priceId: priceId, quantity: 1 }],
+      });
+    } catch (e) {
+      console.error(e);
+      alert("Failed to initialize checkout.");
     }
-
-    paddle.Checkout.open(checkoutOptions);
     
     // Safety timeout in case modal fails to open or is closed manually
     setTimeout(() => {
-      setIsProcessing(false);
+      setProcessingPlan(null);
     }, 2000);
   };
 
@@ -269,14 +266,14 @@ const Subscription = () => {
 
             <button
               onClick={() => handleUpgrade(plan.name)}
-              disabled={isProcessing}
+              disabled={processingPlan === plan.name}
               className={`w-full py-4 rounded-full font-bold text-[16px] tracking-tight transition-transform active:scale-[0.98] flex items-center justify-center ${
                 plan.popular
                   ? 'bg-primary text-white hover:bg-primary-dark shadow-[0_4px_20px_rgba(0,98,255,0.4)]'
                   : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-              } ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+              } ${processingPlan === plan.name ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {isProcessing ? 'Processing...' : plan.buttonText}
+              {processingPlan === plan.name ? 'Processing...' : plan.buttonText}
             </button>
           </motion.div>
         ))}
@@ -285,7 +282,7 @@ const Subscription = () => {
       <div className="mt-8 md:mt-12 flex items-center justify-center gap-2 text-muted-foreground px-4">
         <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
         <span className="text-xs md:text-sm font-medium text-center">
-          Secure payment processed by Stripe. Cancel anytime.
+          Secure payment processed by Paddle. Cancel anytime.
         </span>
       </div>
     </div>
