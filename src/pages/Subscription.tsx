@@ -105,15 +105,23 @@ const Subscription = () => {
     const plan = plans.find(p => p.name === planName);
     const priceId = billingCycle === 'monthly' ? plan?.paddlePriceIdMonthly : plan?.paddlePriceIdYearly;
 
-    paddle.Checkout.open({
-      items: [{ priceId: priceId || 'pri_pro_monthly_mock', quantity: 1 }],
-      customer: {
-        email: user?.email || '',
-      },
-      customData: {
-        userId: user?.id || ''
-      }
-    });
+    const checkoutOptions: any = {
+      items: [{ priceId: priceId, quantity: 1 }],
+    };
+
+    if (user?.email) {
+      checkoutOptions.customer = {
+        email: user.email,
+      };
+    }
+
+    if (user?.id) {
+      checkoutOptions.customData = {
+        userId: user.id,
+      };
+    }
+
+    paddle.Checkout.open(checkoutOptions);
     
     // Safety timeout in case modal fails to open or is closed manually
     setTimeout(() => {
