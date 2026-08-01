@@ -30,13 +30,20 @@ serve(async (req) => {
       const customData = data.custom_data || {};
       const userId = customData.userId;
       
-      const isPro = true; // Placeholder logic based on priceId
+      const priceId = data.items?.[0]?.price?.id;
+      // Pro prices from frontend
+      const isPro = priceId === 'pri_01kyy11tk9bzmpe7jaj4sq74e2' || priceId === 'pri_01kyy14epj1ndxbe4gbwchfn37';
       const tier = isPro ? 'Pro' : 'Plus';
+      
+      const endsAt = data.current_billing_period?.ends_at || null;
       
       if (userId) {
         await supabase
           .from('profiles')
-          .update({ subscription_tier: tier })
+          .update({ 
+            subscription_tier: tier,
+            subscription_expires: endsAt
+          })
           .eq('id', userId);
       }
     } else if (eventType === 'subscription.canceled') {
@@ -46,7 +53,10 @@ serve(async (req) => {
       if (userId) {
         await supabase
           .from('profiles')
-          .update({ subscription_tier: 'Trial' }) // Downgrade
+          .update({ 
+            subscription_tier: 'Trial',
+            subscription_expires: null
+          }) // Downgrade
           .eq('id', userId);
       }
     }
