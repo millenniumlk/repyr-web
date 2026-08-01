@@ -29,7 +29,7 @@ const Subscription = () => {
           // Fallback UI update until webhooks are ready
           setSubscriptionTier(tier); 
           if (user) {
-             await supabase.from('profiles').update({ subscription_tier: tier }).eq('id', user.id);
+             await supabase.from('profiles').upsert({ id: user.id, subscription_tier: tier });
           }
           
           let needsCompleteProfile = false;

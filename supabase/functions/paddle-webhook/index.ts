@@ -85,12 +85,12 @@ serve(async (req) => {
       if (userId) {
         await supabase
           .from('profiles')
-          .update({ 
+          .upsert({ 
+            id: userId,
             subscription_tier: tier,
             paddle_customer_id: customerId,
             subscription_expires_at: endsAt || null
-          })
-          .eq('id', userId);
+          });
       }
     }
 
