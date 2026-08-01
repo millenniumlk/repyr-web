@@ -1,79 +1,46 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Follow this setup guide to integrate the Deno language server with your editor:
+// https://deno.land/manual/getting_started/setup_your_environment
+// This enables autocomplete, go to definition, etc.
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Setup type definitions for built-in Supabase Runtime APIs
+import "@supabase/functions-js/edge-runtime.d.ts";
+import { withSupabase } from "@supabase/server";
+
+console.log("Hello from Functions!");
+
+// This endpoint uses 'publishable' | 'secret' access, apiKey is required.
+// Use publishable for Client-facing, key-validated endpoints
+// Use secret for Server-to-server, internal calls
+export default {
+  fetch: withSupabase({ auth: ["publishable", "secret"] }, async (req, ctx) => {
+    // Called by another service with a secret key
+    // ctx.supabaseAdmin bypasses RLS — use for privileged operations
+    /*
+    if (ctx.authMode === "secret") {
+      const { user_id } = await req.json();
+      const { data } = await ctx.supabaseAdmin.auth.admin.getUserById(user_id);
+
+      return Response.json({
+        email: data?.user?.email,
+      });
+    }
+    */
+
+    const { name } = await req.json();
+
+    return Response.json({
+      message: `Hello ${name}!`,
+    });
+  }),
 };
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
+/* To invoke locally:
 
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') as string;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') as string;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: req.headers.get('Authorization')! } }
-    });
+  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
+  2. Make an HTTP request:
 
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401,
-      });
-    }
+  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/paddle-portal' \
+    --header 'apiKey: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH' \
+    --data '{"name":"Functions"}'
 
-    const { customer_id } = await req.json();
-
-    if (!customer_id) {
-      return new Response(JSON.stringify({ error: 'Missing customer_id' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      });
-    }
-
-    const paddleApiKey = Deno.env.get('PADDLE_API_KEY');
-    
-    if (!paddleApiKey) {
-      return new Response(JSON.stringify({ error: 'Missing PADDLE_API_KEY' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      });
-    }
-
-    const response = await fetch(`https://sandbox-api.paddle.com/customers/${customer_id}/portal-sessions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${paddleApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    });
-
-    if (!response.ok) {
-      const errData = await response.text();
-      console.error("Paddle API error:", errData);
-      return new Response(JSON.stringify({ error: 'Failed to create portal session' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: response.status,
-      });
-    }
-
-    const data = await response.json();
-
-    return new Response(JSON.stringify({ url: data.data.urls.general.url }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
-  }
-});
-
+*/
