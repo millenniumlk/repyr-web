@@ -35,13 +35,15 @@ serve(async (req) => {
       const isProUser = priceId === 'pri_01kyy11tk9bzmpe7jaj4sq74e2' || priceId === 'pri_01kyy14epj1ndxbe4gbwchfn37';
       
       const endsAt = data.current_billing_period?.ends_at || null;
+      const paddleCustomerId = data.customer_id;
       
       if (userId) {
         await supabase
           .from('profiles')
           .update({ 
             is_pro: isProUser,
-            subscription_expires_at: endsAt
+            subscription_expires_at: endsAt,
+            paddle_customer_id: paddleCustomerId
           })
           .eq('id', userId);
       }

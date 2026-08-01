@@ -5,7 +5,7 @@ import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 
-const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any) => (
+const ActionRow = ({ icon: Icon, title, onClick, isAction, isLast }: any) => (
   <button 
     onClick={onClick}
     className={`w-full flex items-center justify-between pl-4 pr-4 bg-transparent hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-200/60' : ''}`}
@@ -19,21 +19,6 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
       </span>
     </div>
     <div className="flex items-center gap-2 py-4 justify-end flex-1 pl-4">
-      {value === 'Pro' && (
-        <span className="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-indigo-200">
-          Pro
-        </span>
-      )}
-      {value === 'Plus' && (
-        <span className="bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-blue-200">
-          Plus
-        </span>
-      )}
-      {value === 'Trial' && (
-        <span className="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
-          Trial
-        </span>
-      )}
       <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400 transition-colors" strokeWidth={2.2} />
     </div>
   </button>
@@ -71,8 +56,36 @@ const Settings = () => {
     fetchProfile();
   }, [user]);
 
-  const handleManageSubscription = () => {
-    navigate('/settings/subscription');
+  const handleManageSubscription = async () => {
+    if (subscriptionTier !== 'Trial' && user) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paddle-portal`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.url) {
+            window.location.href = result.url;
+            return;
+          }
+        }
+        
+        alert("Failed to securely open the customer portal. Please contact support.");
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred while opening the portal.");
+      }
+    } else {
+      navigate('/settings/subscription');
+    }
   };
 
   const handleSupport = () => {
@@ -159,7 +172,6 @@ const Settings = () => {
                 title={subscriptionTier === 'Trial' ? "Upgrade to Repyr Pro" : "Manage Subscription"} 
                 onClick={handleManageSubscription}
                 isAction={subscriptionTier === 'Trial'}
-                value={subscriptionTier}
                 isLast={true}
               />
             </div>
