@@ -17,7 +17,7 @@ const Subscription = () => {
   useEffect(() => {
     initializePaddle({ 
       environment: 'sandbox', 
-      token: 'test_88387b2007b5f5db687e3091f1f',
+      token: 'test_47e18d0521de46b6c5571feccd4',
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
           // Fallback UI update until webhooks are ready
