@@ -105,16 +105,21 @@ const Subscription = () => {
     const plan = plans.find(p => p.name === planName);
     const priceId = billingCycle === 'monthly' ? plan?.paddlePriceIdMonthly : plan?.paddlePriceIdYearly;
 
-    if (!priceId) {
-      alert("Invalid price ID.");
-      setProcessingPlan(null);
-      return;
+    const checkoutOptions: any = {
+      items: [{ priceId: priceId, quantity: 1 }],
+      customer: {
+        email: user?.email || 'guest@repyrai.com',
+      }
+    };
+
+    if (user?.id) {
+      checkoutOptions.customData = {
+        userId: user.id,
+      };
     }
 
     try {
-      paddle.Checkout.open({
-        items: [{ priceId: priceId, quantity: 1 }],
-      });
+      paddle.Checkout.open(checkoutOptions);
     } catch (e) {
       console.error(e);
       alert("Failed to initialize checkout.");
