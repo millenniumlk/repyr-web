@@ -22,7 +22,7 @@ const Subscription = () => {
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
           const items = data.data?.items || [];
-          const priceId = items.length > 0 ? items[0].price?.id : '';
+          const priceId = items.length > 0 ? (items[0] as any).price?.id : '';
           const isPlus = priceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || priceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
           const tier = isPlus ? 'Plus' : 'Pro';
 
