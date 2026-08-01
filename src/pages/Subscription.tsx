@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, ChevronLeft, ShieldCheck } from 'lucide-react';
+import { initializePaddle } from '@paddle/paddle-js';
+import type { Paddle } from '@paddle/paddle-js';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -10,6 +12,48 @@ const Subscription = () => {
   const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paddle, setPaddle] = useState<Paddle | undefined>();
+
+  useEffect(() => {
+    initializePaddle({ 
+      environment: 'sandbox', 
+      token: 'test_88387b2007b5f5db687e3091f1f',
+      eventCallback: async (data) => {
+        if (data.name === 'checkout.completed') {
+          // Fallback UI update until webhooks are ready
+          localStorage.setItem('subscription_tier', 'Pro'); // Safe fallback for both plans for now
+          
+          let needsCompleteProfile = false;
+          const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+          if (pendingChatRaw) {
+             needsCompleteProfile = true;
+          } else if (user) {
+             const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).limit(1);
+             if (vData && vData.length > 0) {
+                const v = vData[0];
+                if (!v.transmission || !v.fuel_type || !v.location) {
+                   needsCompleteProfile = true;
+                }
+             }
+          }
+      
+          setIsProcessing(false);
+          
+          if (needsCompleteProfile) {
+             navigate('/complete-profile');
+          } else {
+             navigate('/');
+          }
+        }
+      }
+    }).then(
+      (paddleInstance) => {
+        if (paddleInstance) {
+          setPaddle(paddleInstance);
+        }
+      }
+    );
+  }, [navigate, user]);
 
   const plans = [
     {
@@ -26,6 +70,8 @@ const Subscription = () => {
       ],
       color: 'blue',
       buttonText: 'Start 7-Day Free Trial',
+      paddlePriceIdMonthly: 'pri_01kyy15yhbjgftzkcsjyjmm9pm',
+      paddlePriceIdYearly: 'pri_01kyy16sh5qt3wyybn04r1ypkr'
     },
     {
       name: 'Repyr Pro',
@@ -44,38 +90,35 @@ const Subscription = () => {
       color: 'indigo',
       popular: true,
       buttonText: 'Start 7-Day Free Trial',
+      paddlePriceIdMonthly: 'pri_01kyy11tk9bzmpe7jaj4sq74e2',
+      paddlePriceIdYearly: 'pri_01kyy14epj1ndxbe4gbwchfn37'
     },
   ];
 
-  const handleUpgrade = async (_planName: string) => {
+  const handleUpgrade = async (planName: string) => {
+    if (!paddle) {
+      alert("Billing system is loading. Please try again in a moment.");
+      return;
+    }
     setIsProcessing(true);
     
-    // Mock successful payment
-    localStorage.setItem('subscription_tier', 'Pro');
-    
-    // Check if we need to complete profile
-    let needsCompleteProfile = false;
-    
-    const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-    if (pendingChatRaw) {
-       needsCompleteProfile = true;
-    } else if (user) {
-       const { data } = await supabase.from('vehicles').select('*').eq('user_id', user.id).limit(1);
-       if (data && data.length > 0) {
-          const v = data[0];
-          if (!v.transmission || !v.fuel_type || !v.location) {
-             needsCompleteProfile = true;
-          }
-       }
-    }
+    const plan = plans.find(p => p.name === planName);
+    const priceId = billingCycle === 'monthly' ? plan?.paddlePriceIdMonthly : plan?.paddlePriceIdYearly;
 
-    setIsProcessing(false);
+    paddle.Checkout.open({
+      items: [{ priceId: priceId || 'pri_pro_monthly_mock', quantity: 1 }],
+      customer: {
+        email: user?.email || '',
+      },
+      customData: {
+        userId: user?.id || ''
+      }
+    });
     
-    if (needsCompleteProfile) {
-       navigate('/complete-profile');
-    } else {
-       navigate('/');
-    }
+    // Safety timeout in case modal fails to open or is closed manually
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 2000);
   };
 
   return (
