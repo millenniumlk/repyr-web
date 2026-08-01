@@ -43,16 +43,29 @@ const Settings = () => {
   const navigate = useNavigate();
   const { user, isGuest, setGuestMode } = useAuth();
   
-  const [subscriptionTier] = useState<'Trial' | 'Plus' | 'Pro'>('Trial');
-  const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string } | null>(null);
+  const [subscriptionTier, setSubscriptionTier] = useState<'Trial' | 'Plus' | 'Pro'>('Trial');
+  const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string, subscription_tier?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (user) {
-        const { data } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single();
-        if (data) setProfile(data);
+      let currentTier = 'Trial';
+      const localTier = localStorage.getItem('subscription_tier');
+      if (localTier === 'Pro' || localTier === 'Plus') {
+        currentTier = localTier;
       }
+
+      if (user) {
+        const { data } = await supabase.from('profiles').select('full_name, avatar_url, subscription_tier').eq('id', user.id).single();
+        if (data) {
+          setProfile(data);
+          if (data.subscription_tier && data.subscription_tier !== 'Trial') {
+            currentTier = data.subscription_tier;
+          }
+        }
+      }
+      
+      setSubscriptionTier(currentTier as 'Trial' | 'Plus' | 'Pro');
       setLoading(false);
     };
     fetchProfile();
