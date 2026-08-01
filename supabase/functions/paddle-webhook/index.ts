@@ -69,9 +69,13 @@ serve(async (req) => {
       const status = data.status;
       const endsAt = data.current_billing_period?.ends_at;
       
+      const items = data.items || [];
+      const firstItemPriceId = items.length > 0 ? items[0].price?.id : '';
+      
       let tier = 'Trial';
       if (status === 'active' || status === 'trialing') {
-        tier = 'Pro'; // Note: In a robust setup, you might determine 'Pro' vs 'Plus' based on data.items[0].price.id
+        const isPlus = firstItemPriceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || firstItemPriceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
+        tier = isPlus ? 'Plus' : 'Pro';
       }
       
       // If a user cancels, their status usually becomes 'canceled' or remains 'active' until the end of the billing period

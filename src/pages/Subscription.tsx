@@ -20,10 +20,15 @@ const Subscription = () => {
       token: 'test_47e18d0521de46b6c5571feccd4',
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
+          const items = data.data?.items || [];
+          const priceId = items.length > 0 ? items[0].price?.id : '';
+          const isPlus = priceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || priceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
+          const tier = isPlus ? 'Plus' : 'Pro';
+
           // Fallback UI update until webhooks are ready
-          setSubscriptionTier('Pro'); // Safe fallback for both plans for now
+          setSubscriptionTier(tier); 
           if (user) {
-             await supabase.from('profiles').update({ subscription_tier: 'Pro' }).eq('id', user.id);
+             await supabase.from('profiles').update({ subscription_tier: tier }).eq('id', user.id);
           }
           
           let needsCompleteProfile = false;
