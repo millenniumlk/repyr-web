@@ -344,7 +344,7 @@ const Home = () => {
                     <button
                       key={i}
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`px-5 py-3.5 rounded-full text-[15px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
                         category === cat
                           ? 'bg-white text-primary shadow-glow-primary border border-primary/20'
                           : 'bg-white text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-transparent'
