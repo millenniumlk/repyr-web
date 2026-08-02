@@ -331,23 +331,23 @@ const Home = () => {
                 onAction={() => navigate('/garage/add')}
               />
             ) : (
-              <div className="mt-12 flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-4">
-                <div className="mb-8">
-                  <h1 className="text-3xl md:text-[32px] font-normal text-primary tracking-tighter leading-tight mb-4">
-                    Let's fix your {selectedVehicle?.model}.
+              <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
+                <div className="mb-6 w-full">
+                  <h1 className="text-[34px] md:text-4xl font-normal text-primary tracking-tight leading-tight">
+                    Let's fix your {selectedVehicle?.model || 'vehicle'}.
                   </h1>
                 </div>
                 
                 {/* Common Issue Prompts */}
-                <div className="flex flex-wrap justify-center gap-3 mt-4">
+                <div className="flex flex-wrap justify-start gap-3 w-full">
                   {VEHICLE_CATEGORIES.map((cat, i) => (
                     <button
                       key={i}
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`px-5 py-3 rounded-full border text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`px-5 py-3.5 rounded-full text-[15px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
                         category === cat
-                          ? 'bg-white border-primary text-primary shadow-glow-primary'
-                          : 'bg-white border-gray-100 text-gray-600 shadow-sm'
+                          ? 'bg-white text-primary shadow-glow-primary border border-primary/20'
+                          : 'bg-white text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-transparent'
                       }`}
                     >
                       {cat}

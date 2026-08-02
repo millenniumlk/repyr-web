@@ -56,7 +56,7 @@ const ChatInputBar = ({
         )}
 
         {/* Input Field Area */}
-        <div className="bg-white border border-gray-100 shadow-soft-card rounded-3xl p-1.5 flex items-end relative transition-all">
+        <div className="bg-white border border-gray-50 shadow-[0_8px_30px_rgba(0,0,0,0.06)] rounded-[32px] p-2 flex items-center relative transition-all">
           
           {/* Vehicle Selector (only shown when not in chat and empty input) */}
           <AnimatePresence>
@@ -70,12 +70,12 @@ const ChatInputBar = ({
                 <button 
                   onClick={openGarage}
                   disabled={isGuest}
-                  className={`flex items-center px-3 py-1.5 rounded-full whitespace-nowrap ${isGuest ? 'bg-gray-100 border border-gray-200 cursor-default' : 'bg-primary/10 border border-primary/20'}`}
+                  className={`flex items-center px-4 py-2.5 rounded-full whitespace-nowrap ${isGuest ? 'bg-gray-100 border border-gray-200 cursor-default' : 'bg-primary/5 border border-primary/20'}`}
                 >
-                  <span className={`text-xs font-medium mr-1 max-w-[100px] truncate ${isGuest ? 'text-gray-500' : 'text-primary-dark'}`}>
+                  <span className={`text-[13.5px] font-medium mr-1.5 max-w-[120px] truncate ${isGuest ? 'text-gray-500' : 'text-primary'}`}>
                     {selectedVehicle.make} {selectedVehicle.model}
                   </span>
-                  {!isGuest && <ChevronDown className="text-primary w-3.5 h-3.5" />}
+                  {!isGuest && <ChevronDown className="text-primary w-4 h-4 opacity-70" />}
                 </button>
               </motion.div>
             )}
@@ -91,7 +91,7 @@ const ChatInputBar = ({
               }
             }}
             placeholder={isChatActive ? (isDiagnosisComplete && !hasAskedFollowUp ? "Ask a follow-up question..." : "Message Repyr...") : "Describe the issue..."}
-            className="flex-1 max-h-32 min-h-[44px] px-4 py-3 bg-transparent outline-none resize-none text-foreground placeholder:text-muted-foreground text-base md:text-sm"
+            className="flex-1 max-h-32 min-h-[48px] px-4 py-3.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-[15px]"
             rows={1}
             style={{ overflowY: 'auto' }}
           />
@@ -99,11 +99,11 @@ const ChatInputBar = ({
           <button 
             onClick={handleStartOrReply}
             disabled={!isButtonActive}
-            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ml-1 mr-0.5 transition-all mb-0.5 ${
-              isButtonActive ? 'bg-primary text-white hover:scale-105 active:scale-95' : 'bg-gray-100 text-gray-400'
+            className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ml-1 mr-1 transition-all ${
+              isButtonActive ? 'bg-primary text-white hover:scale-105 active:scale-95 shadow-md shadow-primary/30' : 'bg-[#F2F4F7] text-gray-400'
             }`}
           >
-            <ArrowUp className="w-5 h-5" />
+            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
           </button>
         </div>
       </div>
