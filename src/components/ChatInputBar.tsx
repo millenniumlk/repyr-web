@@ -27,32 +27,36 @@ const ChatInputBar = ({
   const shouldShowSelector = !isChatActive && !!selectedVehicle && inputValue.length === 0;
 
   return (
-    <div className={`fixed bottom-0 left-0 md:left-64 right-0 px-4 md:px-8 pb-4 pt-4 z-20 ${
+    <div className={`fixed bottom-0 left-0 md:left-64 right-0 px-4 md:px-8 pb-4 pt-4 z-20 flex justify-center ${
       isChatActive ? 'bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]' : 'bg-transparent pointer-events-none'
     }`}>
-      <div className={`max-w-3xl mx-auto w-full ${!isChatActive ? 'pointer-events-auto' : ''}`}>
+      <div className="w-full max-w-7xl flex justify-center">
+        <div className={`max-w-3xl w-full ${!isChatActive ? 'pointer-events-auto' : ''}`}>
         
         {/* Quick Replies */}
         {isChatActive && !isTyping && currentOptions?.length > 0 && !isDiagnosisComplete && hasAccess !== false && (
           <div className="flex overflow-x-auto no-scrollbar gap-2 mb-4 pb-2">
             {currentOptions.map((opt: string, i: number) => (
-              <button 
+              <motion.button 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
                 key={i}
                 onClick={() => handleSendReply(opt)}
-                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex-shrink-0 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex-shrink-0 active:scale-[0.98] ${
                   i === 0 
-                    ? 'bg-primary text-white hover:bg-primary-dark' 
+                    ? 'bg-primary text-white hover:bg-primary-dark shadow-button-primary' 
                     : 'bg-white border border-border text-foreground hover:bg-secondary'
                 }`}
               >
                 {opt}
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
 
         {/* Input Field Area */}
-        <div className="bg-white border border-gray-100 shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-3xl p-1.5 flex items-end relative transition-all">
+        <div className="bg-white border border-gray-100 shadow-soft-card rounded-3xl p-1.5 flex items-end relative transition-all">
           
           {/* Vehicle Selector (only shown when not in chat and empty input) */}
           <AnimatePresence>
@@ -104,7 +108,8 @@ const ChatInputBar = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default ChatInputBar;

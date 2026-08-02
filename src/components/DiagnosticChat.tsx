@@ -77,12 +77,13 @@ const DiagnosticChat = ({
       )}
 
       {/* Messages */}
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col">
         <AnimatePresence>
           {displayMessages.map((item: any, index: number) => {
             const isAI = item.role === 'assistant';
             const content = isAI ? parseMessage(item.content) : item.content;
             const isLastInGroup = index === displayMessages.length - 1 || displayMessages[index + 1]?.role !== item.role;
+            const isFirstInGroup = index === 0 || displayMessages[index - 1]?.role !== item.role;
             
             return (
               <motion.div 
@@ -90,12 +91,12 @@ const DiagnosticChat = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'}`}
+                className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} ${isFirstInGroup && index > 0 ? 'mt-4' : 'mt-1.5'}`}
               >
                 <div className={`max-w-[85%] px-5 py-3.5 text-[15px] leading-[22px] font-medium ${
                   isAI 
-                    ? `bg-white text-gray-800 border border-gray-50 shadow-[0_4px_8px_rgba(17,24,39,0.02),0_16px_24px_rgba(17,24,39,0.04)] ${isLastInGroup ? 'rounded-[20px] rounded-bl-sm' : 'rounded-[20px]'}` 
-                    : `bg-gradient-to-br from-[#0062FF] to-[#004CCC] text-white shadow-[0_8px_24px_rgba(0,98,255,0.25)] ${isLastInGroup ? 'rounded-[20px] rounded-br-sm' : 'rounded-[20px]'}`
+                    ? `bg-white text-gray-800 border border-gray-50 shadow-soft-card ${isLastInGroup ? 'rounded-[20px] rounded-bl-sm' : 'rounded-[20px]'}` 
+                    : `bg-gradient-primary text-white shadow-button-primary ${isLastInGroup ? 'rounded-[20px] rounded-br-sm' : 'rounded-[20px]'}`
                 }`}>
                   {content}
                 </div>
@@ -147,7 +148,7 @@ const DiagnosticChat = ({
           )}
           
           {trialTier === 'Trial' && (
-            <div className="mb-6 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden">
+            <div className="mb-6 bg-gradient-indigo rounded-2xl p-5 text-white shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 p-3 opacity-20 pointer-events-none">
                   <Zap className="w-16 h-16" />
                </div>

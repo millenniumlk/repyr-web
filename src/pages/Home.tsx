@@ -8,11 +8,9 @@ import { useDiagnosticAI } from '../hooks/useDiagnosticAI';
 import DiagnosticChat from '../components/DiagnosticChat';
 import ChatInputBar from '../components/ChatInputBar';
 
-const VEHICLE_CATEGORIES = [
-  "Car won't start", "Engine overheating", "Check engine light", 
-  "Battery problem", "Strange noise", "Poor acceleration", 
-  "Transmission problem", "Other"
-];
+import { Skeleton } from '../components/ui/Skeleton';
+import { EmptyState } from '../components/ui/EmptyState';
+import { VEHICLE_CATEGORIES, SUBSCRIPTION_LIMITS } from '../lib/constants';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -257,7 +255,7 @@ const Home = () => {
             }
           }
 
-          const maxSessions = subscriptionTier === 'Plus' ? 5 : 1;
+          const maxSessions = subscriptionTier === 'Plus' ? SUBSCRIPTION_LIMITS.PLUS_MAX_SESSIONS : SUBSCRIPTION_LIMITS.TRIAL_MAX_SESSIONS;
           if (adjustedCount >= maxSessions) {
             limitReached = true;
           }
@@ -302,8 +300,10 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] space-y-4 px-4 w-full max-w-2xl mx-auto">
+        <Skeleton className="w-full h-[60px] rounded-2xl" />
+        <Skeleton className="w-full h-[120px] rounded-2xl" />
+        <Skeleton className="w-3/4 h-[40px] rounded-2xl" />
       </div>
     );
   }
@@ -320,24 +320,16 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="flex-1 pb-32"
+            className="flex-1 flex flex-col justify-center pb-32"
           >
             {vehicles.length === 0 ? (
-              <div className="glass rounded-3xl p-12 mt-12 flex flex-col items-center text-center max-w-lg mx-auto shadow-sm">
-                <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6">
-                  <Car className="w-10 h-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">Welcome to Repyr</h3>
-                <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
-                  Add your first vehicle to start tracking diagnostics, maintenance logs, and get intelligent AI recommendations.
-                </p>
-                <button 
-                  onClick={() => navigate('/garage/add')}
-                  className="bg-primary text-white px-8 py-3.5 rounded-xl font-medium hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                >
-                  Add a Vehicle
-                </button>
-              </div>
+              <EmptyState 
+                icon={Car}
+                title="Welcome to Repyr"
+                description="Add your first vehicle to start tracking diagnostics, maintenance logs, and get intelligent AI recommendations."
+                actionLabel="Add a Vehicle"
+                onAction={() => navigate('/garage/add')}
+              />
             ) : (
               <div className="mt-12 flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-4">
                 <div className="mb-8">
@@ -357,8 +349,8 @@ const Home = () => {
                       onClick={() => setCategory(category === cat ? '' : cat)}
                       className={`px-5 py-3 rounded-full border text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
                         category === cat
-                          ? 'bg-white border-primary text-primary shadow-[0_4px_16px_rgba(0,98,255,0.2)]'
-                          : 'bg-white border-gray-100 text-gray-600 shadow-[0_2px_8px_rgba(0,0,0,0.03)]'
+                          ? 'bg-white border-primary text-primary shadow-glow-primary'
+                          : 'bg-white border-gray-100 text-gray-600 shadow-sm'
                       }`}
                     >
                       {cat}
