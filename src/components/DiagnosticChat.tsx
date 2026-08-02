@@ -42,7 +42,7 @@ const DiagnosticChat = ({
           disabled={isUpgrading}
           className="bg-amber-500 text-white font-medium px-8 py-3 rounded-xl shadow-md disabled:opacity-70 transition-opacity"
         >
-          {isUpgrading ? "Processing..." : "Upgrade to Pro"}
+          {isUpgrading ? "Processing..." : (trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro")}
         </button>
         <button onClick={exitChat} className="mt-6 font-bold text-muted-foreground hover:text-foreground">
           Back to Home

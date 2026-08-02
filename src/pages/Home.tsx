@@ -248,12 +248,18 @@ const Home = () => {
         }
       }
       
-      setIsChatActive(true);
-      setInputValue('');
-      
       if (limitReached) {
-        setHasAccess(false);
+        if (subscriptionTier === 'Trial') {
+          navigate('/settings/subscription');
+          return;
+        } else {
+          setIsChatActive(true);
+          setInputValue('');
+          setHasAccess(false);
+        }
       } else {
+        setIsChatActive(true);
+        setInputValue('');
         setHasAccess(true);
         startInvestigation();
       }
@@ -357,7 +363,7 @@ const Home = () => {
           >
             <DiagnosticChat 
               hasAccess={hasAccess}
-              handleUpgrade={() => {}}
+              handleUpgrade={() => navigate('/settings/subscription')}
               isUpgrading={false}
               exitChat={exitChat}
               selectedVehicle={selectedVehicle}
