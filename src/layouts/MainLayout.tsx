@@ -15,9 +15,24 @@ const MainLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [guestRestrictedFeature, setGuestRestrictedFeature] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string } | null>(null);
 
-  const userName = isGuest ? 'Guest User' : (user?.user_metadata?.full_name || user?.email?.split('@')[0]);
-  const avatarUrl = !isGuest && user?.user_metadata?.avatar_url;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user && !isGuest) {
+        try {
+          const { data } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single();
+          if (data) setProfile(data);
+        } catch (error) {
+          console.error('Error fetching profile for sidebar:', error);
+        }
+      }
+    };
+    fetchProfile();
+  }, [user, isGuest]);
+
+  const userName = isGuest ? 'Guest User' : (profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0]);
+  const avatarUrl = !isGuest && (profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture);
   const displayInitial = userName ? userName.charAt(0).toUpperCase() : 'U';
 
   useEffect(() => {
