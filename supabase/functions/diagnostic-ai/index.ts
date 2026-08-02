@@ -69,8 +69,24 @@ serve(async (req) => {
         .lte('created_at', session.created_at);
 
       if (!countError && count !== null) {
+        let adjustedCount = count;
+
+        if (tier === 'Plus') {
+          const { data: firstSession } = await supabaseClient
+            .from('diagnostic_sessions')
+            .select('created_at')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: true })
+            .limit(1)
+            .single();
+
+          if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
+            adjustedCount = Math.max(0, adjustedCount - 1);
+          }
+        }
+
         const maxSessions = tier === 'Plus' ? 5 : 1;
-        if (count > maxSessions) {
+        if (adjustedCount > maxSessions) {
           return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
             status: 403,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
