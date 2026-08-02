@@ -90,7 +90,7 @@ const QuickSelect = ({ options, value, onChange }: { options: string[], value: s
 
 const AddVehicle = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, subscriptionTier } = useAuth();
   
   const [step, setStep] = useState(1);
   const [make, setMake] = useState('');
@@ -134,6 +134,31 @@ const AddVehicle = () => {
 
     try {
       if (!user) throw new Error('Not authenticated');
+
+      // Fetch user's current vehicle count
+      const { count: currentVehicles, error: countError } = await supabase
+        .from('vehicles')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+        
+      if (countError) throw countError;
+
+      // Fetch the vehicle limit for the current tier
+      const { data: limitData, error: limitError } = await supabase
+        .from('plan_limits')
+        .select('vehicle_limit')
+        .eq('plan_name', subscriptionTier)
+        .single();
+        
+      if (limitError && limitError.code !== 'PGRST116') {
+        throw limitError;
+      }
+      
+      const limit = limitData ? limitData.vehicle_limit : -1;
+      
+      if (limit !== -1 && currentVehicles !== null && currentVehicles >= limit) {
+        throw new Error(`Vehicle limit reached. The ${subscriptionTier} plan allows up to ${limit} vehicles. Please upgrade to add more.`);
+      }
 
       const { error } = await supabase.from('vehicles').insert({
         user_id: user.id,
