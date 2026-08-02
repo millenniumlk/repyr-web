@@ -425,7 +425,7 @@ const Home = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto no-scrollbar">
                 {vehicles.map(v => (
                   <button 
                     key={v.id}

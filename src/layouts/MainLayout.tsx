@@ -89,7 +89,7 @@ const MainLayout = () => {
           </button>
         </div>
         
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto no-scrollbar">
           {navItems.map((item) => {
             const isActive = item.exact 
               ? location.pathname === item.path 
@@ -256,7 +256,7 @@ const MainLayout = () => {
                 </button>
               </div>
 
-              <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+              <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto no-scrollbar">
                 {navItems.map((item) => {
                   const isActive = item.exact 
                     ? location.pathname === item.path 
