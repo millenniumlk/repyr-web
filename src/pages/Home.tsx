@@ -339,29 +339,10 @@ const Home = () => {
                 </div>
                 
                 {/* Common Issue Prompts */}
-                <motion.div 
-                  className="flex flex-wrap justify-center gap-3 mt-4"
-                  initial="hidden"
-                  animate="show"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.05 }
-                    }
-                  }}
-                >
+                <div className="flex flex-wrap justify-center gap-3 mt-4">
                   {VEHICLE_CATEGORIES.map((cat, i) => (
-                    <motion.button
+                    <button
                       key={i}
-                      variants={{
-                        hidden: { opacity: 0, y: 15 },
-                        show: { 
-                          opacity: 1, 
-                          y: 0, 
-                          transition: { type: 'spring', stiffness: 400, damping: 25 }
-                        }
-                      }}
                       onClick={() => setCategory(category === cat ? '' : cat)}
                       className={`px-5 py-3 rounded-full border text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
                         category === cat
@@ -370,9 +351,9 @@ const Home = () => {
                       }`}
                     >
                       {cat}
-                    </motion.button>
+                    </button>
                   ))}
-                </motion.div>
+                </div>
               </div>
             )}
           </motion.div>
