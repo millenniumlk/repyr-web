@@ -33,7 +33,9 @@ const DiagnosticChat = ({
         </div>
         <h2 className="text-center font-bold mb-3 text-2xl">Limit Reached</h2>
         <p className="text-center text-muted-foreground mb-8 px-4 text-sm max-w-sm">
-          You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access.
+          {trialTier === 'Trial' 
+            ? "You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access."
+            : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
         </p>
         <button 
           onClick={handleUpgrade} 

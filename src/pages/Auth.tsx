@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +34,14 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Clear stale pending guest chat if we navigated here directly (not from the guest chat intercept overlay)
+  useEffect(() => {
+    if (!location.state?.fromGuestChat) {
+      localStorage.removeItem('pending_guest_chat');
+    }
+  }, [location]);
   
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);

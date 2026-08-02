@@ -13,10 +13,12 @@ export function useDiagnosticAI(vehicle: any) {
 
     try {
       if (vehicle.id !== 'guest-vehicle') {
+        const { data: { session } } = await supabase.auth.getSession();
         const { data: sessionData, error } = await supabase
           .from('diagnostic_sessions')
           .insert([{
             vehicle_id: vehicle.id,
+            user_id: session?.user?.id,
             vehicle_make: vehicle.make,
             vehicle_model: vehicle.model,
             vehicle_year: vehicle.year?.toString(), 
@@ -31,6 +33,10 @@ export function useDiagnosticAI(vehicle: any) {
 
         if (error) {
           console.error("Supabase Session Creation Error:", error);
+          setIsTyping(false);
+          // If the backend blocked it (e.g. limit reached trigger), stop the chat immediately
+          setMessages(prev => [...prev, { role: 'system', content: 'Session creation blocked by server. ' + error.message }]);
+          return;
         }
 
         if (sessionData) {
@@ -72,7 +78,7 @@ export function useDiagnosticAI(vehicle: any) {
         { role: 'user', content: initialUserMessage }
       ];
 
-      await pingOpenAI(chatContext, currentSessionId);
+      await pingOpenAI({ chatContext, currentSessionId });
       
     } catch (error) {
       console.error("Critical error in startInvestigation:", error);
@@ -80,11 +86,15 @@ export function useDiagnosticAI(vehicle: any) {
     }
   };
 
-  const pingOpenAI = async (chatContext: any[], currentSessionId: string | null = sessionId) => {
+  const pingOpenAI = async ({ chatContext, newMessage, currentSessionId = sessionId }: { chatContext?: any[], newMessage?: string, currentSessionId?: string | null }) => {
     setIsTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke('diagnostic-ai', {
-        body: { chatContext }
+        body: { 
+          sessionId: currentSessionId,
+          ...(chatContext ? { chatContext } : {}),
+          ...(newMessage ? { newMessage } : {})
+        }
       });
 
       if (error) {
@@ -95,16 +105,14 @@ export function useDiagnosticAI(vehicle: any) {
 
       if (aiResponse.current_probabilities) setProbabilities(aiResponse.current_probabilities);
       
-      const newMessages = [...chatContext, { role: 'assistant', content: JSON.stringify(aiResponse) }];
-      setMessages(newMessages);
+      setMessages(prev => {
+        if (chatContext) {
+          return [...chatContext, { role: 'assistant', content: JSON.stringify(aiResponse) }];
+        } else {
+          return [...prev, { role: 'assistant', content: JSON.stringify(aiResponse) }];
+        }
+      });
 
-      if (currentSessionId) {
-        await supabase.from('diagnostic_sessions').update({ 
-          chat_history: newMessages,
-          final_probabilities: aiResponse.current_probabilities || null,
-          status: aiResponse.status 
-        }).eq('id', currentSessionId);
-      }
     } catch (error) {
       console.error("OpenAI API Error:", error);
     } finally {
@@ -114,9 +122,8 @@ export function useDiagnosticAI(vehicle: any) {
 
   const handleSendReply = async (text: string) => {
     if (!text.trim()) return;
-    const newContext = [...messages, { role: 'user', content: text }];
-    setMessages(newContext);
-    await pingOpenAI(newContext);
+    setMessages(prev => [...prev, { role: 'user', content: text }]);
+    await pingOpenAI({ newMessage: text });
   };
 
   const resetDiagnosis = () => {

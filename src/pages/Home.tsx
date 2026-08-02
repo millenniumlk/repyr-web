@@ -66,25 +66,73 @@ const Home = () => {
         .eq('user_id', user.id);
         
       if (!error && data) {
-        tempVehicles = data;
-      }
-    } else if (guestVehicle) {
-      tempVehicles = [guestVehicle];
-    }
-    
-    // Check pending guest chat for newly signed up users
-    const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-    if (pendingChatRaw) {
-      try {
-        const pendingChat = JSON.parse(pendingChatRaw);
-        if (pendingChat.vehicle) {
-          const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
-          // If not already in the list, add it
-          if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
-            tempVehicles = [vehicle, ...tempVehicles];
-          }
+        let finalData = data;
+        
+        // Remove backend-injected default Toyota Camry to show empty state
+        if (data.length === 1 && data[0].make === 'Toyota' && data[0].model === 'Camry' && !data[0].transmission) {
+          supabase.from('vehicles').delete().eq('id', data[0].id).then();
+          finalData = [];
         }
-      } catch (e) {}
+        
+        // Save pending guest chat vehicle to the database
+        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+        if (pendingChatRaw) {
+          try {
+            const pendingChat = JSON.parse(pendingChatRaw);
+            if (pendingChat.vehicle) {
+              const gv = pendingChat.vehicle;
+              const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
+              
+              if (!alreadyExists) {
+                const { data: newVehicle } = await supabase.from('vehicles').insert({
+                  user_id: user.id,
+                  make: gv.make,
+                  model: gv.model,
+                  year: gv.year,
+                  transmission: gv.transmission || '',
+                  engine: gv.engine || '',
+                  drivetrain: gv.drivetrain || '',
+                  fuel_type: gv.fuel_type || '',
+                  location: gv.location || ''
+                }).select().single();
+                
+                if (newVehicle) {
+                  finalData = [newVehicle, ...finalData];
+                }
+              }
+              
+              // Remove vehicle from pending chat so we don't save it again on next refresh
+              delete pendingChat.vehicle;
+              if (Object.keys(pendingChat).length === 0) {
+                localStorage.removeItem('pending_guest_chat');
+              } else {
+                localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+              }
+            }
+          } catch (e) {}
+        }
+        
+        tempVehicles = finalData;
+      }
+    } else {
+      if (guestVehicle) {
+        tempVehicles = [guestVehicle];
+      }
+      
+      // Check pending guest chat for guest users
+      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+      if (pendingChatRaw) {
+        try {
+          const pendingChat = JSON.parse(pendingChatRaw);
+          if (pendingChat.vehicle) {
+            const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
+            // If not already in the list, add it
+            if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
+              tempVehicles = [vehicle, ...tempVehicles];
+            }
+          }
+        } catch (e) {}
+      }
     }
 
     setVehicles(tempVehicles);
@@ -178,23 +226,37 @@ const Home = () => {
       }
       
       // Check paywall limits
-      const count = parseInt(localStorage.getItem('diagnostics_run_count') || '0', 10);
+      let limitReached = false;
       
-      if (count >= 1 && subscriptionTier === 'Trial') {
-        navigate('/settings/subscription');
-        return;
+      if (subscriptionTier !== 'Pro') {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+        const { count, error } = await supabase
+          .from('diagnostic_sessions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .gte('created_at', twentyFourHoursAgo);
+
+        if (error) {
+          console.error("Error checking limits manually:", error);
+          limitReached = true;
+        } else {
+          const maxSessions = subscriptionTier === 'Plus' ? 5 : 1;
+          if (count !== null && count >= maxSessions) {
+            limitReached = true;
+          }
+        }
       }
       
-      // Increment count
-      localStorage.setItem('diagnostics_run_count', (count + 1).toString());
-      
       setIsChatActive(true);
-      
       setInputValue('');
       
-      // Access check simulation (mocking profile check for simplicity in web MVP)
-      setHasAccess(true);
-      startInvestigation();
+      if (limitReached) {
+        setHasAccess(false);
+      } else {
+        setHasAccess(true);
+        startInvestigation();
+      }
     } else {
       if (!inputValue.trim()) return;
       handleSendReply(inputValue);
@@ -412,7 +474,7 @@ const Home = () => {
                     symptoms: inputValue.trim() || category
                   };
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-                  navigate('/auth');
+                  navigate('/auth', { state: { fromGuestChat: true } });
                 }}
                 className="w-full py-3.5 bg-primary text-white rounded-xl font-bold tracking-wide shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5 transition-all active:scale-95"
               >

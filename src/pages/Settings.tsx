@@ -74,6 +74,7 @@ const Settings = () => {
     } else {
       await supabase.auth.signOut();
     }
+    localStorage.removeItem('pending_guest_chat');
     navigate('/auth');
   };
 
