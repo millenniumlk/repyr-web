@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Check, Loader2, X } from 'lucide-react';
+import googleLogo from '../assets/google.png';
 
 const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rightAccessory, className = "", ...props }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -453,7 +454,7 @@ const Auth = () => {
                   onClick={handleGoogleSignIn}
                   className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
                 >
-                  <img src="/google.png" alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
+                  <img src={googleLogo} alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
                   <span className="font-medium text-gray-700 tracking-tight text-[16px]">Continue with Google</span>
                 </button>
 
