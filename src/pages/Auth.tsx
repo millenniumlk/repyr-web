@@ -443,21 +443,10 @@ const Auth = () => {
                 <button 
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-3"
+                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
                 >
                   <img src="/google.png" alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
                   <span className="font-medium text-gray-700 tracking-tight text-[16px]">Continue with Google</span>
-                </button>
-
-                <button 
-                  type="button"
-                  onClick={() => alert('Apple Auth coming soon.')}
-                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
-                >
-                  <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center mr-3 pb-[1px]">
-                    <span className="font-medium text-white text-[15px]"></span>
-                  </div>
-                  <span className="font-medium text-gray-700 tracking-tight text-[16px]">Continue with Apple</span>
                 </button>
 
                 <div className="flex justify-center items-center mt-4">
