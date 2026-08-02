@@ -355,11 +355,10 @@ const Home = () => {
                     <motion.button
                       key={i}
                       variants={{
-                        hidden: { opacity: 0, y: 15, scale: 0.95 },
+                        hidden: { opacity: 0, y: 15 },
                         show: { 
                           opacity: 1, 
                           y: 0, 
-                          scale: 1,
                           transition: { type: 'spring', stiffness: 400, damping: 25 }
                         }
                       }}
