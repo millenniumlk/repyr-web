@@ -240,7 +240,7 @@ const Auth = () => {
         : !email || !password;
 
   return (
-    <div className="min-h-screen bg-gray-50 md:bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80')] md:bg-cover md:bg-center flex flex-col md:items-center md:justify-center relative font-sans">
+    <div className="h-[100dvh] overflow-hidden bg-gray-50 md:bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80')] md:bg-cover md:bg-center flex flex-col md:items-center md:justify-center relative font-sans">
       
       {/* Desktop Overlay */}
       <div className="hidden md:block absolute inset-0 bg-black/50 backdrop-blur-sm z-0"></div>
@@ -268,7 +268,7 @@ const Auth = () => {
         </button>
       </div>
 
-      <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-white md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10">
+      <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-white md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar max-h-[100dvh] md:max-h-[90dvh]">
         <AnimatePresence mode="wait">
           <motion.div 
             key={isForgotPassword ? `forgot-${forgotStep}` : isSignUp ? 'signup' : 'login'}
