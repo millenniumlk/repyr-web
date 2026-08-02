@@ -241,8 +241,24 @@ const Home = () => {
           console.error("Error checking limits manually:", error);
           limitReached = true;
         } else {
+          let adjustedCount = count || 0;
+          
+          if (subscriptionTier === 'Plus') {
+            const { data: firstSession } = await supabase
+              .from('diagnostic_sessions')
+              .select('created_at')
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: true })
+              .limit(1)
+              .single();
+
+            if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
+              adjustedCount = Math.max(0, adjustedCount - 1);
+            }
+          }
+
           const maxSessions = subscriptionTier === 'Plus' ? 5 : 1;
-          if (count !== null && count >= maxSessions) {
+          if (adjustedCount >= maxSessions) {
             limitReached = true;
           }
         }
