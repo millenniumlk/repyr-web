@@ -39,6 +39,7 @@ const EditProfile = () => {
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
   
   const [fullName, setFullName] = useState('');
@@ -101,6 +102,7 @@ const EditProfile = () => {
     if (!window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return;
     
     setSaving(true);
+    setIsDeleting(true);
     try {
       // Attempt to delete profile data
       await supabase.from('profiles').delete().eq('id', user?.id);
@@ -118,6 +120,7 @@ const EditProfile = () => {
       navigate('/auth');
     } finally {
       setSaving(false);
+      setIsDeleting(false);
     }
   };
 
@@ -380,13 +383,13 @@ const EditProfile = () => {
         <div className="mt-8 mb-12">
           <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
             <ActionRow 
-              icon={saving ? Loader2 : Trash2} 
-              title={saving ? "Deleting..." : "Delete Account"} 
+              icon={isDeleting ? Loader2 : Trash2} 
+              title={isDeleting ? "Deleting..." : "Delete Account"} 
               onClick={handleDeleteAccount}
               isDestructive={true}
               isLast={true}
               disabled={saving}
-              isSpinning={saving}
+              isSpinning={isDeleting}
             />
           </div>
           <p className="text-center text-[13px] mt-4 px-4 leading-snug text-gray-400 font-medium">
