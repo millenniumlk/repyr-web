@@ -46,7 +46,7 @@ const EditProfile = () => {
   const [originalFullName, setOriginalFullName] = useState('');
   const [originalAvatarUrl, setOriginalAvatarUrl] = useState<string | null>(null);
   
-  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+
   const [showPasswordEdit, setShowPasswordEdit] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -197,51 +197,30 @@ const EditProfile = () => {
           animate={{ opacity: 1, y: 0 }}
           className="items-center mb-12 flex flex-col"
         >
-          <div className="relative">
-            <div className="relative cursor-pointer group" onClick={() => setShowPhotoMenu(!showPhotoMenu)}>
-              <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-gray-50' : 'bg-blue-50 border-blue-100'}`}>
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-primary text-[40px] font-black pt-1 leading-[44px]">
-                    {displayInitial}
-                  </span>
-                )}
-              </div>
-              
-              <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-primary border-[4px] border-white flex items-center justify-center z-20 group-hover:bg-blue-700 transition-colors">
-                <Camera className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
-              </div>
+          <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+            <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-gray-50' : 'bg-blue-50 border-blue-100'}`}>
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-primary text-[40px] font-black pt-1 leading-[44px]">
+                  {displayInitial}
+                </span>
+              )}
             </div>
             
-            {showPhotoMenu && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowPhotoMenu(false)} />
-                <div className="absolute top-full mt-3 w-56 bg-white/90 backdrop-blur-xl rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-200/50 z-30 left-1/2 -translate-x-1/2 overflow-hidden flex flex-col divide-y divide-gray-200/50">
-                  <button 
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                      setShowPhotoMenu(false);
-                    }}
-                    className="w-full text-left px-4 py-3 text-[15px] font-normal text-gray-900 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
-                  >
-                    Upload Photo
-                  </button>
-                  {avatarUrl && (
-                    <button 
-                      onClick={() => {
-                        setAvatarUrl(null);
-                        setShowPhotoMenu(false);
-                      }}
-                      className="w-full text-left px-4 py-3 text-[15px] font-normal text-red-500 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
-                    >
-                      Remove Photo
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
+            <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-primary border-[4px] border-white flex items-center justify-center z-20 group-hover:bg-blue-700 transition-colors">
+              <Camera className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+            </div>
           </div>
+          
+          {avatarUrl && (
+            <button 
+              onClick={() => setAvatarUrl(null)}
+              className="mt-4 text-red-500 text-[13px] font-bold tracking-tight hover:text-red-600 transition-colors bg-red-50 hover:bg-red-100 px-4 py-1.5 rounded-full"
+            >
+              Remove Photo
+            </button>
+          )}
           
           <input 
             type="file" 
@@ -250,7 +229,6 @@ const EditProfile = () => {
             accept="image/*"
             onChange={handleFileChange}
           />
-
         </motion.div>
 
         {/* Group 1: Personal Details */}
