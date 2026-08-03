@@ -35,6 +35,7 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -214,15 +215,24 @@ const EditProfile = () => {
             {showPhotoMenu && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowPhotoMenu(false)} />
-                <div className="absolute top-full mt-2 w-48 bg-white rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-gray-100 py-1 z-20 left-1/2 -translate-x-1/2">
+                <div className="absolute top-[65%] w-56 bg-white/95 backdrop-blur-xl rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-gray-100/80 py-1 z-30 left-1/2 -translate-x-1/2 overflow-hidden">
+                  <button 
+                    onClick={() => {
+                      cameraInputRef.current?.click();
+                      setShowPhotoMenu(false);
+                    }}
+                    className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-primary hover:bg-gray-50/80 transition-colors border-b border-gray-100/50"
+                  >
+                    Take Photo
+                  </button>
                   <button 
                     onClick={() => {
                       fileInputRef.current?.click();
                       setShowPhotoMenu(false);
                     }}
-                    className="w-full text-left px-4 py-3 text-[14px] font-bold text-gray-900 hover:bg-gray-50 transition-colors"
+                    className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-gray-900 hover:bg-gray-50/80 transition-colors"
                   >
-                    Upload Photo
+                    Choose from Library
                   </button>
                   {avatarUrl && (
                     <button 
@@ -230,7 +240,7 @@ const EditProfile = () => {
                         setAvatarUrl(null);
                         setShowPhotoMenu(false);
                       }}
-                      className="w-full text-left px-4 py-3 text-[14px] font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-gray-100"
+                      className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-red-500 hover:bg-red-50/80 transition-colors border-t border-gray-100/50"
                     >
                       Remove Photo
                     </button>
@@ -247,6 +257,14 @@ const EditProfile = () => {
             accept="image/*"
             onChange={handleFileChange}
           />
+          <input 
+            type="file" 
+            ref={cameraInputRef} 
+            className="hidden" 
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileChange}
+          />
         </motion.div>
 
         {/* Group 1: Personal Details */}
@@ -256,7 +274,7 @@ const EditProfile = () => {
           </h4>
           <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
             {/* Full Name Row */}
-            <div className={`px-5 py-4 border-b border-gray-100 flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
+            <div className={`px-5 py-2 border-b border-gray-100 flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
               <div className="mr-4">
                 <User className={`w-[22px] h-[22px] ${(!isValidName && fullName.length > 0) ? "text-red-500" : "text-primary"}`} strokeWidth={2.2} />
               </div>
@@ -276,7 +294,7 @@ const EditProfile = () => {
             </div>
             
             {/* Email Row */}
-            <div className="px-5 py-4 flex items-center opacity-70">
+            <div className="px-5 py-2 flex items-center opacity-70">
               <div className="mr-4">
                 <Mail className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
               </div>
