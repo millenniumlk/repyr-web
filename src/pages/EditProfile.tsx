@@ -369,7 +369,7 @@ const EditProfile = () => {
                   onClick={handleUpdatePassword}
                   disabled={!canSavePassword}
                   isLoading={saving && newPassword.length > 0}
-                  className="w-full rounded-[20px]"
+                  className="w-full"
                 >
                   Update Password
                 </Button>
