@@ -3,6 +3,7 @@ import { Sparkles, CheckCircle, Zap, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../lib/AuthContext';
+import { Button } from './ui/Button';
 
 const DiagnosticChat = ({
   hasAccess,
@@ -37,16 +38,17 @@ const DiagnosticChat = ({
             ? "You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access."
             : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
         </p>
-        <button 
+        <Button 
           onClick={handleUpgrade} 
           disabled={isUpgrading}
-          className="bg-amber-500 text-white font-medium px-8 py-3 rounded-xl shadow-md disabled:opacity-70 transition-opacity"
+          isLoading={isUpgrading}
+          className="bg-amber-500 text-white hover:bg-amber-600 px-8 py-3 rounded-xl shadow-md disabled:opacity-70 transition-opacity"
         >
-          {isUpgrading ? "Processing..." : (trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro")}
-        </button>
-        <button onClick={exitChat} className="mt-6 font-bold text-muted-foreground hover:text-foreground">
+          {trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro"}
+        </Button>
+        <Button variant="ghost" onClick={exitChat} className="mt-6 font-bold text-muted-foreground hover:text-foreground hover:bg-transparent">
           Back to Home
-        </button>
+        </Button>
       </div>
     );
   }
@@ -159,21 +161,22 @@ const DiagnosticChat = ({
                <p className="text-indigo-100 text-sm mb-4 relative z-10 leading-relaxed">
                  You've used your free chat! Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance.
                </p>
-               <button 
+               <Button 
                  onClick={() => navigate('/settings/subscription')}
-                 className="w-full bg-white text-indigo-700 font-bold py-3 rounded-xl hover:bg-indigo-50 transition-colors shadow-lg active:scale-95"
+                 className="w-full bg-white text-indigo-700 hover:bg-indigo-50 py-3 rounded-xl shadow-lg hover:text-indigo-800"
                >
                  Start 7-Day Free Trial
-               </button>
+               </Button>
             </div>
           )}
 
-          <button 
+          <Button 
+            variant={trialTier === 'Trial' ? 'outline' : 'default'}
             onClick={exitChat}
-            className={`w-full font-medium py-3 rounded-xl transition-colors ${trialTier === 'Trial' ? 'bg-transparent text-primary hover:bg-primary/10 border border-primary/20' : 'bg-primary text-white hover:bg-primary/90'}`}
+            className={`w-full py-3 rounded-xl ${trialTier === 'Trial' ? 'text-primary border-primary/20 hover:bg-primary/10' : 'text-white hover:bg-primary/90'}`}
           >
             Back to Garage
-          </button>
+          </Button>
         </motion.div>
       )}
 

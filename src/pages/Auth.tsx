@@ -3,8 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, Check, Loader2, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Check, X } from 'lucide-react';
 import googleLogo from '../assets/google.png';
+import { Button } from '../components/ui/Button';
 
 const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rightAccessory, className = "", ...props }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -248,7 +249,9 @@ const Auth = () => {
       
       {/* Top Right Close/Skip Button */}
       <div className="absolute top-6 right-6 z-50">
-        <button 
+        <Button 
+          variant="ghost"
+          size="icon"
           onClick={() => {
             if (isForgotPassword) {
               if (forgotStep === 'new_password' || forgotStep === 'otp') {
@@ -263,10 +266,10 @@ const Auth = () => {
               navigate('/guest-intake');
             }
           }}
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200/50 md:bg-white/10 md:hover:bg-white/20 md:backdrop-blur-md transition-colors"
+          className="hover:bg-gray-200/50 md:bg-white/10 md:hover:bg-white/20 md:backdrop-blur-md transition-colors"
         >
           <X className="w-6 h-6 text-primary md:text-white" strokeWidth={2.5} />
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-white md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar max-h-[100dvh] md:max-h-[90dvh]">
@@ -399,9 +402,9 @@ const Auth = () => {
 
               {!isSignUp && !isForgotPassword && (
                 <div className="flex justify-end pb-4 pt-1">
-                  <button type="button" onClick={() => handleToggleState('forgot')} className="text-primary font-semibold text-[13.5px] hover:underline">
+                  <Button variant="link" size="sm" type="button" onClick={() => handleToggleState('forgot')} className="h-auto p-0 text-[13.5px]">
                     Forgot password?
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -424,21 +427,16 @@ const Auth = () => {
 
               {isForgotPassword && <div className="h-4" />}
 
-              <button
+              <Button
                 type="submit"
-                disabled={isFormIncomplete || loading}
-                className={`w-full py-3.5 rounded-full flex items-center justify-center transition-all shadow-lg shadow-primary/30 mt-1 ${
-                  isFormIncomplete || loading ? 'bg-primary/60 opacity-60 cursor-not-allowed' : 'bg-primary hover:bg-primary-dark active:scale-[0.98]'
-                }`}
+                disabled={isFormIncomplete}
+                isLoading={loading}
+                className="w-full mt-1"
               >
-                {loading ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : (
-                  <span className="text-white font-semibold text-[16px] tracking-tight">
-                    {isForgotPassword 
-                      ? (forgotStep === 'otp' ? 'Verify OTP' : forgotStep === 'new_password' ? 'Update Password' : 'Send OTP') 
-                      : isSignUp ? 'Sign Up' : 'Log In'}
-                  </span>
-                )}
-              </button>
+                {isForgotPassword 
+                  ? (forgotStep === 'otp' ? 'Verify OTP' : forgotStep === 'new_password' ? 'Update Password' : 'Send OTP') 
+                  : isSignUp ? 'Sign Up' : 'Log In'}
+              </Button>
             </form>
 
             {!isForgotPassword && (
@@ -449,25 +447,28 @@ const Auth = () => {
                   <div className="flex-1 h-[1px] bg-gray-200" />
                 </div>
 
-                <button 
+                <Button 
                   type="button"
+                  variant="outline"
                   onClick={handleGoogleSignIn}
-                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
+                  className="w-full mb-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
                 >
                   <img src={googleLogo} alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
-                  <span className="font-medium text-gray-700 tracking-tight text-[16px]">Continue with Google</span>
-                </button>
+                  Continue with Google
+                </Button>
 
                 <div className="flex justify-center items-center mt-4">
                   <span className="text-gray-900 font-medium text-[15px]">
                     {isSignUp ? "Already have an account? " : "Don't have an account? "}
                   </span>
-                  <button 
+                  <Button 
+                    variant="link"
+                    size="sm"
                     onClick={() => handleToggleState(isSignUp ? 'login' : 'signup')}
-                    className="text-primary font-semibold text-[15px] hover:underline ml-1"
+                    className="h-auto p-0 text-[15px] ml-1"
                   >
                     {isSignUp ? "Log In" : "Sign Up"}
-                  </button>
+                  </Button>
                 </div>
               </>
             )}

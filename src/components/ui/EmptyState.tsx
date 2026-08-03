@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { cn } from './Skeleton';
+import { Button } from './Button';
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -28,12 +29,12 @@ export function EmptyState({
         {description}
       </p>
       {actionLabel && onAction && (
-        <button 
+        <Button 
           onClick={onAction}
-          className="bg-primary text-white px-8 py-3.5 rounded-xl font-bold tracking-wide shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5 transition-all active:scale-95"
+          className="px-8 py-3.5 rounded-xl shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5"
         >
           {actionLabel}
-        </button>
+        </Button>
       )}
     </div>
   );

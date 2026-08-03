@@ -4,11 +4,13 @@ import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, Load
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
+import { Button } from '../components/ui/Button';
 
 const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any) => (
-  <button 
+  <Button 
+    variant="ghost"
     onClick={onClick}
-    className={`w-full flex items-center justify-between pl-4 pr-4 bg-transparent hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-200/60' : ''}`}
+    className={`w-full h-auto flex items-center justify-between pl-4 pr-4 py-0 rounded-none bg-transparent hover:bg-gray-50/50 group ${!isLast ? 'border-b border-gray-200/60' : ''}`}
   >
     <div className="flex items-center">
       <div className="mr-3 py-3.5">
@@ -36,7 +38,7 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
       )}
       <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400 transition-colors" strokeWidth={2.2} />
     </div>
-  </button>
+  </Button>
 );
 
 const Settings = () => {
@@ -176,13 +178,14 @@ const Settings = () => {
         </div>
 
         <div className="pt-8 mt-4 flex flex-col items-center gap-4 mb-8">
-          <button 
+          <Button 
+            variant="ghost"
             onClick={handleLogout}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 transition-colors shadow-sm"
+            className="h-auto flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 hover:text-red-700 shadow-sm"
           >
             <LogOut className="w-5 h-5" strokeWidth={2.5} />
-            <span>Sign Out</span>
-          </button>
+            Sign Out
+          </Button>
         </div>
       </div>
 

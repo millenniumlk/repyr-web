@@ -4,6 +4,7 @@ import { Home, Car, FileText, Settings as SettingsIcon, LogOut, ChevronLeft, Che
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../components/ui/Button';
 
 
 
@@ -81,12 +82,14 @@ const MainLayout = () => {
               <h1 className="text-2xl font-black text-black tracking-tighter hover:opacity-80 transition-opacity">Repyr</h1>
             </Link>
           )}
-          <button 
+          <Button 
+            variant="ghost"
+            size="icon"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="p-1 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-          </button>
+          </Button>
         </div>
         
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto no-scrollbar">
@@ -135,21 +138,23 @@ const MainLayout = () => {
                 <SettingsIcon className="w-4 h-4 text-primary shrink-0" />
                 Edit Profile
               </Link>
-              <button 
+              <Button 
+                variant="ghost"
                 onClick={() => {
                   setIsProfileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-destructive hover:bg-red-50 transition-colors border-t border-border"
+                className="w-full h-auto flex justify-start gap-3 px-4 py-3 text-sm font-bold text-destructive hover:bg-red-50 hover:text-destructive rounded-none border-t border-border"
               >
                 <LogOut className="w-4 h-4 shrink-0" />
                 Sign out
-              </button>
+              </Button>
             </div>
           )}
 
           {/* Profile Trigger */}
-          <button 
+          <Button 
+            variant="ghost"
             onClick={() => {
               if (isGuest) {
                 setGuestRestrictedFeature('Profile');
@@ -157,7 +162,7 @@ const MainLayout = () => {
                 setIsProfileMenuOpen(!isProfileMenuOpen);
               }
             }}
-            className={`w-full flex items-center gap-3 px-2 py-2 -mx-2 rounded-xl hover:bg-secondary/50 transition-colors group text-left ${isSidebarCollapsed ? 'justify-center' : ''}`}
+            className={`w-full h-auto flex items-center gap-3 px-2 py-2 -mx-2 rounded-xl hover:bg-secondary/50 group text-left ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}
           >
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20 shadow-sm group-hover:border-primary/40 transition-colors shrink-0">
               {avatarUrl ? (
@@ -173,7 +178,7 @@ const MainLayout = () => {
                 </p>
               </div>
             )}
-          </button>
+          </Button>
         </div>
       </aside>
 
@@ -190,12 +195,14 @@ const MainLayout = () => {
              : 'Repyr.'}
           </h1>
         </Link>
-        <button 
+        <Button 
+          variant="ghost"
+          size="icon"
           onClick={() => setIsMobileMenuOpen(true)}
-          className="p-2 -mr-2 text-muted-foreground hover:text-foreground"
+          className="-mr-2 text-muted-foreground"
         >
           <Menu className="w-6 h-6" />
-        </button>
+        </Button>
       </header>
       )}
 
@@ -248,12 +255,14 @@ const MainLayout = () => {
                 >
                   <h1 className="text-xl font-black text-black tracking-tighter">Repyr.</h1>
                 </Link>
-                <button 
+                <Button 
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 -mr-2 text-muted-foreground hover:text-foreground"
+                  className="-mr-2 text-muted-foreground"
                 >
                   <X className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
 
               <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto no-scrollbar">
@@ -343,12 +352,13 @@ const MainLayout = () => {
               >
                 Sign Up to Continue
               </Link>
-              <button 
+              <Button 
+                variant="ghost"
                 onClick={() => setGuestRestrictedFeature(null)}
-                className="w-full py-3.5 font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                className="w-full h-auto py-3.5 text-gray-400 hover:text-gray-600"
               >
                 Not Now
-              </button>
+              </Button>
             </motion.div>
           </div>
         )}

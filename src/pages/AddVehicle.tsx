@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Car, Settings, Calendar, Activity, MapPin, Loader2, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { Button } from '../components/ui/Button';
 
 const AddVehicle = () => {
   const navigate = useNavigate();
@@ -124,9 +125,9 @@ const AddVehicle = () => {
         
         {/* Back button for layout consistency since mobile header is hidden */}
         <div className="absolute top-0 left-6 right-6 flex justify-between items-center md:hidden">
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-muted-foreground">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="-ml-2 text-muted-foreground">
                 <ChevronLeft className="w-6 h-6" />
-            </button>
+            </Button>
             <span className="font-bold text-foreground">Add Vehicle</span>
             <div className="w-6" />
         </div>

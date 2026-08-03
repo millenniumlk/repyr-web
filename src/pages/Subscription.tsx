@@ -6,6 +6,7 @@ import { initializePaddle } from '@paddle/paddle-js';
 import type { Paddle } from '@paddle/paddle-js';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
+import { Button } from '../components/ui/Button';
 
 const Subscription = () => {
   const navigate = useNavigate();
@@ -189,34 +190,29 @@ const Subscription = () => {
             You are currently on the <strong className="text-black">Repyr {subscriptionTier}</strong> plan.
           </p>
           
-          <button
+          <Button
             onClick={handleManagePortal}
             disabled={managing}
-            className="w-full py-4 rounded-full font-bold text-[16px] tracking-tight transition-transform active:scale-[0.98] flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-900 shadow-xl shadow-black/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            isLoading={managing}
+            className="w-full py-4 rounded-full bg-black text-white hover:bg-gray-900 shadow-xl shadow-black/20"
           >
-            {managing ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Loading Portal...
-              </>
-            ) : (
-              <>
-                Manage Billing <ExternalLink className="w-4 h-4" />
-              </>
+            {managing ? 'Loading Portal...' : (
+              <span className="flex items-center gap-2">Manage Billing <ExternalLink className="w-4 h-4" /></span>
             )}
-          </button>
+          </Button>
           
           <p className="text-sm text-gray-400 mt-6 font-medium leading-relaxed">
             Update payment methods, change your plan, or cancel via Paddle's secure portal.
           </p>
         </div>
-        <button 
+        <Button 
+          variant="ghost"
           onClick={() => navigate('/settings')}
-          className="mt-10 flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold transition-colors"
+          className="mt-10 flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold hover:bg-transparent"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Settings
-        </button>
+        </Button>
       </div>
     );
   }
@@ -225,12 +221,14 @@ const Subscription = () => {
     <div className="max-w-5xl mx-auto pb-16 px-4 md:px-6 relative min-h-[80vh] flex flex-col">
       {/* Header & Back Button */}
       <div className="flex items-center gap-4 mb-8 mt-2">
-        <button 
+        <Button 
+          variant="secondary"
+          size="icon"
           onClick={() => navigate('/settings')}
-          className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+          className="bg-gray-100 hover:bg-gray-200"
         >
           <ChevronLeft className="w-6 h-6 text-gray-900" />
-        </button>
+        </Button>
         <h1 className="text-xl md:text-2xl font-bold text-black tracking-tight leading-tight">Subscription</h1>
       </div>
 
@@ -260,9 +258,10 @@ const Subscription = () => {
         className="flex justify-center mb-8 md:mb-12"
       >
         <div className="bg-gray-100 p-1.5 rounded-full flex items-center shadow-inner relative">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setBillingCycle('monthly')}
-            className={`px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all relative z-10 ${
+            className={`h-auto px-4 md:px-6 py-2 md:py-2.5 hover:bg-transparent rounded-full text-xs md:text-sm transition-all relative z-10 ${
               billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'
             }`}
           >
@@ -274,10 +273,11 @@ const Subscription = () => {
               />
             )}
             <span className="relative z-10">Monthly</span>
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => setBillingCycle('yearly')}
-            className={`px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all flex items-center gap-1.5 md:gap-2 relative z-10 ${
+            className={`h-auto px-4 md:px-6 py-2 md:py-2.5 hover:bg-transparent rounded-full text-xs md:text-sm flex items-center gap-1.5 md:gap-2 relative z-10 ${
               billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'
             }`}
           >
@@ -292,7 +292,7 @@ const Subscription = () => {
             <span className="relative z-10 bg-green-100 text-green-700 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full border border-green-200">
               Save 20%
             </span>
-          </button>
+          </Button>
         </div>
       </motion.div>
 
@@ -359,17 +359,18 @@ const Subscription = () => {
               ))}
             </div>
 
-            <button
+            <Button
               onClick={() => handleUpgrade(plan.name)}
               disabled={processingPlan === plan.name}
-              className={`w-full py-4 rounded-full font-bold text-[16px] tracking-tight transition-transform active:scale-[0.98] flex items-center justify-center ${
+              isLoading={processingPlan === plan.name}
+              className={`w-full py-4 rounded-full ${
                 plan.popular
                   ? 'bg-primary text-white hover:bg-primary-dark shadow-[0_4px_20px_rgba(0,98,255,0.4)]'
                   : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-              } ${processingPlan === plan.name ? 'opacity-70 cursor-not-allowed' : ''}`}
+              }`}
             >
-              {processingPlan === plan.name ? 'Processing...' : plan.buttonText}
-            </button>
+              {plan.buttonText}
+            </Button>
           </motion.div>
         ))}
       </div>

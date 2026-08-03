@@ -1,5 +1,6 @@
 import { ArrowUp, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from './ui/Button';
 
 const ChatInputBar = ({
   isChatActive,
@@ -67,16 +68,17 @@ const ChatInputBar = ({
                 exit={{ width: 0, opacity: 0 }}
                 className="overflow-hidden flex-shrink-0 self-center ml-1"
               >
-                <button 
+                <Button 
+                  variant="outline"
                   onClick={openGarage}
                   disabled={isGuest}
-                  className={`flex items-center px-3 py-1.5 rounded-full whitespace-nowrap ${isGuest ? 'bg-gray-100 border border-gray-200 cursor-default' : 'bg-primary/5 border border-primary/20'}`}
+                  className={`h-auto flex items-center px-3 py-1.5 rounded-full whitespace-nowrap border ${isGuest ? 'bg-gray-100 border-gray-200 cursor-default hover:bg-gray-100' : 'bg-primary/5 border-primary/20 hover:bg-primary/10'}`}
                 >
                   <span className={`text-xs font-medium mr-1 max-w-[100px] truncate ${isGuest ? 'text-gray-500' : 'text-primary'}`}>
                     {selectedVehicle.make} {selectedVehicle.model}
                   </span>
                   {!isGuest && <ChevronDown className="text-primary w-3.5 h-3.5 opacity-70" />}
-                </button>
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -96,15 +98,17 @@ const ChatInputBar = ({
             style={{ overflowY: 'auto' }}
           />
 
-          <button 
+          <Button 
+            variant="ghost"
+            size="icon"
             onClick={handleStartOrReply}
             disabled={!isButtonActive}
-            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ml-1 mr-0.5 transition-all ${
-              isButtonActive ? 'bg-primary text-white hover:scale-105 active:scale-95 shadow-md shadow-primary/30' : 'bg-[#F2F4F7] text-gray-400'
+            className={`h-9 w-9 rounded-full shrink-0 ml-1 mr-0.5 transition-all ${
+              isButtonActive ? 'bg-primary text-white hover:bg-primary/90 hover:text-white shadow-md shadow-primary/30 hover:scale-105 active:scale-95' : 'bg-[#F2F4F7] text-gray-400 hover:bg-[#F2F4F7] hover:text-gray-400'
             }`}
           >
             <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

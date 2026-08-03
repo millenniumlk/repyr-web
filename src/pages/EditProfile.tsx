@@ -4,12 +4,14 @@ import { ChevronLeft, ChevronRight, ChevronDown, User, Lock, Mail, Camera, Loade
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
+import { Button } from '../components/ui/Button';
 
 const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandable, expanded, disabled, isSpinning }: any) => (
-  <button 
+  <Button 
+    variant="ghost"
     onClick={onClick}
     disabled={disabled}
-    className={`w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-100' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    className={`w-full h-auto flex items-center justify-between px-5 py-4 rounded-none hover:bg-gray-50/50 group ${!isLast ? 'border-b border-gray-100' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
   >
     <div className="flex items-center">
       <div className="mr-4">
@@ -28,7 +30,7 @@ const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandab
         )}
       </div>
     )}
-  </button>
+  </Button>
 );
 
 const EditProfile = () => {
@@ -189,22 +191,26 @@ const EditProfile = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-2 mt-2">
         <div className="flex items-center gap-4">
-          <button 
+          <Button 
+            variant="secondary"
+            size="icon"
             onClick={() => navigate('/settings')}
-            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            className="bg-gray-100 hover:bg-gray-200"
           >
             <ChevronLeft className="w-6 h-6 text-gray-900" />
-          </button>
+          </Button>
           <h1 className="text-xl md:text-2xl font-bold text-black tracking-tight leading-tight">Edit Profile</h1>
         </div>
         {hasChanges && (
-          <button
+          <Button
+            variant="ghost"
             onClick={handleSaveProfile}
             disabled={!canSaveProfile}
-            className={`font-bold text-[16px] px-4 py-2 rounded-full ${canSaveProfile ? 'text-primary' : 'text-gray-300'}`}
+            isLoading={saving}
+            className={`font-bold text-[16px] px-4 py-2 hover:bg-transparent ${canSaveProfile ? 'text-primary' : 'text-gray-300'}`}
           >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save'}
-          </button>
+            Save
+          </Button>
         )}
       </div>
 
@@ -238,15 +244,17 @@ const EditProfile = () => {
           </div>
           
           {avatarUrl && (
-            <button 
+            <Button 
+              variant="destructive"
+              size="sm"
               onClick={() => {
                 setAvatarUrl(null);
                 setAvatarFile(null);
               }}
-              className="mt-4 text-red-500 text-[13px] font-bold tracking-tight hover:text-red-600 transition-colors bg-red-50 hover:bg-red-100 px-4 py-1.5 rounded-full"
+              className="mt-4 bg-red-50 text-red-500 text-[13px] hover:bg-red-100 hover:text-red-600 rounded-full px-4 py-1.5 h-auto"
             >
               Remove Photo
-            </button>
+            </Button>
           )}
           
           <input 
@@ -320,12 +328,14 @@ const EditProfile = () => {
                   <Shield className="w-5 h-5 text-primary mr-2.5" strokeWidth={2.2} />
                   <span className="text-gray-900 font-bold text-[15px]">Update Password</span>
                 </div>
-                <button 
+                <Button 
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowPasswordEdit(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200/80 hover:bg-gray-300 transition-colors"
+                  className="h-8 w-8 rounded-full bg-gray-200/80 hover:bg-gray-300"
                 >
                   <X className="w-4 h-4 text-gray-600" strokeWidth={3} />
-                </button>
+                </Button>
               </div>
 
               <div className="px-5 py-4 border-b border-gray-100 bg-white/50">
@@ -355,13 +365,14 @@ const EditProfile = () => {
               </div>
 
               <div className="p-4 border-t border-gray-100">
-                <button 
+                <Button 
                   onClick={handleUpdatePassword}
                   disabled={!canSavePassword}
-                  className={`w-full py-3.5 rounded-[20px] flex items-center justify-center font-bold text-[15px] transition-colors ${canSavePassword ? 'bg-primary text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                  isLoading={saving && newPassword.length > 0}
+                  className="w-full rounded-[20px]"
                 >
-                  {saving && newPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Password'}
-                </button>
+                  Update Password
+                </Button>
               </div>
             </div>
           )}

@@ -10,6 +10,7 @@ import ChatInputBar from '../components/ChatInputBar';
 
 import { Skeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
+import { Button } from '../components/ui/Button';
 import { VEHICLE_CATEGORIES, SUBSCRIPTION_LIMITS } from '../lib/constants';
 
 const Home = () => {
@@ -341,17 +342,18 @@ const Home = () => {
                 {/* Common Issue Prompts */}
                 <div className="flex flex-wrap justify-start gap-3 w-full">
                   {VEHICLE_CATEGORIES.map((cat, i) => (
-                    <button
+                    <Button
                       key={i}
+                      variant="outline"
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`h-auto px-4 py-2 rounded-full text-sm font-medium ${
                         category === cat
-                          ? 'bg-white text-primary shadow-glow-primary border border-primary/20'
-                          : 'bg-white text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-transparent'
+                          ? 'border-primary/20 text-primary shadow-glow-primary'
+                          : 'border-transparent text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)]'
                       }`}
                     >
                       {cat}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -418,33 +420,35 @@ const Home = () => {
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-lg">Select Vehicle</h3>
-                <button onClick={() => setIsVehicleSelectorOpen(false)} className="p-2 -mr-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
+                <Button variant="ghost" size="icon" onClick={() => setIsVehicleSelectorOpen(false)} className="h-9 w-9 -mr-2">
                   <X className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
               <div className="space-y-2 max-h-[60vh] overflow-y-auto no-scrollbar">
                 {vehicles.map(v => (
-                  <button 
+                  <Button 
                     key={v.id}
+                    variant="ghost"
                     onClick={() => {
                       setSelectedVehicle(v);
                       setIsVehicleSelectorOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-all ${
+                    className={`w-full h-auto text-left px-4 py-3 rounded-xl flex items-center justify-between font-normal ${
                       selectedVehicle?.id === v.id 
-                        ? 'bg-primary/10 text-primary border border-primary/20' 
-                        : 'bg-secondary/50 hover:bg-secondary border border-transparent text-foreground'
+                        ? 'bg-primary/10 text-primary border-primary/20 border' 
+                        : 'bg-secondary/50 hover:bg-secondary border-transparent text-foreground'
                     }`}
                   >
-                    <div>
+                    <div className="text-left">
                       <p className="font-medium text-[16px] tracking-tight">{v.year} {v.make} {v.model}</p>
                       {v.vin && <p className="text-xs opacity-70 font-mono mt-0.5">{v.vin}</p>}
                     </div>
                     {selectedVehicle?.id === v.id && <CheckCircle className="w-5 h-5 text-primary" />}
-                  </button>
+                  </Button>
                 ))}
               </div>
-              <button 
+              <Button 
+                variant="outline"
                 onClick={() => {
                   setIsVehicleSelectorOpen(false);
                   const count = parseInt(localStorage.getItem('diagnostics_run_count') || '0', 10);
@@ -454,11 +458,11 @@ const Home = () => {
                     navigate('/garage/add');
                   }
                 }}
-                className="w-full mt-4 flex items-center justify-center py-3 rounded-xl border border-dashed border-primary/40 text-primary hover:bg-primary/10 transition-colors font-medium"
+                className="w-full mt-4 rounded-xl border-dashed border-primary/40 text-primary hover:bg-primary/10"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Vehicle
-              </button>
+              </Button>
             </motion.div>
           </div>
         )}
@@ -478,7 +482,7 @@ const Home = () => {
               <p className="text-muted-foreground font-medium text-[15px] leading-relaxed mb-8">
                 Sign up to complete the chat and view your diagnosis.
               </p>
-              <button
+              <Button
                 onClick={() => {
                   const pendingChat = {
                     vehicle: selectedVehicle,
@@ -487,16 +491,17 @@ const Home = () => {
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
                   navigate('/auth', { state: { fromGuestChat: true } });
                 }}
-                className="w-full py-3.5 bg-primary text-white rounded-xl font-bold tracking-wide shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5 transition-all active:scale-95"
+                className="w-full rounded-xl"
               >
                 Sign Up to Continue
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => setGuestRedirectMessage(false)}
-                className="w-full mt-3 py-2.5 text-muted-foreground font-medium hover:text-foreground transition-colors"
+                className="w-full mt-3 h-auto py-2.5"
               >
                 Cancel
-              </button>
+              </Button>
             </motion.div>
           </div>
         )}

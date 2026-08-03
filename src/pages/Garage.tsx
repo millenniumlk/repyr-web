@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { Button } from '../components/ui/Button';
 
 const Garage = () => {
   const { user } = useAuth();
@@ -99,16 +100,18 @@ const Garage = () => {
                 ) : null}
               </div>
               
-              <button 
+              <Button 
+                variant="ghost"
+                size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteVehicle(vehicle.id, vehicle.make, vehicle.model);
                 }}
-                className="p-3 rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors group flex items-center justify-center shrink-0"
+                className="h-11 w-11 rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 group shrink-0"
                 title="Remove Vehicle"
               >
                 <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2} />
-              </button>
+              </Button>
             </motion.div>
           ))}
         </AnimatePresence>

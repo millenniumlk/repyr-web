@@ -3,6 +3,7 @@ import { Loader2, Car, ChevronRight, Battery, Thermometer, Gauge, Settings2, Wre
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { Button } from '../components/ui/Button';
 
 const History = () => {
   const { user } = useAuth();
@@ -79,29 +80,31 @@ const History = () => {
 
       {sessions.length > 0 && uniqueVehicles.length > 0 && (
         <div className="flex overflow-x-auto no-scrollbar gap-2 pb-4 pt-1 px-1">
-          <button
+          <Button
+            variant="outline"
             onClick={() => setSelectedFilter(null)}
-            className={`px-5 py-2.5 rounded-full whitespace-nowrap border transition-all ${
+            className={`h-auto px-5 py-2.5 rounded-full whitespace-nowrap transition-all ${
               !selectedFilter 
-                ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)]' 
+                ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)] hover:bg-[#0062FF]/90' 
                 : 'bg-white/60 border-gray-100 text-gray-600 shadow-sm shadow-gray-200/20 hover:bg-white'
             }`}
           >
             <span className={`font-medium text-[13px] tracking-tight ${!selectedFilter ? 'text-white' : 'text-gray-600'}`}>All Logs</span>
-          </button>
+          </Button>
           
           {uniqueVehicles.map((vehicle: any) => (
-            <button
+            <Button
               key={vehicle}
+              variant="outline"
               onClick={() => setSelectedFilter(vehicle)}
-              className={`px-5 py-2.5 rounded-full whitespace-nowrap border transition-all ${
+              className={`h-auto px-5 py-2.5 rounded-full whitespace-nowrap transition-all ${
                 selectedFilter === vehicle 
-                  ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)]' 
+                  ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)] hover:bg-[#0062FF]/90' 
                   : 'bg-white/60 border-gray-100 text-gray-600 shadow-sm shadow-gray-200/20 hover:bg-white'
               }`}
             >
               <span className={`font-medium text-[13px] tracking-tight ${selectedFilter === vehicle ? 'text-white' : 'text-gray-600'}`}>{vehicle}</span>
-            </button>
+            </Button>
           ))}
         </div>
       )}

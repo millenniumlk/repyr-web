@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, Car, MapPin, Check } from 'lucide-react';
+import { Car, MapPin, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { motion } from 'framer-motion';
+import { Button } from '../components/ui/Button';
 
 const TRANSMISSION_TYPES = ['Automatic', 'Manual', 'Tiptronic'];
 const FUEL_TYPES = ['Petrol', 'Diesel', 'Hybrid', 'Plug-in Hybrid', 'Electric'];
@@ -11,18 +12,19 @@ const FUEL_TYPES = ['Petrol', 'Diesel', 'Hybrid', 'Plug-in Hybrid', 'Electric'];
 const QuickSelect = ({ options, value, onChange }: { options: string[], value: string, onChange: (v: string) => void }) => (
   <div className="flex flex-wrap gap-2 mb-2">
     {options.map((opt) => (
-      <button
+      <Button
         key={opt}
         type="button"
+        variant="outline"
         onClick={() => onChange(value === opt ? '' : opt)}
-        className={`px-4 py-2.5 rounded-xl border text-[14px] transition-all duration-200 font-medium ${
+        className={`h-auto px-4 py-2.5 rounded-xl text-[14px] transition-all duration-200 font-medium ${
           value === opt 
-            ? 'bg-primary border-primary text-white shadow-md shadow-primary/20 scale-[0.98]' 
+            ? 'bg-primary border-primary text-white shadow-md shadow-primary/20 scale-[0.98] hover:bg-primary/90 hover:text-white' 
             : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
         }`}
       >
         {opt}
-      </button>
+      </Button>
     ))}
   </div>
 );
@@ -253,24 +255,19 @@ const CompleteVehicleProfile = () => {
             </div>
 
             <div className="mt-8">
-              <button
+              <Button
                 type="submit"
                 disabled={!isComplete || isSubmitting}
-                className={`w-full py-4 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-300 ${
+                isLoading={isSubmitting}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
                   isComplete
                     ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/40' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 cursor-not-allowed'
                 }`}
               >
-                {isSubmitting ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <>
-                    <Check className="w-5 h-5 mr-2" />
-                    Complete Profile
-                  </>
-                )}
-              </button>
+                <Check className="w-5 h-5 mr-2" />
+                Complete Profile
+              </Button>
             </div>
           </form>
         </motion.div>
