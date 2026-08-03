@@ -110,8 +110,8 @@ const AddVehicle = () => {
     { label: "And the model?", value: model, setter: setModel, icon: Settings, placeholder: 'e.g. Camry' },
     { label: "What year was it made?", value: year, setter: setYear, icon: Calendar, placeholder: 'e.g. 2018', type: 'number' },
     { label: "Approximate mileage?", value: mileage, setter: setMileage, icon: Activity, placeholder: 'e.g. 45000', type: 'number' },
-    { label: "Transmission type?", value: transmission, setter: setTransmission, icon: Settings, placeholder: 'e.g. Automatic' },
-    { label: "Fuel type?", value: fuelType, setter: setFuelType, icon: Activity, placeholder: 'e.g. Petrol' },
+    { label: "Transmission type?", value: transmission, setter: setTransmission, icon: Settings, placeholder: 'Select transmission', options: ['Automatic', 'Manual', 'Tiptronic'] },
+    { label: "Fuel type?", value: fuelType, setter: setFuelType, icon: Activity, placeholder: 'Select fuel type', options: ['Petrol', 'Diesel', 'Hybrid', 'Electric'] },
     { label: "Where is it located?", value: location, setter: setLocation, icon: MapPin, placeholder: 'e.g. Dubai, UAE' }
   ];
 
@@ -153,16 +153,36 @@ const AddVehicle = () => {
         </motion.div>
 
         <div className="relative">
-          <input
-            ref={inputRef}
-            type={currentStep.type || 'text'}
-            value={currentStep.value}
-            onChange={(e) => currentStep.setter(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={currentStep.placeholder}
-            disabled={isSubmitting}
-            className="w-full bg-transparent border-b-2 border-border focus:border-primary text-3xl md:text-4xl text-foreground font-medium pb-4 outline-none transition-colors placeholder:text-muted-foreground/50 disabled:opacity-50"
-          />
+          {currentStep.options ? (
+            <div className="relative w-full">
+              <select
+                value={currentStep.value}
+                onChange={(e) => currentStep.setter(e.target.value)}
+                disabled={isSubmitting}
+                className="w-full bg-transparent border-b-2 border-border focus:border-primary text-3xl md:text-4xl text-foreground font-medium pb-4 outline-none transition-colors disabled:opacity-50 appearance-none cursor-pointer"
+              >
+                <option value="" disabled className="text-lg text-gray-500">Select option...</option>
+                {currentStep.options.map((opt: string) => (
+                  <option key={opt} value={opt} className="text-lg text-black">{opt}</option>
+                ))}
+              </select>
+              {/* Custom dropdown arrow */}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none pb-4 opacity-50">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          ) : (
+            <input
+              ref={inputRef}
+              type={currentStep.type || 'text'}
+              value={currentStep.value}
+              onChange={(e) => currentStep.setter(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={currentStep.placeholder}
+              disabled={isSubmitting}
+              className="w-full bg-transparent border-b-2 border-border focus:border-primary text-3xl md:text-4xl text-foreground font-medium pb-4 outline-none transition-colors placeholder:text-muted-foreground/50 disabled:opacity-50"
+            />
+          )}
         </div>
 
         <div className="mt-12 flex justify-between items-center w-full">
