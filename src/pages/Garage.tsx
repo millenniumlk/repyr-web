@@ -73,8 +73,8 @@ const Garage = () => {
               </div>
 
               <div className="flex-1 min-w-0 py-0.5">
-                <div className="text-gray-900 font-bold text-[16px] leading-snug truncate mb-0.5">
-                  {vehicle.year} {vehicle.make} <span className="text-primary">{vehicle.model}</span>
+                <div className="text-black font-medium text-[16px] leading-snug truncate mb-0.5">
+                  {vehicle.year} {vehicle.make} {vehicle.model}
                 </div>
                 {vehicle.mileage ? (
                   <div className="text-gray-500 font-medium text-[13px] truncate">
