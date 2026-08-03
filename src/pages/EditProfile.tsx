@@ -35,7 +35,6 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -221,21 +220,12 @@ const EditProfile = () => {
                 <div className="absolute top-full mt-3 w-56 bg-white/90 backdrop-blur-xl rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-200/50 z-30 left-1/2 -translate-x-1/2 overflow-hidden flex flex-col divide-y divide-gray-200/50">
                   <button 
                     onClick={() => {
-                      cameraInputRef.current?.click();
-                      setShowPhotoMenu(false);
-                    }}
-                    className="w-full text-left px-4 py-3 text-[15px] font-normal text-gray-900 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
-                  >
-                    Take Photo
-                  </button>
-                  <button 
-                    onClick={() => {
                       fileInputRef.current?.click();
                       setShowPhotoMenu(false);
                     }}
                     className="w-full text-left px-4 py-3 text-[15px] font-normal text-gray-900 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
                   >
-                    Choose from Library
+                    Upload Photo
                   </button>
                   {avatarUrl && (
                     <button 
@@ -260,14 +250,7 @@ const EditProfile = () => {
             accept="image/*"
             onChange={handleFileChange}
           />
-          <input 
-            type="file" 
-            ref={cameraInputRef} 
-            className="hidden" 
-            accept="image/*"
-            capture="environment"
-            onChange={handleFileChange}
-          />
+
         </motion.div>
 
         {/* Group 1: Personal Details */}
