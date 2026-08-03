@@ -256,7 +256,7 @@ const CompleteVehicleProfile = () => {
               <button
                 type="submit"
                 disabled={!isComplete || isSubmitting}
-                className={`w-full py-4 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-300 ${
+                className={`w-full py-3.5 rounded-[20px] flex items-center justify-center font-bold text-lg transition-all duration-300 ${
                   isComplete
                     ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/40' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'

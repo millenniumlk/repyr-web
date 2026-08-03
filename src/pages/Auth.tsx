@@ -427,7 +427,7 @@ const Auth = () => {
               <button
                 type="submit"
                 disabled={isFormIncomplete || loading}
-                className={`w-full py-3.5 rounded-full flex items-center justify-center transition-all shadow-lg shadow-primary/30 mt-1 ${
+                className={`w-full py-3.5 rounded-[20px] flex items-center justify-center transition-all shadow-lg shadow-primary/30 mt-1 ${
                   isFormIncomplete || loading ? 'bg-primary/60 opacity-60 cursor-not-allowed' : 'bg-primary hover:bg-primary-dark active:scale-[0.98]'
                 }`}
               >
@@ -452,7 +452,7 @@ const Auth = () => {
                 <button 
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
+                  className="w-full flex items-center justify-center bg-white border border-gray-100 py-3.5 rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-gray-50 transition-colors mb-4"
                 >
                   <img src={googleLogo} alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
                   <span className="font-medium text-gray-700 tracking-tight text-[16px]">Continue with Google</span>
