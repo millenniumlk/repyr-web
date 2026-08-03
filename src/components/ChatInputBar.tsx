@@ -91,7 +91,7 @@ const ChatInputBar = ({
               }
             }}
             placeholder={isChatActive ? (isDiagnosisComplete && !hasAskedFollowUp ? "Ask a follow-up question..." : "Message Repyr...") : "Describe the issue..."}
-            className="flex-1 max-h-32 min-h-[40px] px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-[14px]"
+            className="flex-1 max-h-32 min-h-[40px] px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-[16px]"
             rows={1}
             style={{ overflowY: 'auto' }}
           />

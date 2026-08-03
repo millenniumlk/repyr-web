@@ -333,7 +333,7 @@ const Home = () => {
             ) : (
               <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
                 <div className="mb-6 w-full">
-                  <h1 className="text-[34px] md:text-4xl font-normal text-primary tracking-tight leading-tight">
+                  <h1 className="text-[28px] md:text-3xl font-normal text-primary tracking-tight leading-tight">
                     Let's fix your {selectedVehicle?.model || 'vehicle'}.
                   </h1>
                 </div>

@@ -305,7 +305,6 @@ const MainLayout = () => {
                     <p className="text-sm font-bold text-foreground truncate">
                       {userName}
                     </p>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">Free Plan</p>
                   </div>
                 </div>
                 
