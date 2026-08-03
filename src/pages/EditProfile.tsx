@@ -8,10 +8,10 @@ import { motion } from 'framer-motion';
 const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandable, expanded }: any) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-200/60' : ''}`}
+    className={`w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-100' : ''}`}
   >
     <div className="flex items-center">
-      <div className="mr-3 py-3.5 pl-4">
+      <div className="mr-4">
         <Icon className={`w-[22px] h-[22px] ${isDestructive ? 'text-red-500' : 'text-primary'}`} strokeWidth={2.2} />
       </div>
       <span className={`text-[16px] tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-gray-900'}`}>
@@ -19,7 +19,7 @@ const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandab
       </span>
     </div>
     {expandable && (
-      <div className="pr-4">
+      <div>
         {expanded ? (
           <ChevronDown className="w-5 h-5 text-gray-400" strokeWidth={2} />
         ) : (
