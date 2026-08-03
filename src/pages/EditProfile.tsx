@@ -45,6 +45,7 @@ const EditProfile = () => {
   const [originalFullName, setOriginalFullName] = useState('');
   const [originalAvatarUrl, setOriginalAvatarUrl] = useState<string | null>(null);
   
+  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
   const [showPasswordEdit, setShowPasswordEdit] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -193,30 +194,52 @@ const EditProfile = () => {
           animate={{ opacity: 1, y: 0 }}
           className="items-center mb-12 flex flex-col"
         >
-          <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-            <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-gray-50' : 'bg-blue-50 border-blue-100'}`}>
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-primary text-[40px] font-black pt-1 leading-[44px]">
-                  {displayInitial}
-                </span>
-              )}
+          <div className="relative">
+            <div className="relative cursor-pointer group" onClick={() => setShowPhotoMenu(!showPhotoMenu)}>
+              <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-gray-50' : 'bg-blue-50 border-blue-100'}`}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-primary text-[40px] font-black pt-1 leading-[44px]">
+                    {displayInitial}
+                  </span>
+                )}
+              </div>
+              
+              <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-primary border-[4px] border-white flex items-center justify-center z-20 group-hover:bg-blue-700 transition-colors">
+                <Camera className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+              </div>
             </div>
             
-            <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-primary border-[4px] border-white flex items-center justify-center z-20 group-hover:bg-blue-700 transition-colors">
-              <Camera className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
-            </div>
+            {showPhotoMenu && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowPhotoMenu(false)} />
+                <div className="absolute top-full mt-2 w-48 bg-white rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-gray-100 py-1 z-20 left-1/2 -translate-x-1/2">
+                  <button 
+                    onClick={() => {
+                      fileInputRef.current?.click();
+                      setShowPhotoMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-[14px] font-bold text-gray-900 hover:bg-gray-50 transition-colors"
+                  >
+                    Upload Photo
+                  </button>
+                  {avatarUrl && (
+                    <button 
+                      onClick={() => {
+                        setAvatarUrl(null);
+                        setShowPhotoMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-[14px] font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-gray-100"
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
           
-          {avatarUrl && (
-            <button 
-              onClick={() => setAvatarUrl(null)}
-              className="mt-4 text-red-500 text-[13px] font-bold tracking-tight hover:text-red-600 transition-colors bg-red-50 hover:bg-red-100 px-4 py-1.5 rounded-full"
-            >
-              Remove Photo
-            </button>
-          )}
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -233,7 +256,7 @@ const EditProfile = () => {
           </h4>
           <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
             {/* Full Name Row */}
-            <div className={`px-5 py-3 border-b border-gray-100 flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
+            <div className={`px-5 py-4 border-b border-gray-100 flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
               <div className="mr-4">
                 <User className={`w-[22px] h-[22px] ${(!isValidName && fullName.length > 0) ? "text-red-500" : "text-primary"}`} strokeWidth={2.2} />
               </div>
@@ -253,7 +276,7 @@ const EditProfile = () => {
             </div>
             
             {/* Email Row */}
-            <div className="px-5 py-3 flex items-center opacity-70">
+            <div className="px-5 py-4 flex items-center opacity-70">
               <div className="mr-4">
                 <Mail className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
               </div>
