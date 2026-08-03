@@ -251,7 +251,7 @@ const EditProfile = () => {
                 setAvatarUrl(null);
                 setAvatarFile(null);
               }}
-              className="mt-4 bg-red-50 text-red-500 text-[13px] hover:bg-red-100 hover:text-red-600 rounded-full px-4 py-1.5 h-auto"
+              className="mt-4 bg-red-50 text-red-500 text-[13px] font-medium hover:bg-red-100 hover:text-red-600 rounded-full px-4 py-1.5 h-auto"
             >
               Remove Photo
             </Button>
