@@ -215,13 +215,13 @@ const EditProfile = () => {
             {showPhotoMenu && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowPhotoMenu(false)} />
-                <div className="absolute top-[65%] w-56 bg-white/95 backdrop-blur-xl rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-gray-100/80 py-1 z-30 left-1/2 -translate-x-1/2 overflow-hidden">
+                <div className="absolute top-full mt-3 w-56 bg-white/90 backdrop-blur-xl rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-200/50 z-30 left-1/2 -translate-x-1/2 overflow-hidden flex flex-col divide-y divide-gray-200/50">
                   <button 
                     onClick={() => {
                       cameraInputRef.current?.click();
                       setShowPhotoMenu(false);
                     }}
-                    className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-primary hover:bg-gray-50/80 transition-colors border-b border-gray-100/50"
+                    className="w-full text-left px-4 py-3 text-[15px] font-normal text-gray-900 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
                   >
                     Take Photo
                   </button>
@@ -230,7 +230,7 @@ const EditProfile = () => {
                       fileInputRef.current?.click();
                       setShowPhotoMenu(false);
                     }}
-                    className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-gray-900 hover:bg-gray-50/80 transition-colors"
+                    className="w-full text-left px-4 py-3 text-[15px] font-normal text-gray-900 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
                   >
                     Choose from Library
                   </button>
@@ -240,7 +240,7 @@ const EditProfile = () => {
                         setAvatarUrl(null);
                         setShowPhotoMenu(false);
                       }}
-                      className="w-full text-center px-4 py-3.5 text-[15px] font-bold text-red-500 hover:bg-red-50/80 transition-colors border-t border-gray-100/50"
+                      className="w-full text-left px-4 py-3 text-[15px] font-normal text-red-500 hover:bg-gray-100/50 active:bg-gray-200/50 transition-colors"
                     >
                       Remove Photo
                     </button>
