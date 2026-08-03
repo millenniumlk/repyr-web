@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, Loader2, Car } from 'lucide-react';
+import { Trash2, Plus, Loader2, Car, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -51,12 +51,25 @@ const Garage = () => {
 
   return (
     <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
-      <div className="flex justify-between items-center mb-6 px-1 mt-2">
-        <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight">Your Garage</h1>
-        <Link to="/garage/add" className="hidden md:flex bg-[#0062FF] text-white px-5 py-2.5 rounded-full font-semibold text-[15px] items-center hover:bg-[#004CCC] transition-colors shadow-[0_2px_8px_rgba(0,98,255,0.2)]">
-          <Plus className="w-5 h-5 mr-1" strokeWidth={2.5} />
-          Add Vehicle
-        </Link>
+      <div className="mb-6 px-1 mt-2">
+        <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight mb-6">Your Garage</h1>
+        
+        <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
+          <Link 
+            to="/garage/add"
+            className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors group"
+          >
+            <div className="flex items-center">
+              <div className="mr-4">
+                <Plus className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
+              </div>
+              <span className="text-[16px] tracking-tight font-medium text-gray-900">
+                Add Vehicle
+              </span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" strokeWidth={2} />
+          </Link>
+        </div>
       </div>
 
       <div className="mt-4 px-1 space-y-4">
@@ -115,13 +128,7 @@ const Garage = () => {
         </div>
       )}
 
-      {/* Mobile Fixed Bottom Button */}
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-20">
-        <Link to="/garage/add" className="bg-[#0062FF] text-white w-full py-4 rounded-[20px] font-bold text-[17px] flex items-center justify-center hover:bg-[#004CCC] transition-colors shadow-[0_8px_24px_rgba(0,98,255,0.25)]">
-          <Plus className="w-6 h-6 mr-1" strokeWidth={2.5} />
-          Add Vehicle
-        </Link>
-      </div>
+
     </div>
   );
 };

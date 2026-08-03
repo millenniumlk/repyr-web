@@ -5,14 +5,15 @@ import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 
-const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandable, expanded }: any) => (
+const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandable, expanded, disabled, isSpinning }: any) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-100' : ''}`}
+    disabled={disabled}
+    className={`w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors group ${!isLast ? 'border-b border-gray-100' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
   >
     <div className="flex items-center">
       <div className="mr-4">
-        <Icon className={`w-[22px] h-[22px] ${isDestructive ? 'text-red-500' : 'text-primary'}`} strokeWidth={2.2} />
+        <Icon className={`w-[22px] h-[22px] ${isDestructive ? 'text-red-500' : 'text-primary'} ${isSpinning ? 'animate-spin' : ''}`} strokeWidth={2.2} />
       </div>
       <span className={`text-[16px] tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-gray-900'}`}>
         {title}
@@ -335,19 +336,21 @@ const EditProfile = () => {
         </div>
 
         {/* Danger Zone */}
-        <div className="mt-8 mb-12 flex flex-col items-center">
-           <button 
-             onClick={handleDeleteAccount}
-             className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-[20px] bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 transition-colors w-full border border-red-100"
-             disabled={saving}
-           >
-             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" strokeWidth={2.5} />}
-             <span>{saving ? 'Deleting...' : 'Delete Account'}</span>
-           </button>
-           
-           <p className="text-center text-[13px] mt-4 px-4 leading-snug text-gray-400 font-medium">
+        <div className="mt-8 mb-12">
+          <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
+            <ActionRow 
+              icon={saving ? Loader2 : Trash2} 
+              title={saving ? "Deleting..." : "Delete Account"} 
+              onClick={handleDeleteAccount}
+              isDestructive={true}
+              isLast={true}
+              disabled={saving}
+              isSpinning={saving}
+            />
+          </div>
+          <p className="text-center text-[13px] mt-4 px-4 leading-snug text-gray-400 font-medium">
              Once you delete your account, your diagnostic history will be permanently erased.
-           </p>
+          </p>
         </div>
 
       </div>
