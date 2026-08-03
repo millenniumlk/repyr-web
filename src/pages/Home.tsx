@@ -12,6 +12,7 @@ import { Skeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Button } from '../components/ui/Button';
 import { VEHICLE_CATEGORIES, SUBSCRIPTION_LIMITS } from '../lib/constants';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -54,78 +55,89 @@ const Home = () => {
 
   const displayMessages = messages.filter((m: any) => m.role !== 'system' && !(m.role === 'user' && m.content.startsWith('Vehicle:')));
 
-  const fetchVehicles = useCallback(async () => {
-    setIsLoading(true);
-    let tempVehicles: any[] = [];
-    
-    if (user) {
+  const queryClient = useQueryClient();
+
+  const { data: dbVehicles = [], isLoading: isQueryLoading } = useQuery({
+    queryKey: ['vehicles', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from('vehicles')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
         
-      if (!error && data) {
-        let finalData = data;
-        
-        // Remove backend-injected default Toyota Camry to show empty state
-        if (data.length === 1 && data[0].make === 'Toyota' && data[0].model === 'Camry' && !data[0].transmission) {
-          supabase.from('vehicles').delete().eq('id', data[0].id).then();
-          finalData = [];
-        }
-        
-        // Save pending guest chat vehicle to the database
-        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-        if (pendingChatRaw) {
-          try {
-            const pendingChat = JSON.parse(pendingChatRaw);
-            if (pendingChat.vehicle) {
-              const gv = pendingChat.vehicle;
-              const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
-              
-              if (!alreadyExists) {
-                const { data: newVehicle } = await supabase.from('vehicles').insert({
-                  user_id: user.id,
-                  make: gv.make,
-                  model: gv.model,
-                  year: gv.year,
-                  transmission: gv.transmission || '',
-                  engine: gv.engine || '',
-                  drivetrain: gv.drivetrain || '',
-                  fuel_type: gv.fuel_type || '',
-                  location: gv.location || ''
-                }).select().single();
-                
-                if (newVehicle) {
-                  finalData = [newVehicle, ...finalData];
-                }
-              }
-              
-              // Remove vehicle from pending chat so we don't save it again on next refresh
-              delete pendingChat.vehicle;
-              if (Object.keys(pendingChat).length === 0) {
-                localStorage.removeItem('pending_guest_chat');
-              } else {
-                localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-              }
-            }
-          } catch (e) {}
-        }
-        
-        tempVehicles = finalData;
+      if (error) throw error;
+      
+      let finalData = data || [];
+      if (finalData.length === 1 && finalData[0].make === 'Toyota' && finalData[0].model === 'Camry' && !finalData[0].transmission) {
+        supabase.from('vehicles').delete().eq('id', finalData[0].id).then();
+        finalData = [];
       }
+      return finalData;
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    let tempVehicles: any[] = [];
+    
+    if (user) {
+      if (isQueryLoading) return; // Wait until react-query completes
+      
+      let finalData = [...dbVehicles];
+      
+      // Save pending guest chat vehicle to the database
+      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+      if (pendingChatRaw) {
+        try {
+          const pendingChat = JSON.parse(pendingChatRaw);
+          if (pendingChat.vehicle) {
+            const gv = pendingChat.vehicle;
+            const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
+            
+            if (!alreadyExists) {
+              supabase.from('vehicles').insert({
+                user_id: user.id,
+                make: gv.make,
+                model: gv.model,
+                year: gv.year,
+                transmission: gv.transmission || '',
+                engine: gv.engine || '',
+                drivetrain: gv.drivetrain || '',
+                fuel_type: gv.fuel_type || '',
+                location: gv.location || ''
+              }).select().single().then(({ data: newVehicle }) => {
+                if (newVehicle) {
+                  queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
+                }
+              });
+              
+              finalData = [{ ...gv, id: 'temp-id' }, ...finalData];
+            }
+            
+            delete pendingChat.vehicle;
+            if (Object.keys(pendingChat).length === 0) {
+              localStorage.removeItem('pending_guest_chat');
+            } else {
+              localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+            }
+          }
+        } catch (e) {}
+      }
+      
+      tempVehicles = finalData;
     } else {
       if (guestVehicle) {
         tempVehicles = [guestVehicle];
       }
       
-      // Check pending guest chat for guest users
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
         try {
           const pendingChat = JSON.parse(pendingChatRaw);
           if (pendingChat.vehicle) {
             const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
-            // If not already in the list, add it
             if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
               tempVehicles = [vehicle, ...tempVehicles];
             }
@@ -135,9 +147,15 @@ const Home = () => {
     }
 
     setVehicles(tempVehicles);
-    if (tempVehicles.length > 0) setSelectedVehicle(tempVehicles[0]);
     setIsLoading(false);
-  }, [user, guestVehicle]);
+  }, [user, guestVehicle, dbVehicles, isQueryLoading, queryClient]);
+
+  // Set selected vehicle once loaded
+  useEffect(() => {
+    if (vehicles.length > 0 && !selectedVehicle) {
+      setSelectedVehicle(vehicles[0]);
+    }
+  }, [vehicles, selectedVehicle]);
 
   // Pre-fill symptoms if there was a pending chat
   useEffect(() => {
@@ -149,7 +167,6 @@ const Home = () => {
           if (pendingChat.symptoms) {
             setInputValue(pendingChat.symptoms);
             setShouldAutoStart(true);
-            // Clean up only the symptoms so it doesn't trigger again, but keep the vehicle!
             delete pendingChat.symptoms;
             localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
           }
@@ -157,10 +174,6 @@ const Home = () => {
       }
     }
   }, [isLoading, selectedVehicle, isChatActive]);
-
-  useEffect(() => {
-    fetchVehicles();
-  }, [fetchVehicles]);
 
   // Hide global mobile header on scroll down when chat is active
   useEffect(() => {

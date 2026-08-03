@@ -1,35 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2, Car, ChevronRight, Battery, Thermometer, Gauge, Settings2, Wrench, Volume2, Disc } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from '../components/ui/Button';
+import { useQuery } from '@tanstack/react-query';
 
 const History = () => {
   const { user } = useAuth();
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      setIsLoading(true);
-      if (user) {
-        const { data, error } = await supabase
-          .from('diagnostic_sessions')
-          .select('*, vehicles(make, model)')
-          .eq('status', 'diagnosis_complete')
-          .order('created_at', { ascending: false });
-          
-        if (!error && data) {
-          setSessions(data);
-        }
-      }
-      setIsLoading(false);
-    };
-
-    fetchHistory();
-  }, [user]);
+  const { data: sessions = [], isLoading } = useQuery({
+    queryKey: ['diagnostic_sessions', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('diagnostic_sessions')
+        .select('*, vehicles(make, model)')
+        .eq('status', 'diagnosis_complete')
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
   const uniqueVehicles = Array.from(new Set(sessions.map(s => s.vehicles?.model).filter(Boolean)));
   const filteredSessions = selectedFilter ? sessions.filter(s => s.vehicles?.model === selectedFilter) : sessions;

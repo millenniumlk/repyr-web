@@ -1,41 +1,37 @@
-import { useState, useEffect } from 'react';
 import { Trash2, Plus, Loader2, Car, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from '../components/ui/Button';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Garage = () => {
   const { user } = useAuth();
-  const [vehicles, setVehicles] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      setIsLoading(true);
-      if (user) {
-        const { data, error } = await supabase
-          .from('vehicles')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
-          
-        if (!error && data) {
-          setVehicles(data);
-        }
-      }
-      setIsLoading(false);
-    };
-
-    fetchVehicles();
-  }, [user]);
+  const { data: vehicles = [], isLoading } = useQuery({
+    queryKey: ['vehicles', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
   const handleDeleteVehicle = async (id: string, make: string, model: string) => {
     if (window.confirm(`Are you sure you want to remove this ${make} ${model}?`)) {
       const { error } = await supabase.from('vehicles').delete().eq('id', id);
       if (!error) {
-        setVehicles(prev => prev.filter(v => v.id !== id));
+        queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 
+          old ? old.filter(v => v.id !== id) : []
+        );
       } else {
         alert('Could not delete vehicle.');
       }
