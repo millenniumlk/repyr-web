@@ -177,13 +177,13 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="pt-8 mt-4 flex flex-col items-center gap-4 mb-8">
+        <div className="pt-8 mt-4 mb-8">
           <Button 
-            variant="ghost"
+            variant="destructive"
             onClick={handleLogout}
-            className="h-auto flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 hover:text-red-700 shadow-sm"
+            className="w-full"
           >
-            <LogOut className="w-5 h-5" strokeWidth={2.5} />
+            <LogOut className="w-5 h-5 mr-2" strokeWidth={2.5} />
             Sign Out
           </Button>
         </div>
