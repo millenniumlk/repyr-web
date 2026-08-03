@@ -243,7 +243,7 @@ const EditProfile = () => {
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-[16px] font-semibold py-0.5 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-gray-900 text-[16px] font-medium py-0.5 outline-none placeholder:text-gray-400"
                   placeholder="Enter your full name"
                 />
                 {(!isValidName && fullName.length > 0) && (
@@ -259,7 +259,7 @@ const EditProfile = () => {
               </div>
               <div className="flex-1 py-1">
                 <label className="block text-[12px] font-bold mb-1 text-gray-400 uppercase tracking-wider">Email Address</label>
-                <p className="text-gray-900 text-[16px] font-semibold py-0.5">{user?.email}</p>
+                <p className="text-gray-900 text-[16px] font-medium py-0.5">{user?.email}</p>
               </div>
             </div>
           </div>
