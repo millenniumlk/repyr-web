@@ -344,7 +344,7 @@ const Home = () => {
                     <button
                       key={i}
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`px-4 py-2 rounded-[20px] text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
                         category === cat
                           ? 'bg-white text-primary shadow-glow-primary border border-primary/20'
                           : 'bg-white text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-transparent'
@@ -430,7 +430,7 @@ const Home = () => {
                       setSelectedVehicle(v);
                       setIsVehicleSelectorOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-3 rounded-[20px] flex items-center justify-between transition-all ${
+                    className={`w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-all ${
                       selectedVehicle?.id === v.id 
                         ? 'bg-primary/10 text-primary border border-primary/20' 
                         : 'bg-secondary/50 hover:bg-secondary border border-transparent text-foreground'
@@ -454,7 +454,7 @@ const Home = () => {
                     navigate('/garage/add');
                   }
                 }}
-                className="w-full mt-4 flex items-center justify-center py-3.5 rounded-[20px] border border-dashed border-primary/40 text-primary hover:bg-primary/10 transition-colors font-medium"
+                className="w-full mt-4 flex items-center justify-center py-3 rounded-xl border border-dashed border-primary/40 text-primary hover:bg-primary/10 transition-colors font-medium"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Vehicle
@@ -487,7 +487,7 @@ const Home = () => {
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
                   navigate('/auth', { state: { fromGuestChat: true } });
                 }}
-                className="w-full py-3.5 bg-primary text-white rounded-[20px] font-bold tracking-wide shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5 transition-all active:scale-95"
+                className="w-full py-3.5 bg-primary text-white rounded-xl font-bold tracking-wide shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] hover:-translate-y-0.5 transition-all active:scale-95"
               >
                 Sign Up to Continue
               </button>

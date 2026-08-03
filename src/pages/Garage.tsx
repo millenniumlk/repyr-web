@@ -53,7 +53,7 @@ const Garage = () => {
     <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
       <div className="flex justify-between items-center mb-6 px-1 mt-2">
         <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight">Your Garage</h1>
-        <Link to="/garage/add" className="hidden md:flex bg-[#0062FF] text-white px-6 py-3.5 rounded-[20px] font-semibold text-[15px] items-center hover:bg-[#004CCC] transition-colors shadow-[0_2px_8px_rgba(0,98,255,0.2)]">
+        <Link to="/garage/add" className="hidden md:flex bg-[#0062FF] text-white px-5 py-2.5 rounded-full font-semibold text-[15px] items-center hover:bg-[#004CCC] transition-colors shadow-[0_2px_8px_rgba(0,98,255,0.2)]">
           <Plus className="w-5 h-5 mr-1" strokeWidth={2.5} />
           Add Vehicle
         </Link>

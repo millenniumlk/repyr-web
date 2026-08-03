@@ -178,7 +178,7 @@ const Settings = () => {
         <div className="pt-8 mt-4 flex flex-col items-center gap-4 mb-8">
           <button 
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-[20px] bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 transition-colors w-full border border-red-100 max-w-xs shadow-sm"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-600 font-bold text-[15px] hover:bg-red-100 transition-colors shadow-sm"
           >
             <LogOut className="w-5 h-5" strokeWidth={2.5} />
             <span>Sign Out</span>

@@ -81,7 +81,7 @@ const History = () => {
         <div className="flex overflow-x-auto no-scrollbar gap-2 pb-4 pt-1 px-1">
           <button
             onClick={() => setSelectedFilter(null)}
-            className={`px-5 py-2.5 rounded-[20px] whitespace-nowrap border transition-all ${
+            className={`px-5 py-2.5 rounded-full whitespace-nowrap border transition-all ${
               !selectedFilter 
                 ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)]' 
                 : 'bg-white/60 border-gray-100 text-gray-600 shadow-sm shadow-gray-200/20 hover:bg-white'
@@ -94,7 +94,7 @@ const History = () => {
             <button
               key={vehicle}
               onClick={() => setSelectedFilter(vehicle)}
-              className={`px-5 py-2.5 rounded-[20px] whitespace-nowrap border transition-all ${
+              className={`px-5 py-2.5 rounded-full whitespace-nowrap border transition-all ${
                 selectedFilter === vehicle 
                   ? 'bg-[#0062FF] border-[#0062FF] text-white shadow-[0_2px_8px_rgba(0,98,255,0.2)]' 
                   : 'bg-white/60 border-gray-100 text-gray-600 shadow-sm shadow-gray-200/20 hover:bg-white'
