@@ -43,6 +43,7 @@ const EditProfile = () => {
   
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [originalFullName, setOriginalFullName] = useState('');
   const [originalAvatarUrl, setOriginalAvatarUrl] = useState<string | null>(null);
   
@@ -67,7 +68,7 @@ const EditProfile = () => {
     fetchProfile();
   }, [user]);
 
-  const hasChanges = (fullName !== originalFullName) || (avatarUrl !== originalAvatarUrl);
+  const hasChanges = (fullName !== originalFullName) || (avatarUrl !== originalAvatarUrl) || (avatarFile !== null);
   const isValidName = fullName.trim().length >= 2;
   const canSaveProfile = hasChanges && isValidName && !saving;
   
@@ -81,15 +82,37 @@ const EditProfile = () => {
     setError('');
 
     try {
+      let finalAvatarUrl = avatarUrl;
+      
+      if (avatarFile && user?.id) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, avatarFile);
+          
+        if (uploadError) {
+          throw new Error('Failed to upload image. Make sure an "avatars" storage bucket exists in Supabase. Details: ' + uploadError.message);
+        }
+        
+        const { data } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+          
+        finalAvatarUrl = data.publicUrl;
+      }
+
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ full_name: fullName, avatar_url: avatarUrl })
+        .update({ full_name: fullName, avatar_url: finalAvatarUrl })
         .eq('id', user?.id);
       
       if (profileError) throw profileError;
 
       setOriginalFullName(fullName);
-      setOriginalAvatarUrl(avatarUrl);
+      setOriginalAvatarUrl(finalAvatarUrl);
+      setAvatarFile(null);
       navigate('/settings');
     } catch (err: any) {
       setError(err.message || 'Failed to update profile');
@@ -148,6 +171,7 @@ const EditProfile = () => {
     const file = e.target.files[0];
     const tempUrl = URL.createObjectURL(file);
     setAvatarUrl(tempUrl);
+    setAvatarFile(file);
   };
 
   if (loading) {
@@ -215,7 +239,10 @@ const EditProfile = () => {
           
           {avatarUrl && (
             <button 
-              onClick={() => setAvatarUrl(null)}
+              onClick={() => {
+                setAvatarUrl(null);
+                setAvatarFile(null);
+              }}
               className="mt-4 text-red-500 text-[13px] font-bold tracking-tight hover:text-red-600 transition-colors bg-red-50 hover:bg-red-100 px-4 py-1.5 rounded-full"
             >
               Remove Photo
