@@ -78,7 +78,7 @@ const Garage = () => {
                 </div>
                 {vehicle.mileage ? (
                   <div className="text-gray-500 font-medium text-[13px] truncate">
-                    {vehicle.mileage.toLocaleString()} miles
+                    {Number(vehicle.mileage).toLocaleString()} km
                   </div>
                 ) : null}
               </div>
