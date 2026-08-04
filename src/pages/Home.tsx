@@ -232,8 +232,12 @@ const Home = () => {
       
       // If the user is a guest, intercept the chat and force auth
       if (!user) {
-        setGuestRedirectMessage(true);
-        // We no longer auto-redirect. The button in the overlay handles it.
+        const pendingChat = {
+          vehicle: selectedVehicle,
+          symptoms: inputValue.trim() || category
+        };
+        localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+        navigate('/auth', { state: { fromGuestChat: true, isSignUp: true } });
         return;
       }
       
