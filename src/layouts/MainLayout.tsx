@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, FileText, Settings as SettingsIcon, LogOut, ChevronLeft, ChevronRight, Bell, Menu, X } from 'lucide-react';
+import { Home, Car, FileText, Settings as SettingsIcon, LogOut, ChevronLeft, ChevronRight, Bell, Menu, X, User } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -341,7 +341,11 @@ const MainLayout = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
-                <SettingsIcon className="w-8 h-8 text-primary" />
+                {(() => {
+                  const navItem = navItems.find(item => item.name === guestRestrictedFeature);
+                  const Icon = navItem ? navItem.icon : guestRestrictedFeature === 'Profile' ? User : SettingsIcon;
+                  return <Icon className="w-8 h-8 text-primary" />;
+                })()}
               </div>
               <h3 className="text-xl font-bold mb-2 tracking-tight">Unlock {guestRestrictedFeature}</h3>
               <p className="text-gray-500 mb-6 leading-relaxed text-[15px]">
@@ -354,14 +358,14 @@ const MainLayout = () => {
                 onClick={() => setGuestRestrictedFeature(null)}
                 className="w-full block mb-3"
               >
-                <Button className="w-full" type="button">
+                <Button className="w-full font-normal" type="button">
                   Sign Up to Continue
                 </Button>
               </Link>
               <Button 
                 variant="ghost"
                 onClick={() => setGuestRestrictedFeature(null)}
-                className="w-full text-gray-400 hover:text-gray-600"
+                className="w-full text-gray-400 hover:text-gray-600 font-normal"
               >
                 Not Now
               </Button>

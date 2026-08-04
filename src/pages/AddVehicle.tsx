@@ -5,10 +5,12 @@ import { ChevronRight, ChevronLeft, Car, Settings, Calendar, Activity, MapPin, L
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from '../components/ui/Button';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AddVehicle = () => {
   const navigate = useNavigate();
   const { user, subscriptionTier } = useAuth();
+  const queryClient = useQueryClient();
   
   const [step, setStep] = useState(0);
 
@@ -93,6 +95,7 @@ const AddVehicle = () => {
 
       if (error) throw error;
       
+      await queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
       navigate('/garage');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to save vehicle.');

@@ -29,6 +29,16 @@ const Home = () => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [guestRedirectMessage, setGuestRedirectMessage] = useState(false);
   const [shouldAutoStart, setShouldAutoStart] = useState(false);
+  const [isProcessingGuestChat, setIsProcessingGuestChat] = useState(() => {
+    const raw = localStorage.getItem('pending_guest_chat');
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        return !!data.symptoms;
+      } catch (e) {}
+    }
+    return false;
+  });
 
   const { 
     messages, 
@@ -174,6 +184,10 @@ const Home = () => {
 
   // Pre-fill symptoms if there was a pending chat
   useEffect(() => {
+    if (!isLoading && vehicles.length === 0) {
+      setIsProcessingGuestChat(false);
+    }
+    
     if (user && !isLoading && selectedVehicle && !isChatActive) {
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
@@ -236,17 +250,24 @@ const Home = () => {
 
 
   const handleStartOrReply = async () => {
-    if (!selectedVehicle) return;
+    if (!selectedVehicle) {
+      setIsProcessingGuestChat(false);
+      return;
+    }
 
     if (shouldAutoStart) {
       setShouldAutoStart(false);
     }
 
     if (!isChatActive) {
-      if (!inputValue.trim() && !category) return;
+      if (!inputValue.trim() && !category) {
+        setIsProcessingGuestChat(false);
+        return;
+      }
       
       // If the user is a guest, intercept the chat and show the signup overlay
       if (!user) {
+        setIsProcessingGuestChat(false);
         setGuestRedirectMessage(true);
         return;
       }
@@ -292,18 +313,21 @@ const Home = () => {
       
       if (limitReached) {
         if (subscriptionTier === 'Trial') {
+          setIsProcessingGuestChat(false);
           navigate('/settings/subscription');
           return;
         } else {
           setIsChatActive(true);
           setInputValue('');
           setHasAccess(false);
+          setIsProcessingGuestChat(false);
         }
       } else {
         setIsChatActive(true);
         setInputValue('');
         setHasAccess(true);
         startInvestigation();
+        setIsProcessingGuestChat(false);
       }
     } else {
       if (!inputValue.trim()) return;
@@ -326,7 +350,7 @@ const Home = () => {
     resetDiagnosis();
   }, [resetDiagnosis]);
 
-  if (isLoading) {
+  if (isLoading || isProcessingGuestChat) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] space-y-4 px-4 w-full max-w-2xl mx-auto">
         <Skeleton className="w-full h-[60px] rounded-2xl" />
@@ -505,7 +529,7 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md px-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -527,14 +551,14 @@ const Home = () => {
                   setGuestRedirectMessage(false);
                   window.location.href = '/auth?signup=true&fromGuestChat=true';
                 }}
-                className="w-full"
+                className="w-full font-normal"
               >
                 Sign Up to Continue
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setGuestRedirectMessage(false)}
-                className="w-full mt-3"
+                className="w-full mt-3 font-normal"
               >
                 Cancel
               </Button>
