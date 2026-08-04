@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, Car, ChevronRight, Battery, Thermometer, Gauge, Settings2, Wrench, Volume2, Disc, FileText } from 'lucide-react';
+import { Loader2, Car, ChevronRight, Battery, Thermometer, Gauge, Settings2, Wrench, Volume2, Disc } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
@@ -105,21 +105,16 @@ const History = () => {
       )}
 
       {sessions.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center min-h-[50vh]">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-center max-w-md px-4"
-          >
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/20">
-              <FileText className="w-12 h-12 text-primary" />
+        <div className="items-center w-full max-w-[600px] self-center mx-auto mt-12">
+          <div className="bg-white border border-gray-100 rounded-[32px] p-10 flex flex-col items-center text-center shadow-sm">
+            <div className="w-[72px] h-[72px] rounded-full bg-gray-50 flex items-center justify-center mb-6 border border-gray-100/50">
+              <Car color="#9CA3AF" size={32} strokeWidth={2} />
             </div>
-            <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">No Diagnostic logs Yet</h2>
-            <p className="text-muted-foreground leading-relaxed">
+            <h2 className="text-[22px] font-bold text-gray-900 tracking-tight mb-2">No Diagnostic logs Yet</h2>
+            <p className="text-gray-500 font-medium text-[15px] leading-relaxed max-w-[280px]">
               Diagnostic sessions will be recorded here once you analyze a vehicle.
             </p>
-          </motion.div>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
