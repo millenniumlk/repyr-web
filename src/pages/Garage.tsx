@@ -27,6 +27,10 @@ const Garage = () => {
 
   const handleDeleteVehicle = async (id: string, make: string, model: string) => {
     if (window.confirm(`Are you sure you want to remove this ${make} ${model}?`)) {
+      // Detach diagnostic sessions from this vehicle before deleting it
+      // so they aren't cascade-deleted. This prevents users from bypassing daily chat limits.
+      await supabase.from('diagnostic_sessions').update({ vehicle_id: null }).eq('vehicle_id', id);
+
       const { error } = await supabase.from('vehicles').delete().eq('id', id);
       if (!error) {
         queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 

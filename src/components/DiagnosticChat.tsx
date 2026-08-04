@@ -29,8 +29,8 @@ const DiagnosticChat = ({
   if (hasAccess === false) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-12">
-        <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mb-5">
-          <Lock className="text-amber-500 w-8 h-8" />
+        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+          <Lock className="text-primary w-8 h-8" />
         </div>
         <h2 className="text-center font-bold mb-3 text-2xl">Limit Reached</h2>
         <p className="text-center text-muted-foreground mb-8 px-4 text-sm max-w-sm">
@@ -42,11 +42,11 @@ const DiagnosticChat = ({
           onClick={handleUpgrade} 
           disabled={isUpgrading}
           isLoading={isUpgrading}
-          className="bg-amber-500 text-white hover:bg-amber-600 px-8 py-3 rounded-xl shadow-md disabled:opacity-70 transition-opacity"
+          className="w-full max-w-[240px] font-medium"
         >
           {trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro"}
         </Button>
-        <Button variant="ghost" onClick={exitChat} className="mt-6 font-bold text-muted-foreground hover:text-foreground hover:bg-transparent">
+        <Button variant="ghost" onClick={exitChat} className="mt-6 font-medium text-muted-foreground hover:text-foreground hover:bg-transparent">
           Back to Home
         </Button>
       </div>

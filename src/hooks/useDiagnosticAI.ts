@@ -4,11 +4,18 @@ import { supabase } from '../lib/supabase';
 export function useDiagnosticAI(vehicle: any) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionIdRef = useRef<string | null>(null); // 🔴 Bug fix: ref always holds the latest sessionId regardless of closure age
+  const vehicleDescriptionRef = useRef<string>(''); // 🔴 Bug fix: pin description at investigation start so stale closures don't send an empty complaint
+  const vehicleCategoryRef = useRef<string>('');    // 🔴 Bug fix: pin category at investigation start
   const [messages, setMessages] = useState<any[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [probabilities, setProbabilities] = useState<any[]>([]);
 
   const startInvestigation = async () => {
+    // 🔴 Bug fix: snapshot synchronously before any await, so async continuations
+    // always read the user's actual input even after React re-renders clear the state.
+    vehicleDescriptionRef.current = vehicle.description || '';
+    vehicleCategoryRef.current = vehicle.category || '';
+
     setIsTyping(true);
     let currentSessionId = null;
 
@@ -26,8 +33,8 @@ export function useDiagnosticAI(vehicle: any) {
             vehicle_mileage: vehicle.mileage?.toString(),
             vehicle_engine: vehicle.fuel_type, 
             location: vehicle.location,        
-            initial_category: vehicle.category || 'General', 
-            user_description: vehicle.description
+            initial_category: vehicleCategoryRef.current || 'General', 
+            user_description: vehicleDescriptionRef.current
           }])
           .select()
           .single();
@@ -73,7 +80,7 @@ export function useDiagnosticAI(vehicle: any) {
       
       10. If the user asks a follow-up question after the diagnosis is complete, answer it helpfully but briefly, and ensure your status remains "diagnosis_complete".`;
 
-      const initialUserMessage = `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.transmission || 'Unknown Transmission'}, ${vehicle.fuel_type || 'Unknown Fuel'}). Mileage: ${vehicle.mileage || 'Unknown'} KM. Location: ${vehicle.location || 'Unknown'}. Category: ${vehicle.category}. Complaint: "${vehicle.description}"`;
+      const initialUserMessage = `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.transmission || 'Unknown Transmission'}, ${vehicle.fuel_type || 'Unknown Fuel'}). Mileage: ${vehicle.mileage || 'Unknown'} KM. Location: ${vehicle.location || 'Unknown'}. Category: ${vehicleCategoryRef.current || 'General'}. Complaint: "${vehicleDescriptionRef.current}"`;
 
       const chatContext = [
         { role: 'system', content: systemPrompt },
@@ -131,6 +138,8 @@ export function useDiagnosticAI(vehicle: any) {
   const resetDiagnosis = () => {
     setSessionId(null);
     sessionIdRef.current = null; // 🔴 Bug fix: clear ref so the next session starts fresh
+    vehicleDescriptionRef.current = '';
+    vehicleCategoryRef.current = '';
     setMessages([]);
     setProbabilities([]);
     setIsTyping(false);
