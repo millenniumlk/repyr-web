@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 export function useDiagnosticAI(vehicle: any) {
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionIdRef = useRef<string | null>(null); // 🔴 Bug fix: ref always holds the latest sessionId regardless of closure age
   const vehicleDescriptionRef = useRef<string>(''); // 🔴 Bug fix: pin description at investigation start so stale closures don't send an empty complaint
   const vehicleCategoryRef = useRef<string>('');    // 🔴 Bug fix: pin category at investigation start
@@ -48,7 +47,6 @@ export function useDiagnosticAI(vehicle: any) {
         }
 
         if (sessionData) {
-          setSessionId(sessionData.id);
           sessionIdRef.current = sessionData.id; // 🔴 Bug fix: keep ref in sync so pingOpenAI always has the live value
           currentSessionId = sessionData.id;
         }
@@ -136,7 +134,6 @@ export function useDiagnosticAI(vehicle: any) {
   };
 
   const resetDiagnosis = () => {
-    setSessionId(null);
     sessionIdRef.current = null; // 🔴 Bug fix: clear ref so the next session starts fresh
     vehicleDescriptionRef.current = '';
     vehicleCategoryRef.current = '';
