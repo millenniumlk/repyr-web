@@ -62,7 +62,7 @@ const DiagnosticChat = ({
   };
 
   return (
-    <div className="flex flex-col flex-1 w-full max-w-3xl mx-auto px-4 pb-32 pt-6">
+    <div className="flex flex-col flex-1 w-full max-w-3xl mx-auto px-4 pb-6 pt-6">
       
       {/* Header Probabilities */}
       {!isDiagnosisComplete && probabilities?.length > 0 && (
@@ -188,8 +188,10 @@ const DiagnosticChat = ({
         </motion.div>
       )}
 
+      {/* Spacer to prevent overlap with fixed input bar */}
+      <div className="h-48 flex-shrink-0" />
       {/* Scroll anchor */}
-      <div ref={bottomRef} className="h-4" />
+      <div ref={bottomRef} />
     </div>
   );
 };
