@@ -112,8 +112,8 @@ const History = () => {
             transition={{ duration: 0.4 }}
             className="text-center max-w-md px-4"
           >
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/20">
-              <Car className="w-12 h-12 text-primary" />
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/20">
+              <Car className="w-10 h-10 text-primary" />
             </div>
             <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">No Diagnostic logs Yet</h2>
             <p className="text-muted-foreground leading-relaxed">
