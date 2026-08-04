@@ -67,10 +67,10 @@ const DiagnosticChat = ({
       
       {/* Header Probabilities */}
       {!isDiagnosisComplete && probabilities?.length > 0 && (
-        <div className="glass rounded-3xl overflow-hidden mb-8 border border-white/60 p-5 shadow-lg">
-          <h3 className="text-sm font-medium text-primary mb-3">Most Likely</h3>
+        <div className="glass rounded-2xl overflow-hidden mb-6 border border-white/60 p-3 shadow-lg">
+          <h3 className="text-sm font-medium text-primary mb-2">Most Likely</h3>
           {probabilities.slice(0, 2).map((prob: any, i: number) => (
-            <div key={i} className={`flex justify-between items-center ${i === 0 ? 'mb-2.5' : ''}`}>
+            <div key={i} className={`flex justify-between items-center ${i === 0 ? 'mb-1.5' : ''}`}>
               <span className="text-sm text-foreground flex-1 pr-3 leading-tight font-medium">{prob.cause}</span>
               <span className="font-bold text-sm text-foreground">{prob.confidence_score}%</span>
             </div>
@@ -117,12 +117,12 @@ const DiagnosticChat = ({
           transition={{ duration: 0.3 }}
           className="flex justify-start mt-1.5"
         >
-          <div className="bg-white border border-gray-50 shadow-soft-card rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center space-x-1.5">
+          <div className="bg-white border border-gray-50 shadow-soft-card rounded-[20px] rounded-bl-sm px-4 py-3 flex items-center space-x-1.5">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
                 animate={{
-                  y: [0, -6, 0],
+                  y: [0, -4, 0],
                   opacity: [0.4, 1, 0.4],
                 }}
                 transition={{
@@ -131,7 +131,7 @@ const DiagnosticChat = ({
                   ease: "easeInOut",
                   delay: i * 0.15,
                 }}
-                className="w-2 h-2 bg-primary rounded-full"
+                className="w-1.5 h-1.5 bg-primary rounded-full"
               />
             ))}
           </div>
@@ -151,19 +151,13 @@ const DiagnosticChat = ({
           </div>
           
           {probabilities?.length > 0 && (
-            <div className="mb-5 bg-white rounded-2xl p-4 border border-primary/10 shadow-sm">
-              <p className="text-sm font-medium text-primary mb-1">Most Likely</p>
-              <h4 className="text-base font-bold text-foreground">{probabilities[0].cause}</h4>
-              <p className="text-xs font-medium text-muted-foreground mt-1">{probabilities[0].confidence_score}% Match Confidence</p>
+            <div className="mb-4 bg-white rounded-xl p-3 border border-primary/10 shadow-sm">
+              <p className="text-xs font-medium text-primary mb-1">Most Likely</p>
+              <h4 className="text-sm font-bold text-foreground leading-tight">{probabilities[0].cause}</h4>
+              <p className="text-xs font-medium text-muted-foreground mt-0.5">{probabilities[0].confidence_score}% Match Confidence</p>
             </div>
           )}
 
-          {!hasAskedFollowUp && trialTier !== 'Trial' && (
-            <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
-              Review your final report, ask one follow-up question below, or tap to return to your garage.
-            </p>
-          )}
-          
           {trialTier === 'Trial' && (
             <div className="mb-6 bg-gradient-indigo rounded-2xl p-5 text-white shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 p-3 opacity-20 pointer-events-none">
@@ -188,7 +182,7 @@ const DiagnosticChat = ({
           <Button 
             variant={trialTier === 'Trial' ? 'outline' : 'default'}
             onClick={exitChat}
-            className={`w-full py-3 rounded-xl ${trialTier === 'Trial' ? 'text-primary border-primary/20 hover:bg-primary/10' : 'text-white hover:bg-primary/90'}`}
+            className="w-full font-medium"
           >
             Back to Garage
           </Button>

@@ -42,7 +42,7 @@ const ChatInputBar = ({
                 transition={{ delay: i * 0.1 }}
                 key={i}
                 onClick={() => handleSendReply(opt)}
-                className={`whitespace-nowrap py-3.5 px-6 rounded-full text-[16px] font-medium transition-all shadow-sm flex-shrink-0 active:scale-[0.98] ${
+                className={`whitespace-nowrap py-2.5 px-4 rounded-full text-sm font-medium transition-all shadow-sm flex-shrink-0 active:scale-[0.98] ${
                   i === 0 
                     ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:bg-primary/90' 
                     : 'bg-white border border-gray-200 text-gray-900 shadow-sm hover:bg-gray-50'
