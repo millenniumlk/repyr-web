@@ -96,19 +96,7 @@ const Garage = () => {
         </AnimatePresence>
       </div>
       
-      {vehicles.length === 0 && (
-        <div className="items-center w-full max-w-[600px] self-center mx-auto mt-12">
-          <div className="bg-white border border-gray-100 rounded-[32px] p-10 flex flex-col items-center text-center shadow-sm">
-            <div className="w-[72px] h-[72px] rounded-full bg-gray-50 flex items-center justify-center mb-6 border border-gray-100/50">
-              <Car color="#9CA3AF" size={32} strokeWidth={2} />
-            </div>
-            <h2 className="text-[22px] font-bold text-gray-900 tracking-tight mb-2">Your Garage is Empty</h2>
-            <p className="text-gray-500 font-medium text-[15px] leading-relaxed max-w-[280px]">
-              Add your vehicles to get personalized AI diagnostics and service recommendations.
-            </p>
-          </div>
-        </div>
-      )}
+
 
       <div className="mt-6 px-1">
         <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
