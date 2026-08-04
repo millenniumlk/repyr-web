@@ -42,11 +42,12 @@ const Auth = () => {
   const fromGuestChatParam = searchParams.get('fromGuestChat') === 'true';
   
   // Clear stale pending guest chat if we navigated here directly (not from the guest chat intercept overlay)
+  const isFromGuestChat = useRef(location.state?.fromGuestChat || fromGuestChatParam);
   useEffect(() => {
-    if (!location.state?.fromGuestChat && !fromGuestChatParam) {
+    if (!isFromGuestChat.current) {
       localStorage.removeItem('pending_guest_chat');
     }
-  }, [location, fromGuestChatParam]);
+  }, []);
   
   const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp || isSignUpParam || false);
 

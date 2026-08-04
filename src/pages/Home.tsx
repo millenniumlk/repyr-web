@@ -98,17 +98,20 @@ const Home = () => {
               const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
               
               if (!alreadyExists) {
-                const { data: newVehicle } = await supabase.from('vehicles').insert({
+                const { data: newVehicle, error: insertError } = await supabase.from('vehicles').insert({
                   user_id: user.id,
                   make: gv.make,
                   model: gv.model,
-                  year: gv.year,
+                  year: parseInt(gv.year, 10) || 2020,
+                  mileage: parseInt(gv.mileage, 10) || 0,
                   transmission: gv.transmission || '',
-                  engine: gv.engine || '',
-                  drivetrain: gv.drivetrain || '',
                   fuel_type: gv.fuel_type || '',
                   location: gv.location || ''
                 }).select().single();
+                
+                if (insertError) {
+                  console.error('Failed to save guest vehicle:', insertError);
+                }
                 
                 if (newVehicle) {
                   finalData = [newVehicle, ...finalData];
