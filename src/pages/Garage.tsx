@@ -47,24 +47,29 @@ const Garage = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0 min-h-[calc(100vh-120px)] flex flex-col">
+    <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
       <div className="mb-6 px-1 mt-2">
         <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight mb-6">Your Garage</h1>
       </div>
 
-      <div className="mt-4 px-1 flex-1 flex flex-col">
-        {vehicles.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-5 shadow-sm border border-primary/20">
+      {vehicles.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-center max-w-md px-4"
+          >
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/20">
               <Car className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-foreground tracking-tight mb-2">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">
               Your Garage is Empty
             </h2>
-            <p className="text-muted-foreground text-[15px] leading-relaxed max-w-[260px] mb-8">
+            <p className="text-muted-foreground leading-relaxed mb-8">
               Add a vehicle to manage its profile and get AI-powered diagnostics.
             </p>
-            <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
+            <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all mx-auto w-fit">
               <Link 
                 to="/garage/add"
                 className="flex items-center justify-center px-6 py-3.5 hover:bg-primary/90 transition-colors group"
@@ -77,11 +82,12 @@ const Garage = () => {
                 </span>
               </Link>
             </div>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col">
-            <div className="space-y-4">
-              <AnimatePresence>
+          </motion.div>
+        </div>
+      ) : (
+        <div className="mt-4 px-1 flex flex-col min-h-[calc(100vh-180px)]">
+          <div className="space-y-4">
+            <AnimatePresence>
                 {vehicles.map((vehicle, index) => (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
@@ -141,8 +147,6 @@ const Garage = () => {
             </div>
           </div>
         )}
-      </div>
-
     </div>
   );
 };
