@@ -348,14 +348,16 @@ const MainLayout = () => {
               <Link
                 to="/auth"
                 onClick={() => setGuestRestrictedFeature(null)}
-                className="w-full block text-center bg-primary text-white font-bold py-3.5 rounded-xl transition-all hover:bg-primary-dark shadow-lg shadow-primary/30 mb-3"
+                className="w-full block mb-3"
               >
-                Sign Up to Continue
+                <Button className="w-full" type="button">
+                  Sign Up to Continue
+                </Button>
               </Link>
               <Button 
                 variant="ghost"
                 onClick={() => setGuestRestrictedFeature(null)}
-                className="w-full h-auto py-3.5 text-gray-400 hover:text-gray-600"
+                className="w-full text-gray-400 hover:text-gray-600"
               >
                 Not Now
               </Button>

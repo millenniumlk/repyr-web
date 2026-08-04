@@ -504,14 +504,14 @@ const Home = () => {
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
                   navigate('/auth', { state: { fromGuestChat: true } });
                 }}
-                className="w-full rounded-xl"
+                className="w-full"
               >
                 Sign Up to Continue
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setGuestRedirectMessage(false)}
-                className="w-full mt-3 h-auto py-2.5"
+                className="w-full mt-3"
               >
                 Cancel
               </Button>
