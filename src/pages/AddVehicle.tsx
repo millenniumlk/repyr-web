@@ -5,12 +5,40 @@ import { ChevronRight, ChevronLeft, Car, Settings, Calendar, Activity, MapPin, L
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from '../components/ui/Button';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const AddVehicle = () => {
   const navigate = useNavigate();
   const { user, subscriptionTier } = useAuth();
   const queryClient = useQueryClient();
+  
+  const { data: limitCheck, isLoading: isCheckingLimit } = useQuery({
+    queryKey: ['vehicleLimitCheck', user?.id, subscriptionTier],
+    queryFn: async () => {
+      if (!user) return { allowed: true };
+      
+      const { count: currentVehicles } = await supabase
+        .from('vehicles')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+        
+      const { data: limitData } = await supabase
+        .from('plan_limits')
+        .select('vehicle_limit')
+        .eq('plan_name', subscriptionTier)
+        .single();
+        
+      const limit = limitData ? limitData.vehicle_limit : -1;
+      
+      if (limit !== -1 && currentVehicles !== null && currentVehicles >= limit) {
+        return { allowed: false, limit, tier: subscriptionTier };
+      }
+      
+      return { allowed: true };
+    },
+    enabled: !!user,
+    staleTime: 0
+  });
   
   const [step, setStep] = useState(0);
 
@@ -122,6 +150,34 @@ const AddVehicle = () => {
   ];
 
   const currentStep = steps[step];
+
+  if (isCheckingLimit) {
+    return (
+      <div className="flex-1 flex justify-center items-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (limitCheck && !limitCheck.allowed) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center py-12 px-6">
+        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-5 border border-primary/20">
+          <Car className="text-primary w-10 h-10" />
+        </div>
+        <h2 className="text-center font-bold mb-3 text-2xl text-foreground">Limit Reached</h2>
+        <p className="text-center text-muted-foreground mb-8 px-4 text-[15px] max-w-sm">
+          {limitCheck.tier} users are allowed to add up to {limitCheck.limit} vehicle{limitCheck.limit > 1 ? 's' : ''}. Please upgrade your plan to add more.
+        </p>
+        <Button onClick={() => navigate('/settings/subscription')} className="w-full max-w-[240px] font-medium mb-4">
+          Upgrade Plan
+        </Button>
+        <Button variant="ghost" onClick={() => navigate('/garage')} className="font-medium text-muted-foreground hover:text-foreground">
+          Back to Garage
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col font-sans relative overflow-hidden h-[calc(100vh-5rem)] md:h-auto md:min-h-[600px]">

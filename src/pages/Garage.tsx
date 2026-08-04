@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { useToast } from '../lib/ToastContext';
 import { Button } from '../components/ui/Button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Garage = () => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: vehicles = [], isLoading } = useQuery({
@@ -36,8 +38,9 @@ const Garage = () => {
         queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 
           old ? old.filter(v => v.id !== id) : []
         );
+        showToast(`Vehicle removed.`, 'success');
       } else {
-        alert('Could not delete vehicle.');
+        showToast('Could not delete vehicle.', 'error');
       }
     }
   };

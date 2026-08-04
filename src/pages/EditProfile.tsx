@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ChevronDown, User, Lock, Mail, Camera, Loader2, Trash2, Shield, X } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
+import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
@@ -36,6 +37,7 @@ const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandab
 const EditProfile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [loading, setLoading] = useState(true);
@@ -160,7 +162,7 @@ const EditProfile = () => {
       setShowPasswordEdit(false);
       setNewPassword('');
       setConfirmPassword('');
-      alert('Password updated successfully');
+      showToast('Password updated successfully', 'success');
     } catch (err: any) {
       setError(err.message || 'Failed to update password');
     } finally {

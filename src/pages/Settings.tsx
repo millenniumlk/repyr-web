@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, Loader2, LogOut } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
+import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
@@ -44,6 +45,7 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
 const Settings = () => {
   const navigate = useNavigate();
   const { user, isGuest, setGuestMode, subscriptionTier, isLoading: authLoading } = useAuth();
+  const { showToast } = useToast();
   
   const [profile, setProfile] = useState<{ full_name?: string, avatar_url?: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +69,7 @@ const Settings = () => {
   };
 
   const handleSupport = () => {
-    alert('Support coming soon.');
+    showToast('Support coming soon.', 'info');
   };
 
   const handleLogout = async () => {
@@ -164,7 +166,7 @@ const Settings = () => {
               <ActionRow 
                 icon={Shield} 
                 title="Privacy & Security" 
-                onClick={() => alert('Coming soon')} 
+                onClick={() => showToast('Coming soon', 'info')} 
                 isLast={false}
               />
               <ActionRow 

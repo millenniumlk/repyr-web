@@ -5,12 +5,14 @@ import { Check, Sparkles, Zap, ChevronLeft, ShieldCheck, Loader2, ExternalLink }
 import { initializePaddle } from '@paddle/paddle-js';
 import type { Paddle } from '@paddle/paddle-js';
 import { useAuth } from '../lib/AuthContext';
+import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/ui/Button';
 
 const Subscription = () => {
   const navigate = useNavigate();
   const { user, subscriptionTier, setSubscriptionTier, isLoading } = useAuth();
+  const { showToast } = useToast();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [paddle, setPaddle] = useState<Paddle | undefined>();
@@ -114,7 +116,7 @@ const Subscription = () => {
 
   const handleUpgrade = async (planName: string) => {
     if (!paddle) {
-      alert("Billing system is loading. Please try again in a moment.");
+      showToast("Billing system is loading. Please try again in a moment.", 'info');
       return;
     }
     setProcessingPlan(planName);
@@ -139,7 +141,7 @@ const Subscription = () => {
       paddle.Checkout.open(checkoutOptions);
     } catch (e) {
       console.error(e);
-      alert("Failed to initialize checkout.");
+      showToast("Failed to initialize checkout.", 'error');
     }
     
     // Safety timeout in case modal fails to open or is closed manually
@@ -171,7 +173,7 @@ const Subscription = () => {
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to open customer portal.");
+      showToast("Failed to open customer portal.", 'error');
       setManaging(false);
     }
   };
