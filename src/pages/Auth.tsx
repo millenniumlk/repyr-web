@@ -45,7 +45,7 @@ const Auth = () => {
     }
   }, [location]);
   
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp || false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'new_password'>('email');
   

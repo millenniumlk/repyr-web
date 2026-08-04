@@ -502,7 +502,7 @@ const Home = () => {
                     symptoms: inputValue.trim() || category
                   };
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-                  navigate('/auth', { state: { fromGuestChat: true } });
+                  navigate('/auth', { state: { fromGuestChat: true, isSignUp: true } });
                 }}
                 className="w-full"
               >
