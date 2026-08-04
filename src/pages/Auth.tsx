@@ -46,6 +46,13 @@ const Auth = () => {
   }, [location]);
   
   const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp || false);
+
+  useEffect(() => {
+    if (location.state?.isSignUp !== undefined) {
+      setIsSignUp(location.state.isSignUp);
+    }
+  }, [location.state?.isSignUp]);
+
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'new_password'>('email');
   

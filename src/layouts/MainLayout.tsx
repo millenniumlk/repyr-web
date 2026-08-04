@@ -347,6 +347,7 @@ const MainLayout = () => {
               
               <Link
                 to="/auth"
+                state={{ isSignUp: true }}
                 onClick={() => setGuestRestrictedFeature(null)}
                 className="w-full block mb-3"
               >
