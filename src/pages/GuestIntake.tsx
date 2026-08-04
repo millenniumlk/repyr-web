@@ -29,8 +29,9 @@ const GuestIntake = () => {
     if (step === 0 && !make) return;
     if (step === 1 && !model) return;
     if (step === 2 && !year) return;
-    
-    if (step === 3 && mileage) {
+    if (step === 3 && !mileage) return; // 🔴 Bug fix: guard against out-of-bounds step on Enter key
+
+    if (step === 3) {
       // Finish and enter guest mode
       setGuestMode(true, {
         id: 'guest-vehicle',
@@ -41,9 +42,10 @@ const GuestIntake = () => {
         type: 'car'
       });
       navigate('/');
-    } else {
-      setStep(prev => prev + 1);
+      return; // never fall through to setStep
     }
+
+    setStep(prev => prev + 1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

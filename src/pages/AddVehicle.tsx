@@ -41,12 +41,14 @@ const AddVehicle = () => {
     if (step === 3 && !mileage) return;
     if (step === 4 && !transmission) return;
     if (step === 5 && !fuelType) return;
-    
-    if (step === 6 && location) {
+    if (step === 6 && !location) return; // 🔴 Bug fix: guard against out-of-bounds step on Enter key
+
+    if (step === 6) {
       await handleSaveVehicle();
-    } else {
-      setStep(prev => prev + 1);
+      return; // never fall through to setStep
     }
+
+    setStep(prev => prev + 1);
   };
 
   const handleSaveVehicle = async () => {

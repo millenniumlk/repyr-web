@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 export function useDiagnosticAI(vehicle: any) {
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const sessionIdRef = useRef<string | null>(null); // 🔴 Bug fix: ref always holds the latest sessionId regardless of closure age
   const [messages, setMessages] = useState<any[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [probabilities, setProbabilities] = useState<any[]>([]);
@@ -41,6 +42,7 @@ export function useDiagnosticAI(vehicle: any) {
 
         if (sessionData) {
           setSessionId(sessionData.id);
+          sessionIdRef.current = sessionData.id; // 🔴 Bug fix: keep ref in sync so pingOpenAI always has the live value
           currentSessionId = sessionData.id;
         }
       }
@@ -86,7 +88,7 @@ export function useDiagnosticAI(vehicle: any) {
     }
   };
 
-  const pingOpenAI = async ({ chatContext, newMessage, currentSessionId = sessionId }: { chatContext?: any[], newMessage?: string, currentSessionId?: string | null }) => {
+  const pingOpenAI = async ({ chatContext, newMessage, currentSessionId = sessionIdRef.current }: { chatContext?: any[], newMessage?: string, currentSessionId?: string | null }) => {
     setIsTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke('diagnostic-ai', {
@@ -128,6 +130,7 @@ export function useDiagnosticAI(vehicle: any) {
 
   const resetDiagnosis = () => {
     setSessionId(null);
+    sessionIdRef.current = null; // 🔴 Bug fix: clear ref so the next session starts fresh
     setMessages([]);
     setProbabilities([]);
     setIsTyping(false);

@@ -80,10 +80,6 @@ const Home = () => {
       if (error) throw error;
       
       let finalData = data || [];
-      if (finalData.length === 1 && finalData[0].make === 'Toyota' && finalData[0].model === 'Camry' && !finalData[0].transmission) {
-        supabase.from('vehicles').delete().eq('id', finalData[0].id).then();
-        finalData = [];
-      }
       return finalData;
     },
     enabled: !!user,
@@ -249,7 +245,7 @@ const Home = () => {
   }, [isChatActive]);
 
 
-  const handleStartOrReply = async () => {
+  const handleStartOrReply = useCallback(async () => { // 🔴 Bug fix: useCallback prevents stale closure in the auto-start effect
     if (!selectedVehicle) {
       setIsProcessingGuestChat(false);
       return;
@@ -334,13 +330,13 @@ const Home = () => {
       handleSendReply(inputValue);
       setInputValue('');
     }
-  };
+  }, [selectedVehicle, shouldAutoStart, isChatActive, inputValue, category, user, subscriptionTier, navigate, startInvestigation, handleSendReply, resetDiagnosis]);
 
   useEffect(() => {
     if (shouldAutoStart && (inputValue || category)) {
       handleStartOrReply();
     }
-  }, [shouldAutoStart, inputValue, category]);
+  }, [shouldAutoStart, inputValue, category, handleStartOrReply]); // 🔴 Bug fix: handleStartOrReply now in deps
 
   const exitChat = useCallback(() => {
     setIsChatActive(false);
