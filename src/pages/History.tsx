@@ -26,8 +26,8 @@ const History = () => {
     enabled: !!user,
   });
 
-  const uniqueVehicles = Array.from(new Set(sessions.map(s => s.vehicles?.model).filter(Boolean)));
-  const filteredSessions = selectedFilter ? sessions.filter(s => s.vehicles?.model === selectedFilter) : sessions;
+  const uniqueVehicles = Array.from(new Set(sessions.map(s => s.vehicles?.model || s.vehicle_model).filter(Boolean)));
+  const filteredSessions = selectedFilter ? sessions.filter(s => (s.vehicles?.model || s.vehicle_model) === selectedFilter) : sessions;
 
   // Grouping Logic
   const groupedSessions = [
@@ -132,7 +132,8 @@ const History = () => {
                 <AnimatePresence>
                   {group.data.map((session, index) => {
                     const probability = session.final_probabilities?.[0];
-                    const model = session.vehicles?.model || 'Unknown Vehicle';
+                    const make = session.vehicles?.make || session.vehicle_make || 'Unknown Make';
+                    const model = session.vehicles?.model || session.vehicle_model || 'Unknown Vehicle';
                     const date = new Date(session.created_at).toLocaleDateString('en-US', { 
                       year: 'numeric', month: 'short', day: 'numeric' 
                     });
@@ -166,7 +167,7 @@ const History = () => {
                           )}
                           
                           <div className="text-gray-500 font-medium text-[13px] truncate">
-                            {session.vehicles?.make} {model}
+                            {make} {model}
                           </div>
                         </div>
                         
