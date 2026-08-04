@@ -496,7 +496,7 @@ const Home = () => {
                       setSelectedVehicle(v);
                       setIsVehicleSelectorOpen(false);
                     }}
-                    className={`w-full h-auto text-left px-4 py-3 rounded-xl flex items-center justify-between font-normal ${
+                    className={`w-full h-auto text-left px-4 py-3 rounded-full flex items-center justify-between font-normal ${
                       selectedVehicle?.id === v.id 
                         ? 'bg-primary/10 text-primary border-primary/20 border' 
                         : 'bg-secondary/50 hover:bg-secondary border-transparent text-foreground'
@@ -521,7 +521,7 @@ const Home = () => {
                     navigate('/garage/add');
                   }
                 }}
-                className="w-full mt-4 rounded-xl border-dashed border-primary/40 text-primary hover:bg-primary/10"
+                className="w-full mt-4 rounded-full border-dashed border-primary/40 text-primary hover:bg-primary/10"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Vehicle
