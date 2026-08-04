@@ -72,7 +72,7 @@ const ChatInputBar = ({
                   disabled={isGuest}
                   className={`h-auto flex items-center px-3 py-1.5 rounded-full whitespace-nowrap border ${isGuest ? 'bg-gray-100 border-gray-200 cursor-default hover:bg-gray-100' : 'bg-primary/5 border-primary/20 hover:bg-primary/10'}`}
                 >
-                  <span className={`text-xs font-medium mr-1 max-w-[100px] truncate ${isGuest ? 'text-gray-500' : 'text-primary'}`}>
+                  <span className={`text-xs font-medium mr-1 w-[100px] text-left truncate ${isGuest ? 'text-gray-500' : 'text-primary'}`}>
                     {selectedVehicle.make} {selectedVehicle.model}
                   </span>
                   {!isGuest && <ChevronDown className="text-primary w-3.5 h-3.5 opacity-70" />}
