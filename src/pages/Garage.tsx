@@ -47,12 +47,12 @@ const Garage = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
+    <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0 min-h-[calc(100vh-120px)] flex flex-col">
       <div className="mb-6 px-1 mt-2">
         <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight mb-6">Your Garage</h1>
       </div>
 
-      <div className="mt-4 px-1 space-y-4">
+      <div className="mt-4 px-1 space-y-4 flex-1">
         <AnimatePresence>
           {vehicles.map((vehicle, index) => (
             <motion.div 
@@ -97,22 +97,20 @@ const Garage = () => {
       </div>
       
 
-
-      <div className="mt-6 px-1">
+      <div className="mt-auto pt-6 px-1 w-full">
         <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
           <Link 
             to="/garage/add"
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-primary/90 transition-colors group"
+            className="w-full flex items-center justify-center px-5 py-4 hover:bg-primary/90 transition-colors group"
           >
-            <div className="flex items-center">
-              <div className="mr-4 text-white">
+            <div className="flex items-center justify-center">
+              <div className="mr-3 text-white">
                 <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
               </div>
               <span className="text-[16px] tracking-tight font-medium text-white">
                 Add Vehicle
               </span>
             </div>
-            <ChevronRight className="w-5 h-5 text-white/80" strokeWidth={2} />
           </Link>
         </div>
       </div>
