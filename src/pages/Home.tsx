@@ -94,7 +94,9 @@ const Home = () => {
         
         let finalData = [...dbVehicles];
         
-        // Save pending guest chat vehicle to the database
+        // Save pending guest chat vehicle to the database.
+        // If needsProfileComplete is true, the user hasn't filled in fuel/transmission/location yet —
+        // defer the insert to CompleteVehicleProfile so we don't save an incomplete record.
         const pendingChatRaw = localStorage.getItem('pending_guest_chat');
         if (pendingChatRaw) {
           try {
@@ -102,36 +104,47 @@ const Home = () => {
             if (pendingChat.vehicle) {
               const gv = pendingChat.vehicle;
               const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
-              
-              if (!alreadyExists) {
-                const { data: newVehicle, error: insertError } = await supabase.from('vehicles').insert({
-                  user_id: user.id,
-                  make: gv.make,
-                  model: gv.model,
-                  year: parseInt(gv.year, 10) || 2020,
-                  mileage: parseInt(gv.mileage, 10) || 0,
-                  transmission: gv.transmission || '',
-                  fuel_type: gv.fuel_type || '',
-                  location: gv.location || ''
-                }).select().single();
-                
-                if (insertError) {
-                  console.error('Failed to save guest vehicle:', insertError);
-                }
-                
-                if (newVehicle) {
-                  finalData = [newVehicle, ...finalData];
-                  queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
+
+              if (pendingChat.needsProfileComplete) {
+                // Profile not yet completed — surface the vehicle in state for display only,
+                // but do NOT insert into the DB. CompleteVehicleProfile will do the insert.
+                if (!alreadyExists) {
+                  finalData = [{ id: 'pending-vehicle', ...gv }, ...finalData];
+                } else {
+                  finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
                 }
               } else {
-                finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
-              }
-              
-              delete pendingChat.vehicle;
-              if (Object.keys(pendingChat).length === 0) {
-                localStorage.removeItem('pending_guest_chat');
-              } else {
-                localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+                // Profile already complete — safe to insert / reorder.
+                if (!alreadyExists) {
+                  const { data: newVehicle, error: insertError } = await supabase.from('vehicles').insert({
+                    user_id: user.id,
+                    make: gv.make,
+                    model: gv.model,
+                    year: parseInt(gv.year, 10) || 2020,
+                    mileage: parseInt(gv.mileage, 10) || 0,
+                    transmission: gv.transmission || '',
+                    fuel_type: gv.fuel_type || '',
+                    location: gv.location || ''
+                  }).select().single();
+
+                  if (insertError) {
+                    console.error('Failed to save guest vehicle:', insertError);
+                  }
+
+                  if (newVehicle) {
+                    finalData = [newVehicle, ...finalData];
+                    queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
+                  }
+                } else {
+                  finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
+                }
+
+                delete pendingChat.vehicle;
+                if (Object.keys(pendingChat).length === 0) {
+                  localStorage.removeItem('pending_guest_chat');
+                } else {
+                  localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+                }
               }
             }
           } catch (e) {}
@@ -541,7 +554,8 @@ const Home = () => {
                 onClick={() => {
                   const pendingChat = {
                     vehicle: selectedVehicle,
-                    symptoms: inputValue.trim() || category
+                    symptoms: inputValue.trim() || category,
+                    needsProfileComplete: true
                   };
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
                   setGuestRedirectMessage(false);

@@ -90,9 +90,10 @@ const CompleteVehicleProfile = () => {
   const [baseVehicle, setBaseVehicle] = useState<any>(null);
 
   useEffect(() => {
-    // Try to find the vehicle to complete
+    // Try to find the vehicle to complete.
+    // Priority 1: the vehicle stored in pending_guest_chat local storage.
+    // Priority 2: the most recently added vehicle in Supabase without fuel/transmission details.
     const loadVehicle = async () => {
-      // First check pending guest chat in local storage
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
         try {
@@ -104,14 +105,15 @@ const CompleteVehicleProfile = () => {
         } catch (e) {}
       }
 
-      // If no pending, check supabase for a vehicle missing details
+      // Fallback: most recently added vehicle from Supabase
       if (user) {
         const { data } = await supabase
           .from('vehicles')
           .select('*')
           .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
           .limit(1);
-          
+
         if (data && data.length > 0) {
           setBaseVehicle(data[0]);
         }
@@ -123,53 +125,68 @@ const CompleteVehicleProfile = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transmission || !fuelType || !location || !user) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
+      // Check if this vehicle already exists in Supabase (inserted by a previous step)
+      // so we update rather than insert a duplicate.
+      let existingId: string | null = null;
+
       if (baseVehicle?.id && baseVehicle.id !== 'guest-vehicle' && baseVehicle.id !== 'pending-vehicle') {
-        // Update existing
-        await supabase
-          .from('vehicles')
-          .update({
-            transmission,
-            fuel_type: fuelType,
-            location
-          })
-          .eq('id', baseVehicle.id);
+        // Already has a real Supabase UUID
+        existingId = baseVehicle.id;
       } else if (baseVehicle) {
-        // Insert new from pending
-        await supabase
+        // Lookup by make/model/year in case Home.tsx inserted it earlier
+        const { data: found } = await supabase
           .from('vehicles')
-          .insert([{
-            user_id: user.id,
-            make: baseVehicle.make,
-            model: baseVehicle.model,
-            year: parseInt(baseVehicle.year),
-            mileage: parseInt(baseVehicle.mileage) || 0,
-            transmission,
-            fuel_type: fuelType,
-            location
-          }]);
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('make', baseVehicle.make)
+          .eq('model', baseVehicle.model)
+          .eq('year', parseInt(String(baseVehicle.year), 10) || 0)
+          .limit(1)
+          .maybeSingle();
+
+        if (found) existingId = found.id;
       }
 
-      // Ensure we clear out pending so it doesn't duplicate
-      // Wait, if we clear pending_guest_chat, the Home dashboard won't automatically start the symptom!
-      // To fix this, we ONLY update the vehicle part of the pending chat, not clear the whole thing.
+      if (existingId) {
+        // Update the existing row with the completed details
+        await supabase
+          .from('vehicles')
+          .update({ transmission, fuel_type: fuelType, location })
+          .eq('id', existingId);
+      } else if (baseVehicle) {
+        // Vehicle isn't in the DB yet — insert with all fields at once
+        await supabase.from('vehicles').insert([{
+          user_id: user.id,
+          make: baseVehicle.make,
+          model: baseVehicle.model,
+          year: parseInt(String(baseVehicle.year), 10) || 2020,
+          mileage: parseInt(String(baseVehicle.mileage), 10) || 0,
+          transmission,
+          fuel_type: fuelType,
+          location
+        }]);
+      }
+
+      // Remove the needsProfileComplete flag so Home.tsx knows the vehicle is ready,
+      // but keep the symptoms so the chat auto-starts.
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
         try {
           const pendingChat = JSON.parse(pendingChatRaw);
-          pendingChat.vehicle = {
-            ...pendingChat.vehicle,
-            transmission,
-            fuel_type: fuelType,
-            location
-          };
-          localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+          delete pendingChat.needsProfileComplete;
+          delete pendingChat.vehicle; // vehicle is now saved in Supabase
+          if (Object.keys(pendingChat).length === 0) {
+            localStorage.removeItem('pending_guest_chat');
+          } else {
+            localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+          }
         } catch (e) {}
       }
-      
+
       navigate('/');
     } catch (error) {
       console.error(error);

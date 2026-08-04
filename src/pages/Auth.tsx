@@ -127,7 +127,9 @@ const Auth = () => {
         });
         if (error) throw error;
         if (data.session) {
-          navigate('/');
+          // If they came from the guest chat intercept, collect the remaining vehicle
+          // details (fuel type, transmission, location) before starting the session.
+          navigate(isFromGuestChat.current ? '/complete-profile' : '/');
         } else {
           localStorage.removeItem('diagnostics_run_count');
           setSuccessMsg('Account created successfully! Please log in.');
