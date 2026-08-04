@@ -10,14 +10,14 @@ const TRANSMISSION_TYPES = ['Automatic', 'Manual', 'Tiptronic'];
 const FUEL_TYPES = ['Petrol', 'Diesel', 'Hybrid', 'Plug-in Hybrid', 'Electric'];
 
 const QuickSelect = ({ options, value, onChange }: { options: string[], value: string, onChange: (v: string) => void }) => (
-  <div className="flex flex-wrap gap-2 mb-2">
+  <div className="flex flex-wrap gap-2 mb-1">
     {options.map((opt) => (
       <Button
         key={opt}
         type="button"
         variant="outline"
         onClick={() => onChange(value === opt ? '' : opt)}
-        className={`h-auto px-4 py-2.5 rounded-xl text-[14px] transition-all duration-200 font-medium ${
+        className={`h-auto px-3 py-2 rounded-xl text-[14px] transition-all duration-200 font-medium ${
           value === opt 
             ? 'bg-primary border-primary text-white shadow-md shadow-primary/20 scale-[0.98] hover:bg-primary/90 hover:text-white' 
             : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
@@ -34,7 +34,7 @@ const AnimatedInput = ({ icon: Icon, label, ...props }: any) => {
   const hasValue = props.value !== undefined && props.value.toString().length > 0;
   
   return (
-    <div className="mb-6 relative">
+    <div className="mb-2 relative">
       <div 
         className={`relative flex items-center bg-white rounded-xl transition-all duration-300 ${
           isFocused 
@@ -198,27 +198,14 @@ const CompleteVehicleProfile = () => {
   const isComplete = transmission && fuelType && location;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-12 md:pt-20 px-4 pb-24 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
-      <div className="absolute -top-48 -right-48 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-48 -left-48 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="min-h-screen bg-transparent flex flex-col justify-center px-4 py-4 relative overflow-hidden">
       <div className="w-full max-w-md mx-auto relative z-10">
         
-        <div className="text-center mb-10">
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-            className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-gray-100"
-          >
-            <Car className="w-8 h-8 text-primary" />
-          </motion.div>
+        <div className="text-center mb-6">
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-black text-gray-900 tracking-tight mb-3"
+            className="text-2xl font-black text-gray-900 tracking-tight mb-2"
           >
             Complete Profile
           </motion.h1>
@@ -226,7 +213,7 @@ const CompleteVehicleProfile = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-muted-foreground text-lg"
+            className="text-muted-foreground text-base"
           >
             To give you hyper-accurate diagnostics, we need 3 quick details {baseVehicle ? `about your ${baseVehicle.year} ${baseVehicle.make} ${baseVehicle.model}` : 'about your vehicle'}.
           </motion.p>
@@ -236,13 +223,13 @@ const CompleteVehicleProfile = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white"
+          className="w-full"
         >
           <form onSubmit={handleSubmit}>
-            <div className="space-y-6">
+            <div className="space-y-4">
               
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-3 ml-1">Transmission Type</label>
+                <label className="block text-sm font-bold text-gray-900 mb-2 ml-1">Transmission Type</label>
                 <QuickSelect 
                   options={TRANSMISSION_TYPES}
                   value={transmission}
@@ -251,7 +238,7 @@ const CompleteVehicleProfile = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-3 ml-1 mt-4">Fuel Type</label>
+                <label className="block text-sm font-bold text-gray-900 mb-2 ml-1">Fuel Type</label>
                 <QuickSelect 
                   options={FUEL_TYPES}
                   value={fuelType}
@@ -259,7 +246,7 @@ const CompleteVehicleProfile = () => {
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="pt-1">
                 <AnimatedInput
                   icon={MapPin}
                   label="Location (City, Region)"
@@ -271,18 +258,13 @@ const CompleteVehicleProfile = () => {
               </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6">
               <Button
                 type="submit"
                 disabled={!isComplete || isSubmitting}
                 isLoading={isSubmitting}
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
-                  isComplete
-                    ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/40' 
-                    : 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 cursor-not-allowed'
-                }`}
+                className="w-full"
               >
-                <Check className="w-5 h-5 mr-2" />
                 Complete Profile
               </Button>
             </div>
