@@ -347,8 +347,8 @@ const Home = () => {
             ) : (
               <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
                 <div className="mb-6 w-full">
-                  <h1 className="text-[32px] md:text-4xl font-black text-gray-900 tracking-tighter leading-tight">
-                    Let's fix your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">{selectedVehicle?.model || 'vehicle'}</span>.
+                  <h1 className="text-[28px] md:text-3xl font-normal text-primary tracking-tight leading-tight">
+                    Let's fix your {selectedVehicle?.model || 'vehicle'}.
                   </h1>
                 </div>
                 
@@ -359,10 +359,10 @@ const Home = () => {
                       key={i}
                       variant="outline"
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`h-auto px-5 py-2.5 rounded-full text-[15px] font-semibold transition-all duration-300 ${
+                      className={`h-auto px-4 py-2 rounded-full text-sm font-medium ${
                         category === cat
-                          ? 'border-primary/20 bg-primary/5 text-primary shadow-glow-primary scale-[1.02]'
-                          : 'border-gray-200/50 bg-white/50 backdrop-blur-sm text-gray-700 shadow-soft hover:shadow-md hover:bg-white hover:-translate-y-0.5'
+                          ? 'border-primary/20 text-primary shadow-glow-primary'
+                          : 'border-transparent text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)]'
                       }`}
                     >
                       {cat}
@@ -421,14 +421,14 @@ const Home = () => {
       <AnimatePresence>
         {isVehicleSelectorOpen && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setIsVehicleSelectorOpen(false)}
           >
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white/90 backdrop-blur-2xl rounded-[2rem] p-6 w-full max-w-sm shadow-elevated border border-white/50"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
@@ -446,10 +446,10 @@ const Home = () => {
                       setSelectedVehicle(v);
                       setIsVehicleSelectorOpen(false);
                     }}
-                    className={`w-full h-auto text-left px-5 py-4 rounded-2xl flex items-center justify-between font-normal transition-all duration-200 ${
+                    className={`w-full h-auto text-left px-4 py-3 rounded-xl flex items-center justify-between font-normal ${
                       selectedVehicle?.id === v.id 
-                        ? 'bg-primary/10 text-primary border-primary/30 border shadow-inner-glow' 
-                        : 'bg-gray-50/50 hover:bg-gray-100 border-transparent text-foreground hover:shadow-sm'
+                        ? 'bg-primary/10 text-primary border-primary/20 border' 
+                        : 'bg-secondary/50 hover:bg-secondary border-transparent text-foreground'
                     }`}
                   >
                     <div className="text-left">

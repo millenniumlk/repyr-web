@@ -72,11 +72,10 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row font-sans relative">
       {/* Fixed Background Gradient (Mimics AppBackgroundGradient) */}
-      <div className="fixed inset-0 bg-background pointer-events-none -z-20" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none -z-10" />
+      <div className="fixed inset-0 bg-gradient-to-b from-background to-primary/15 pointer-events-none -z-10" />
 
       {/* Sidebar - Desktop */}
-      <aside className={`hidden md:flex flex-col bg-white/70 backdrop-blur-2xl border-r border-white/40 shadow-soft h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`hidden md:flex flex-col bg-white border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isSidebarCollapsed && (
             <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
@@ -114,13 +113,13 @@ const MainLayout = () => {
                     window.location.href = '/';
                   }
                 }}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive 
-                    ? 'bg-primary text-white shadow-button-primary font-bold hover:-translate-y-0.5' 
-                    : 'text-gray-600 font-medium hover:bg-white/80 hover:shadow-sm hover:text-gray-900 hover:-translate-y-0.5'
+                    ? 'bg-primary/10 text-primary font-bold' 
+                    : 'text-black font-medium hover:bg-secondary'
                 }`}
               >
-                <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'opacity-70'}`} />
+                <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'opacity-70'}`} />
                 {!isSidebarCollapsed && <span>{item.name}</span>}
               </Link>
             );
