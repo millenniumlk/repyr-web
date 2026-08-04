@@ -52,7 +52,7 @@ const Garage = () => {
         <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight mb-6">Your Garage</h1>
       </div>
 
-      <div className="mt-4 px-1 space-y-4 flex-1 flex flex-col">
+      <div className="mt-4 px-1 flex-1 flex flex-col">
         {vehicles.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-5 shadow-sm border border-primary/20">
@@ -61,72 +61,86 @@ const Garage = () => {
             <h2 className="text-xl font-bold text-foreground tracking-tight mb-2">
               Your Garage is Empty
             </h2>
-            <p className="text-muted-foreground text-[15px] leading-relaxed max-w-[260px]">
+            <p className="text-muted-foreground text-[15px] leading-relaxed max-w-[260px] mb-8">
               Add a vehicle to manage its profile and get AI-powered diagnostics.
             </p>
+            <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
+              <Link 
+                to="/garage/add"
+                className="flex items-center justify-center px-6 py-3.5 hover:bg-primary/90 transition-colors group"
+              >
+                <div className="mr-2 text-white">
+                  <Plus className="w-5 h-5" strokeWidth={2.2} />
+                </div>
+                <span className="text-[15px] tracking-tight font-medium text-white">
+                  Add Vehicle
+                </span>
+              </Link>
+            </div>
           </div>
         ) : (
-          <AnimatePresence>
-            {vehicles.map((vehicle, index) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, height: 0, marginBottom: 0 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 0.98 }}
-                key={vehicle.id} 
-                className="bg-white border border-gray-100/80 rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
-              >
-                <div className="w-[46px] h-[46px] rounded-full bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
-                  <Car className="w-5 h-5 text-primary" strokeWidth={2.2} />
-                </div>
-
-                <div className="flex-1 min-w-0 py-0.5">
-                  <div className="text-black font-medium text-[16px] leading-snug truncate mb-0.5">
-                    {vehicle.year} {vehicle.make} {vehicle.model}
-                  </div>
-                  {vehicle.mileage ? (
-                    <div className="text-gray-500 font-medium text-[13px] truncate">
-                      {Number(vehicle.mileage).toLocaleString()} km
+          <div className="flex-1 flex flex-col">
+            <div className="space-y-4">
+              <AnimatePresence>
+                {vehicles.map((vehicle, index) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, height: 0, marginBottom: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ scale: 0.98 }}
+                    key={vehicle.id} 
+                    className="bg-white border border-gray-100/80 rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
+                  >
+                    <div className="w-[46px] h-[46px] rounded-full bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
+                      <Car className="w-5 h-5 text-primary" strokeWidth={2.2} />
                     </div>
-                  ) : null}
-                </div>
-                
-                <Button 
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteVehicle(vehicle.id, vehicle.make, vehicle.model);
-                  }}
-                  className="h-11 w-11 rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 group shrink-0"
-                  title="Remove Vehicle"
-                >
-                  <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2} />
-                </Button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        )}
-      </div>
-      
 
-      <div className="mt-auto pt-6 px-1 w-full">
-        <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
-          <Link 
-            to="/garage/add"
-            className="w-full flex items-center justify-center px-5 py-4 hover:bg-primary/90 transition-colors group"
-          >
-            <div className="flex items-center justify-center">
-              <div className="mr-3 text-white">
-                <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
-              </div>
-              <span className="text-[16px] tracking-tight font-medium text-white">
-                Add Vehicle
-              </span>
+                    <div className="flex-1 min-w-0 py-0.5">
+                      <div className="text-black font-medium text-[16px] leading-snug truncate mb-0.5">
+                        {vehicle.year} {vehicle.make} {vehicle.model}
+                      </div>
+                      {vehicle.mileage ? (
+                        <div className="text-gray-500 font-medium text-[13px] truncate">
+                          {Number(vehicle.mileage).toLocaleString()} km
+                        </div>
+                      ) : null}
+                    </div>
+                    
+                    <Button 
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteVehicle(vehicle.id, vehicle.make, vehicle.model);
+                      }}
+                      className="h-11 w-11 rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 group shrink-0"
+                      title="Remove Vehicle"
+                    >
+                      <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2} />
+                    </Button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-          </Link>
-        </div>
+            
+            <div className="mt-auto pt-6 w-full">
+              <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
+                <Link 
+                  to="/garage/add"
+                  className="w-full flex items-center justify-center px-5 py-4 hover:bg-primary/90 transition-colors group"
+                >
+                  <div className="mr-3 text-white">
+                    <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[16px] tracking-tight font-medium text-white">
+                    Add Vehicle
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
     </div>
