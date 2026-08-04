@@ -14,7 +14,6 @@ const DiagnosticChat = ({
   displayMessages,
   isTyping,
   isDiagnosisComplete,
-  hasAskedFollowUp,
 }: any) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
