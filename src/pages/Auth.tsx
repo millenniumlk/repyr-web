@@ -37,21 +37,26 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isSignUpParam = searchParams.get('signup') === 'true';
+  const fromGuestChatParam = searchParams.get('fromGuestChat') === 'true';
   
   // Clear stale pending guest chat if we navigated here directly (not from the guest chat intercept overlay)
   useEffect(() => {
-    if (!location.state?.fromGuestChat) {
+    if (!location.state?.fromGuestChat && !fromGuestChatParam) {
       localStorage.removeItem('pending_guest_chat');
     }
-  }, [location]);
+  }, [location, fromGuestChatParam]);
   
-  const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp || false);
+  const [isSignUp, setIsSignUp] = useState(location.state?.isSignUp || isSignUpParam || false);
 
   useEffect(() => {
     if (location.state?.isSignUp !== undefined) {
       setIsSignUp(location.state.isSignUp);
+    } else if (isSignUpParam) {
+      setIsSignUp(true);
     }
-  }, [location.state?.isSignUp]);
+  }, [location.state?.isSignUp, isSignUpParam]);
 
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'new_password'>('email');

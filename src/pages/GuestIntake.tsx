@@ -17,6 +17,9 @@ const GuestIntake = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (step === 0) {
+      localStorage.removeItem('pending_guest_chat');
+    }
     if (inputRef.current) {
       inputRef.current.focus();
     }

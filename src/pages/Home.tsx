@@ -80,74 +80,86 @@ const Home = () => {
   });
 
   useEffect(() => {
-    let tempVehicles: any[] = [];
-    
-    if (user) {
-      if (isQueryLoading) return; // Wait until react-query completes
-      
-      let finalData = [...dbVehicles];
-      
-      // Save pending guest chat vehicle to the database
-      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-      if (pendingChatRaw) {
-        try {
-          const pendingChat = JSON.parse(pendingChatRaw);
-          if (pendingChat.vehicle) {
-            const gv = pendingChat.vehicle;
-            const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
-            
-            if (!alreadyExists) {
-              supabase.from('vehicles').insert({
-                user_id: user.id,
-                make: gv.make,
-                model: gv.model,
-                year: gv.year,
-                transmission: gv.transmission || '',
-                engine: gv.engine || '',
-                drivetrain: gv.drivetrain || '',
-                fuel_type: gv.fuel_type || '',
-                location: gv.location || ''
-              }).select().single().then(({ data: newVehicle }) => {
+    let isMounted = true;
+
+    const loadVehicles = async () => {
+      if (user) {
+        if (isQueryLoading) return; // Wait until react-query completes
+        
+        let finalData = [...dbVehicles];
+        
+        // Save pending guest chat vehicle to the database
+        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+        if (pendingChatRaw) {
+          try {
+            const pendingChat = JSON.parse(pendingChatRaw);
+            if (pendingChat.vehicle) {
+              const gv = pendingChat.vehicle;
+              const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
+              
+              if (!alreadyExists) {
+                const { data: newVehicle } = await supabase.from('vehicles').insert({
+                  user_id: user.id,
+                  make: gv.make,
+                  model: gv.model,
+                  year: gv.year,
+                  transmission: gv.transmission || '',
+                  engine: gv.engine || '',
+                  drivetrain: gv.drivetrain || '',
+                  fuel_type: gv.fuel_type || '',
+                  location: gv.location || ''
+                }).select().single();
+                
                 if (newVehicle) {
+                  finalData = [newVehicle, ...finalData];
                   queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
                 }
-              });
+              } else {
+                finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
+              }
               
-              finalData = [{ ...gv, id: 'temp-id' }, ...finalData];
+              delete pendingChat.vehicle;
+              if (Object.keys(pendingChat).length === 0) {
+                localStorage.removeItem('pending_guest_chat');
+              } else {
+                localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+              }
             }
-            
-            delete pendingChat.vehicle;
-            if (Object.keys(pendingChat).length === 0) {
-              localStorage.removeItem('pending_guest_chat');
-            } else {
-              localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+          } catch (e) {}
+        }
+        
+        if (isMounted) {
+          setVehicles(finalData);
+          setIsLoading(false);
+        }
+      } else {
+        let tempVehicles: any[] = [];
+        if (guestVehicle) {
+          tempVehicles = [guestVehicle];
+        }
+        
+        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+        if (pendingChatRaw) {
+          try {
+            const pendingChat = JSON.parse(pendingChatRaw);
+            if (pendingChat.vehicle) {
+              const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
+              if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
+                tempVehicles = [vehicle, ...tempVehicles];
+              }
             }
-          }
-        } catch (e) {}
+          } catch (e) {}
+        }
+        if (isMounted) {
+          setVehicles(tempVehicles);
+          setIsLoading(false);
+        }
       }
-      
-      tempVehicles = finalData;
-    } else {
-      if (guestVehicle) {
-        tempVehicles = [guestVehicle];
-      }
-      
-      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-      if (pendingChatRaw) {
-        try {
-          const pendingChat = JSON.parse(pendingChatRaw);
-          if (pendingChat.vehicle) {
-            const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
-            if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
-              tempVehicles = [vehicle, ...tempVehicles];
-            }
-          }
-        } catch (e) {}
-      }
-    }
+    };
 
-    setVehicles(tempVehicles);
-    setIsLoading(false);
+    loadVehicles();
+
+    return () => { isMounted = false; };
   }, [user, guestVehicle, dbVehicles, isQueryLoading, queryClient]);
 
   // Set selected vehicle once loaded
@@ -159,7 +171,7 @@ const Home = () => {
 
   // Pre-fill symptoms if there was a pending chat
   useEffect(() => {
-    if (!isLoading && selectedVehicle && !isChatActive) {
+    if (user && !isLoading && selectedVehicle && !isChatActive) {
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
         try {
@@ -173,7 +185,7 @@ const Home = () => {
         } catch (e) {}
       }
     }
-  }, [isLoading, selectedVehicle, isChatActive]);
+  }, [isLoading, selectedVehicle, isChatActive, user]);
 
   // Hide global mobile header on scroll down when chat is active
   useEffect(() => {
@@ -230,14 +242,9 @@ const Home = () => {
     if (!isChatActive) {
       if (!inputValue.trim() && !category) return;
       
-      // If the user is a guest, intercept the chat and force auth
+      // If the user is a guest, intercept the chat and show the signup overlay
       if (!user) {
-        const pendingChat = {
-          vehicle: selectedVehicle,
-          symptoms: inputValue.trim() || category
-        };
-        localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-        navigate('/auth', { state: { fromGuestChat: true, isSignUp: true } });
+        setGuestRedirectMessage(true);
         return;
       }
       
@@ -424,7 +431,10 @@ const Home = () => {
       {/* Vehicle Selector Modal */}
       <AnimatePresence>
         {isVehicleSelectorOpen && (
-          <div 
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setIsVehicleSelectorOpen(false)}
           >
@@ -481,14 +491,19 @@ const Home = () => {
                 Add New Vehicle
               </Button>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Guest Redirect Overlay */}
       <AnimatePresence>
         {guestRedirectMessage && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md px-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md px-4"
+          >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -506,7 +521,8 @@ const Home = () => {
                     symptoms: inputValue.trim() || category
                   };
                   localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-                  navigate('/auth', { state: { fromGuestChat: true, isSignUp: true } });
+                  setGuestRedirectMessage(false);
+                  window.location.href = '/auth?signup=true&fromGuestChat=true';
                 }}
                 className="w-full"
               >
@@ -520,7 +536,7 @@ const Home = () => {
                 Cancel
               </Button>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
