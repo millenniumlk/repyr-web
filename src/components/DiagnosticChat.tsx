@@ -111,14 +111,29 @@ const DiagnosticChat = ({
       {/* Typing Indicator */}
       {isTyping && (
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-start mt-4"
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="flex justify-start mt-1.5"
         >
-          <div className="bg-white rounded-2xl rounded-bl-sm border border-gray-100 px-3 py-2 shadow-sm flex items-center space-x-1">
-            <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-1.5 h-1.5 bg-primary/80 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div className="bg-white border border-gray-50 shadow-soft-card rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center space-x-1.5">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  y: [0, -6, 0],
+                  opacity: [0.4, 1, 0.4],
+                }}
+                transition={{
+                  duration: 0.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.15,
+                }}
+                className="w-2 h-2 bg-primary rounded-full"
+              />
+            ))}
           </div>
         </motion.div>
       )}
