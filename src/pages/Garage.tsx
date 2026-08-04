@@ -1,4 +1,4 @@
-import { Trash2, Plus, Loader2, Car, ChevronRight } from 'lucide-react';
+import { Trash2, Plus, Loader2, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
