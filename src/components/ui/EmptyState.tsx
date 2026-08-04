@@ -1,5 +1,4 @@
 import type { LucideIcon } from 'lucide-react';
-import { Plus, ChevronRight } from 'lucide-react';
 import { cn } from './Skeleton';
 import { Button } from './Button';
 
@@ -34,19 +33,8 @@ export function EmptyState({
         </p>
       )}
       {actionLabel && onAction && (
-        <Button 
-          onClick={onAction}
-          className="w-full flex items-center justify-between px-5 py-4 h-auto rounded-2xl shadow-sm hover:bg-primary/90 transition-colors group"
-        >
-          <div className="flex items-center">
-            <div className="mr-4 text-white">
-              <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
-            </div>
-            <span className="text-[16px] tracking-tight font-medium text-white">
-              {actionLabel}
-            </span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-white/80" strokeWidth={2} />
+        <Button onClick={onAction}>
+          {actionLabel}
         </Button>
       )}
     </div>

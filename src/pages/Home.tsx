@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, X, CheckCircle, Plus, Zap, ClipboardList, Sparkles } from 'lucide-react';
+import { Loader2, X, CheckCircle, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
@@ -337,63 +337,11 @@ const Home = () => {
             className="flex-1 flex flex-col justify-center pb-32"
           >
             {vehicles.length === 0 ? (
-              <div className="flex flex-col items-center text-center max-w-sm mx-auto w-full px-6">
-                {/* Title */}
-                <h1 className="text-[28px] md:text-3xl font-normal text-primary tracking-tight leading-tight mb-2">
-                  Welcome to Repyr
-                </h1>
-                {/* Tagline */}
-                <p className="text-muted-foreground text-[15px] mb-10">
-                  Your AI-powered car companion
-                </p>
-
-                {/* Feature highlights */}
-                <div className="w-full flex flex-col gap-3 mb-10">
-                  <div className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-secondary/60">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Zap className="w-4 h-4 text-primary" strokeWidth={2} />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-primary">AI Diagnostics</p>
-                      <p className="text-xs text-muted-foreground">Instantly identify issues with your car</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-secondary/60">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <ClipboardList className="w-4 h-4 text-primary" strokeWidth={2} />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-primary">Maintenance Logs</p>
-                      <p className="text-xs text-muted-foreground">Track every service and repair in one place</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-secondary/60">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-4 h-4 text-primary" strokeWidth={2} />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-primary">Smart Recommendations</p>
-                      <p className="text-xs text-muted-foreground">Get personalised advice for your vehicle</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CTA button */}
-                <Button
-                  onClick={() => navigate('/garage/add')}
-                  className="w-full flex items-center justify-between px-5 py-4 h-auto rounded-2xl shadow-sm hover:bg-primary/90 transition-colors"
-                >
-                  <div className="flex items-center">
-                    <div className="mr-4 text-white">
-                      <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
-                    </div>
-                    <span className="text-[16px] tracking-tight font-medium text-white">
-                      Add vehicle to get started
-                    </span>
-                  </div>
-                  <Zap className="w-5 h-5 text-white/80" strokeWidth={2} />
-                </Button>
-              </div>
+              <EmptyState 
+                title="Welcome to Repyr"
+                actionLabel="Add vehicle to get started"
+                onAction={() => navigate('/garage/add')}
+              />
             ) : (
               <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
                 <div className="mb-6 w-full">
