@@ -1,6 +1,8 @@
 import type { LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from './Skeleton';
 import { Button } from './Button';
+import { Plus } from 'lucide-react';
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -20,23 +22,52 @@ export function EmptyState({
   className
 }: EmptyStateProps) {
   return (
-    <div className={cn("flex flex-col items-center text-center max-w-lg mx-auto w-full", className)}>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className={cn("flex flex-col items-center text-center max-w-md mx-auto w-full px-4 py-12", className)}
+    >
       {Icon && (
-        <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6">
-          <Icon className="w-10 h-10 text-muted-foreground" />
-        </div>
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 200 }}
+          className="mb-8"
+        >
+          <Icon className="w-16 h-16 text-muted-foreground/50" strokeWidth={1.5} />
+        </motion.div>
       )}
-      <h3 className="text-[28px] md:text-3xl font-normal text-primary tracking-tight leading-tight mb-8">{title}</h3>
+      <motion.h3 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="text-[28px] md:text-3xl font-bold text-foreground tracking-tight leading-tight mb-4"
+      >
+        {title}
+      </motion.h3>
       {description && (
-        <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed text-[15px]">
+        <motion.p 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className="text-muted-foreground max-w-sm mb-10 leading-relaxed text-[15px]"
+        >
           {description}
-        </p>
+        </motion.p>
       )}
       {actionLabel && onAction && (
-        <Button onClick={onAction}>
-          {actionLabel}
-        </Button>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+        >
+          <Button onClick={onAction} className="font-medium">
+            <Plus className="w-5 h-5 mr-2" />
+            {actionLabel}
+          </Button>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
