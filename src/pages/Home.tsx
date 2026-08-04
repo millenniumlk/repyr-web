@@ -303,10 +303,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (shouldAutoStart && inputValue) {
+    if (shouldAutoStart && (inputValue || category)) {
       handleStartOrReply();
     }
-  }, [shouldAutoStart, inputValue]);
+  }, [shouldAutoStart, inputValue, category]);
 
   const exitChat = useCallback(() => {
     setIsChatActive(false);

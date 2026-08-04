@@ -101,7 +101,10 @@ const ChatInputBar = ({
           <Button 
             variant="ghost"
             size="icon"
-            onClick={handleStartOrReply}
+            onClick={(e) => {
+              e.preventDefault();
+              handleStartOrReply();
+            }}
             disabled={!isButtonActive}
             className={`h-9 w-9 rounded-full shrink-0 ml-1 mr-0.5 transition-all ${
               isButtonActive ? 'bg-primary text-white hover:bg-primary/90 hover:text-white shadow-md shadow-primary/30 hover:scale-105 active:scale-95' : 'bg-[#F2F4F7] text-gray-400 hover:bg-[#F2F4F7] hover:text-gray-400'
