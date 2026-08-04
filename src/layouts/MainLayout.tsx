@@ -71,6 +71,9 @@ const MainLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row font-sans relative">
+      {/* Fixed Background Gradient (Mimics AppBackgroundGradient) */}
+      <div className="fixed inset-0 bg-gradient-to-b from-background to-primary/15 pointer-events-none -z-10" />
+
       {/* Sidebar - Desktop */}
       <aside className={`hidden md:flex flex-col bg-white border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
