@@ -206,7 +206,11 @@ const Home = () => {
             setInputValue(pendingChat.symptoms);
             setShouldAutoStart(true);
             delete pendingChat.symptoms;
-            localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+            if (Object.keys(pendingChat).length === 0) {
+              localStorage.removeItem('pending_guest_chat');
+            } else {
+              localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+            }
           }
         } catch (e) {}
       }

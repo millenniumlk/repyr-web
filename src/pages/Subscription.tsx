@@ -36,9 +36,16 @@ const Subscription = () => {
           let needsCompleteProfile = false;
           const pendingChatRaw = localStorage.getItem('pending_guest_chat');
           if (pendingChatRaw) {
-             needsCompleteProfile = true;
-          } else if (user) {
-             const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).limit(1);
+             try {
+                const pendingChat = JSON.parse(pendingChatRaw);
+                if (pendingChat.needsProfileComplete) {
+                   needsCompleteProfile = true;
+                }
+             } catch (e) {}
+          }
+          
+          if (!needsCompleteProfile && user) {
+             const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
              if (vData && vData.length > 0) {
                 const v = vData[0];
                 if (!v.transmission || !v.fuel_type || !v.location) {
