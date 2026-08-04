@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Car, Loader2, X, CheckCircle, Plus } from 'lucide-react';
+import { Loader2, X, CheckCircle, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
@@ -338,9 +338,7 @@ const Home = () => {
           >
             {vehicles.length === 0 ? (
               <EmptyState 
-                icon={Car}
                 title="Welcome to Repyr"
-                description="Add your first vehicle to start tracking diagnostics, maintenance logs, and get intelligent AI recommendations."
                 actionLabel="Add a Vehicle"
                 onAction={() => navigate('/garage/add')}
               />
