@@ -77,6 +77,11 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  const handleError = (err: any) => {
+    let msg = err?.message || (typeof err === 'string' ? err : 'An error occurred. Please try again.');
+    if (msg === '{}' || msg === '[object Object]') msg = 'An error occurred. Please try again.';
+    setError(msg);
+  };
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const maskEmail = (email: string) => {
@@ -142,7 +147,7 @@ const Auth = () => {
         navigate('/');
       }
     } catch (err: any) {
-      setError(err.message);
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -160,7 +165,7 @@ const Auth = () => {
       setForgotStep('otp');
       setSuccessMsg('OTP sent to your inbox.');
     } catch (err: any) {
-      setError(err.message);
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -178,7 +183,7 @@ const Auth = () => {
       setForgotStep('new_password');
       setSuccessMsg(null);
     } catch (err: any) {
-      setError(err.message);
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -198,7 +203,7 @@ const Auth = () => {
       setSuccessMsg('Password has been reset successfully. Please log in.');
       handleToggleState('login');
     } catch (err: any) {
-      setError(err.message);
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -218,7 +223,7 @@ const Auth = () => {
       });
       if (error) throw error;
     } catch (err: any) {
-      setError(err.message);
+      handleError(err);
     } finally {
       setLoading(false);
     }
