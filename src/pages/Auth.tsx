@@ -78,8 +78,14 @@ const Auth = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleError = (err: any) => {
-    let msg = err?.message || (typeof err === 'string' ? err : 'An error occurred. Please try again.');
-    if (msg === '{}' || msg === '[object Object]') msg = 'An error occurred. Please try again.';
+    console.error('Auth error:', err);
+    let msg = err?.message 
+      || err?.error_description 
+      || err?.error 
+      || (typeof err === 'string' ? err : '');
+    if (!msg || msg === '{}' || msg === '[object Object]') {
+      msg = 'An error occurred. Please try again.';
+    }
     setError(msg);
   };
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -141,8 +147,8 @@ const Auth = () => {
           navigate(isFromGuestChat.current ? '/complete-profile' : '/');
         } else {
           localStorage.removeItem('diagnostics_run_count');
-          setSuccessMsg('Account created successfully! Please check your email to verify your account.');
           handleToggleState('login');
+          setSuccessMsg('Account created successfully! Please check your email to verify your account.');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
