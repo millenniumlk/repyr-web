@@ -1,7 +1,7 @@
 import packageJson from '../../package.json';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, LogOut } from 'lucide-react';
+import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, LogOut, FileText } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -178,14 +178,19 @@ const Settings = () => {
 
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
-              Support
+              Legal & Support
             </h4>
             <div className="bg-muted rounded-[28px] overflow-hidden border border-border shadow-sm shadow-black/5">
-              {/* TODO: Implement Privacy & Security page */}
               <ActionRow 
                 icon={Shield} 
-                title="Privacy & Security" 
-                onClick={() => showToast('Coming soon', 'info')} 
+                title="Privacy Policy" 
+                onClick={() => navigate('/privacy')} 
+                isLast={false}
+              />
+              <ActionRow 
+                icon={FileText} 
+                title="Terms & Conditions" 
+                onClick={() => navigate('/terms')} 
                 isLast={false}
               />
               <ActionRow 

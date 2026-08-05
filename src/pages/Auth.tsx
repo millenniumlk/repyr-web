@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -439,7 +439,7 @@ const Auth = () => {
                     {acceptedTerms && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                   </button>
                   <p className="text-muted-foreground text-sm flex-1 font-medium">
-                    I agree to the <span className="text-primary font-semibold">Terms & Conditions</span> and <span className="text-primary font-semibold">Privacy Policy</span>
+                    I agree to the <Link to="/terms" target="_blank" className="text-primary font-semibold hover:underline">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" className="text-primary font-semibold hover:underline">Privacy Policy</Link>
                   </p>
                 </div>
               )}

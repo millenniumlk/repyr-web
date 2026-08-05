@@ -18,6 +18,8 @@ import Notifications from './pages/Notifications';
 import GuestIntake from './pages/GuestIntake';
 import Subscription from './pages/Subscription';
 import CompleteVehicleProfile from './pages/CompleteVehicleProfile';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, isGuest, isLoading } = useAuth();
@@ -53,6 +55,8 @@ const AppRoutes = () => {
         <Route path="settings/profile" element={<EditProfile />} />
         <Route path="settings/subscription" element={<Subscription />} />
         <Route path="complete-profile" element={<CompleteVehicleProfile />} />
+        <Route path="terms" element={<Terms />} />
+        <Route path="privacy" element={<Privacy />} />
       </Route>
     </Routes>
   );
