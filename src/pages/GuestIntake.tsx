@@ -65,9 +65,9 @@ const GuestIntake = () => {
   const currentStep = steps[step];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-transparent flex flex-col font-sans relative overflow-hidden">
       {/* Background styling */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10 pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10 pointer-events-none -z-50" />
       
       {/* Header */}
       <div className="p-8 relative z-10">
