@@ -52,9 +52,21 @@
     display: none; /* Chrome, Safari and Opera */
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: var(--color-background);
     font-family: 'Inter', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    @apply bg-app-gradient;
+    pointer-events: none;
   }
 }
 

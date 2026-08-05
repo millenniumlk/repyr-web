@@ -72,7 +72,7 @@ const MainLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row font-sans bg-app-gradient">
+    <div className="min-h-screen flex flex-col md:flex-row font-sans">
 
       {/* Sidebar - Desktop */}
       <aside className={`hidden md:flex flex-col bg-card border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
