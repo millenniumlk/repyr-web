@@ -8,7 +8,7 @@ import { Button } from '../components/ui/Button';
 
 
 /** Routes where the mobile header should be hidden (these pages have their own headers) */
-const MOBILE_HEADER_EXCLUDED_ROUTES = ['/settings/profile', '/settings/subscription', '/garage/add'];
+const MOBILE_HEADER_EXCLUDED_ROUTES = ['/settings/profile', '/settings/subscription', '/garage/add', '/complete-profile'];
 
 const MainLayout = () => {
   const location = useLocation();
