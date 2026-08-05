@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Check, X } from 'lucide-react';
 import googleLogo from '../assets/google.png';
+import authBg from '../assets/auth-bg.jpg';
 import { Button } from '../components/ui/Button';
 
 const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rightAccessory, className = "", ...props }, ref) => {
@@ -257,8 +258,11 @@ const Auth = () => {
         : !email || !password;
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-gray-50 md:bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80')] md:bg-cover md:bg-center flex flex-col md:items-center md:justify-center relative font-sans">
+    <div className="h-[100dvh] overflow-hidden bg-background flex flex-col md:items-center md:justify-center relative font-sans">
       
+      {/* Desktop Background Image */}
+      <div className="hidden md:block absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${authBg})` }} />
+
       {/* Desktop Overlay */}
       <div className="hidden md:block absolute inset-0 bg-black/50 backdrop-blur-sm z-0"></div>
       

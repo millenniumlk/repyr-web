@@ -70,12 +70,10 @@ const MainLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row font-sans relative">
-      {/* Fixed Background Gradient (Mimics AppBackgroundGradient) */}
-      <div className="fixed inset-0 bg-gradient-to-b from-background to-primary/15 pointer-events-none -z-10" />
+    <div className="min-h-screen flex flex-col md:flex-row font-sans bg-app-gradient">
 
       {/* Sidebar - Desktop */}
-      <aside className={`hidden md:flex flex-col bg-white border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`hidden md:flex flex-col bg-card border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isSidebarCollapsed && (
             <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
@@ -129,7 +127,7 @@ const MainLayout = () => {
         <div className="p-4 border-t border-border relative" ref={menuRef}>
           {/* Popover Menu */}
           {isProfileMenuOpen && !isGuest && (
-            <div className={`absolute bottom-full left-4 mb-2 bg-white rounded-xl shadow-lg border border-border overflow-hidden z-50 ${isSidebarCollapsed ? 'w-48 left-2' : 'right-4'}`}>
+            <div className={`absolute bottom-full left-4 mb-2 bg-card rounded-xl shadow-lg border border-border overflow-hidden z-50 ${isSidebarCollapsed ? 'w-48 left-2' : 'right-4'}`}>
               <Link 
                 to="/settings/profile"
                 onClick={() => setIsProfileMenuOpen(false)}
@@ -240,7 +238,7 @@ const MainLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 h-[100dvh] w-64 bg-white z-[101] shadow-2xl flex flex-col border-r border-border md:hidden"
+              className="fixed top-0 left-0 h-[100dvh] w-64 bg-card z-[101] shadow-2xl flex flex-col border-r border-border md:hidden"
             >
               <div className="p-4 h-16 flex items-center justify-between border-b border-border">
                 <Link 
@@ -337,7 +335,7 @@ const MainLayout = () => {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-[24px] p-6 max-w-sm w-full shadow-2xl relative overflow-hidden text-center"
+              className="bg-card rounded-[24px] p-6 max-w-sm w-full shadow-2xl relative overflow-hidden text-center"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
