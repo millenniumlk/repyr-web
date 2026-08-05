@@ -35,7 +35,9 @@ export function EmptyState({
           transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 200 }}
           className="mb-8"
         >
-          <Icon className="w-16 h-16 text-muted-foreground/50" strokeWidth={1.5} />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center shadow-sm border border-primary/20">
+            <Icon className="w-10 h-10 text-primary" />
+          </div>
         </motion.div>
       )}
       <motion.h3 
