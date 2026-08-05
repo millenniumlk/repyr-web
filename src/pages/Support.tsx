@@ -17,7 +17,7 @@ const Support = () => {
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight leading-tight">Help & Support</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">Help & Support</h1>
       </div>
 
       <motion.div 
