@@ -94,7 +94,7 @@ const ChatInputBar = ({
               }
             }}
             placeholder={isChatActive ? (isDiagnosisComplete && !hasAskedFollowUp ? "Ask a follow-up question..." : "Message Repyr...") : "Describe the issue..."}
-            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-muted-foreground text-sm sm:text-base ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
+            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-muted-foreground text-base ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
             rows={1}
             style={{ overflowY: 'auto' }}
           />
