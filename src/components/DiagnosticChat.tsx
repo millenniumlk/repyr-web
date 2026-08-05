@@ -96,7 +96,7 @@ const DiagnosticChat = ({
               >
                 <div className={`max-w-[85%] px-5 py-3.5 text-[15px] leading-snug font-medium ${
                   isAI 
-                    ? `bg-white text-gray-800 border border-gray-50 shadow-soft-card ${isLastInGroup ? 'rounded-[20px] rounded-bl-sm' : 'rounded-[20px]'}` 
+                    ? `bg-card text-foreground border border-border shadow-soft-card ${isLastInGroup ? 'rounded-[20px] rounded-bl-sm' : 'rounded-[20px]'}` 
                     : `bg-gradient-primary text-white shadow-button-primary ${isLastInGroup ? 'rounded-[20px] rounded-br-sm' : 'rounded-[20px]'}`
                 }`}>
                   {content}
@@ -116,7 +116,7 @@ const DiagnosticChat = ({
           transition={{ duration: 0.3 }}
           className="flex justify-start mt-1.5"
         >
-          <div className="bg-white border border-gray-50 shadow-soft-card rounded-[20px] rounded-bl-sm px-4 py-3 flex items-center space-x-1.5">
+          <div className="bg-card border border-border shadow-soft-card rounded-[20px] rounded-bl-sm px-4 py-3 flex items-center space-x-1.5">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
@@ -150,7 +150,7 @@ const DiagnosticChat = ({
           </div>
           
           {probabilities?.length > 0 && (
-            <div className="mb-4 bg-white rounded-xl p-3 border border-primary/10 shadow-sm">
+            <div className="mb-4 bg-card rounded-xl p-3 border border-primary/10 shadow-sm">
               <p className="text-xs font-medium text-primary mb-1">Most Likely</p>
               <h4 className="text-sm font-bold text-foreground leading-tight">{probabilities[0].cause}</h4>
               <p className="text-xs font-medium text-muted-foreground mt-0.5">{probabilities[0].confidence_score}% Match Confidence</p>
@@ -171,7 +171,7 @@ const DiagnosticChat = ({
                </p>
                <Button 
                  onClick={() => navigate('/settings/subscription')}
-                 className="w-full bg-white text-indigo-700 hover:bg-indigo-50 py-3 rounded-xl shadow-lg hover:text-indigo-800"
+                 className="w-full bg-card text-indigo-700 hover:bg-indigo-50 py-3 rounded-xl shadow-lg hover:text-indigo-800"
                >
                  Start 7-Day Free Trial
                </Button>

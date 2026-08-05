@@ -89,7 +89,7 @@ const History = () => {
   return (
     <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
       <div className="hidden md:block mb-6 px-1 mt-2">
-        <h1 className="text-3xl font-bold text-black tracking-tight leading-tight">Diagnostic Logs</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight leading-tight">Diagnostic Logs</h1>
       </div>
 
       {sessions.length > 0 && uniqueVehicles.length > 0 && (
@@ -138,7 +138,7 @@ const History = () => {
         <div className="space-y-6">
           {groupedSessions.filter(group => group.data.length > 0).map((group, groupIdx) => (
             <div key={groupIdx} className="px-1">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3 ml-2 mt-2">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3 ml-2 mt-2">
                 {group.title}
               </h4>
               <div className="space-y-4">
@@ -159,7 +159,7 @@ const History = () => {
                         whileHover={{ scale: 0.98 }}
                         whileTap={{ scale: 0.96 }}
                         key={session.id} 
-                        className="bg-white border border-gray-100/80 rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
+                        className="bg-card border border-border rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
                       >
                         <div className="w-[46px] h-[46px] rounded-full bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
                           {(() => {
@@ -170,16 +170,16 @@ const History = () => {
                         
                         <div className="flex-1 min-w-0 py-0.5">
                           <div className="flex items-center mb-1">
-                            <span className="text-gray-400 font-bold text-[11px] uppercase tracking-widest">{date}</span>
+                            <span className="text-muted-foreground font-bold text-[11px] uppercase tracking-widest">{date}</span>
                           </div>
                           
                           {probability && (
-                            <div className="text-gray-900 font-bold text-[15px] leading-snug truncate mb-0.5">
+                            <div className="text-foreground font-bold text-[15px] leading-snug truncate mb-0.5">
                               {probability.cause}
                             </div>
                           )}
                           
-                          <div className="text-gray-500 font-medium text-sm truncate">
+                          <div className="text-muted-foreground font-medium text-sm truncate">
                             {make} {model}
                           </div>
                         </div>

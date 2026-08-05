@@ -79,7 +79,7 @@ const MainLayout = () => {
         <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isSidebarCollapsed && (
             <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
-              <h1 className="text-2xl font-black text-black tracking-tighter hover:opacity-80 transition-opacity">Repyr</h1>
+              <h1 className="text-2xl font-black text-foreground tracking-tighter hover:opacity-80 transition-opacity">Repyr</h1>
             </Link>
           )}
           <Button 
@@ -116,7 +116,7 @@ const MainLayout = () => {
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive 
                     ? 'bg-primary/10 text-primary font-bold' 
-                    : 'text-black font-medium hover:bg-secondary'
+                    : 'text-foreground font-medium hover:bg-secondary'
                 }`}
               >
                 <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'opacity-70'}`} />
@@ -186,7 +186,7 @@ const MainLayout = () => {
       {!MOBILE_HEADER_EXCLUDED_ROUTES.some(route => location.pathname.includes(route)) && (
         <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/' ? 'sticky top-0 z-30' : ''}`}>
         <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
-          <h1 className={location.pathname === '/' ? "text-xl font-black text-black tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
+          <h1 className={location.pathname === '/' ? "text-xl font-black text-foreground tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
             {location.pathname === '/' ? 'Repyr.' 
              : location.pathname.startsWith('/garage') ? 'Garage'
              : location.pathname.startsWith('/history') ? 'Diagnostic Logs'
@@ -253,7 +253,7 @@ const MainLayout = () => {
                     }
                   }}
                 >
-                  <h1 className="text-xl font-black text-black tracking-tighter">Repyr.</h1>
+                  <h1 className="text-xl font-black text-foreground tracking-tighter">Repyr.</h1>
                 </Link>
                 <Button 
                   variant="ghost"
@@ -300,7 +300,7 @@ const MainLayout = () => {
                 })}
               </nav>
 
-              <div className="p-4 border-t border-border bg-gray-50/50">
+              <div className="p-4 border-t border-border bg-muted/50">
                 <div className="flex items-center gap-3 px-2 py-2 mb-2">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20 shrink-0">
                     {avatarUrl ? (
@@ -348,7 +348,7 @@ const MainLayout = () => {
                 })()}
               </div>
               <h3 className="text-xl font-bold mb-2 tracking-tight">Unlock {guestRestrictedFeature}</h3>
-              <p className="text-gray-500 mb-6 leading-relaxed text-[15px]">
+              <p className="text-muted-foreground mb-6 leading-relaxed text-[15px]">
                 Sign up for a free account to {guestRestrictedFeature === 'Garage' ? 'save multiple vehicles and manage your virtual garage.' : guestRestrictedFeature === 'Diagnostic Logs' ? 'automatically save your diagnosis history and never lose a report.' : 'unlock all premium features and customize your experience.'}
               </p>
               
@@ -365,7 +365,7 @@ const MainLayout = () => {
               <Button 
                 variant="ghost"
                 onClick={() => setGuestRestrictedFeature(null)}
-                className="w-full text-gray-400 hover:text-gray-600 font-normal"
+                className="w-full text-muted-foreground hover:text-muted-foreground font-normal"
               >
                 Not Now
               </Button>

@@ -20,7 +20,7 @@ const QuickSelect = ({ options, value, onChange }: { options: string[], value: s
         className={`h-auto px-3 py-2 rounded-xl text-sm transition-all duration-200 font-medium ${
           value === opt 
             ? 'bg-primary border-primary text-white shadow-md shadow-primary/20 scale-[0.98] hover:bg-primary/90 hover:text-white' 
-            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+            : 'bg-card border-border text-muted-foreground hover:bg-muted hover:border-gray-300'
         }`}
       >
         {opt}
@@ -36,10 +36,10 @@ const AnimatedInput = ({ icon: Icon, label, ...props }: any) => {
   return (
     <div className="mb-2 relative">
       <div 
-        className={`relative flex items-center bg-white rounded-xl transition-all duration-300 ${
+        className={`relative flex items-center bg-card rounded-xl transition-all duration-300 ${
           isFocused 
             ? 'border-primary ring-4 ring-primary/20 shadow-lg shadow-primary/10' 
-            : 'border-gray-200 border'
+            : 'border-border border'
         }`}
       >
         <div className="pl-4 pr-3 text-muted-foreground z-10">
@@ -52,7 +52,7 @@ const AnimatedInput = ({ icon: Icon, label, ...props }: any) => {
               className={`absolute left-0 transition-all duration-200 pointer-events-none ${
                 isFocused || hasValue 
                   ? 'text-[11px] -translate-y-2.5 font-bold text-primary tracking-wider uppercase' 
-                  : 'text-[15px] text-gray-400 translate-y-0'
+                  : 'text-[15px] text-muted-foreground translate-y-0'
               }`}
             >
               {label}
@@ -205,7 +205,7 @@ const CompleteVehicleProfile = () => {
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-black text-gray-900 tracking-tight mb-2"
+            className="text-2xl font-black text-foreground tracking-tight mb-2"
           >
             Complete Profile
           </motion.h1>
@@ -229,7 +229,7 @@ const CompleteVehicleProfile = () => {
             <div className="space-y-4">
               
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2 ml-1">Transmission Type</label>
+                <label className="block text-sm font-bold text-foreground mb-2 ml-1">Transmission Type</label>
                 <QuickSelect 
                   options={TRANSMISSION_TYPES}
                   value={transmission}
@@ -238,7 +238,7 @@ const CompleteVehicleProfile = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2 ml-1">Fuel Type</label>
+                <label className="block text-sm font-bold text-foreground mb-2 ml-1">Fuel Type</label>
                 <QuickSelect 
                   options={FUEL_TYPES}
                   value={fuelType}

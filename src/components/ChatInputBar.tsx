@@ -58,7 +58,7 @@ const ChatInputBar = ({
         )}
 
         {/* Input Field Area */}
-        <div className="bg-white border border-gray-50 shadow-[0_8px_30px_rgba(0,0,0,0.06)] rounded-[32px] p-1.5 flex items-center relative transition-all pointer-events-auto">
+        <div className="bg-card border border-border shadow-[0_8px_30px_rgba(0,0,0,0.06)] rounded-[32px] p-1.5 flex items-center relative transition-all pointer-events-auto">
           
           {/* Vehicle Selector (only shown when not in chat and empty input) */}
           <AnimatePresence>
@@ -73,9 +73,9 @@ const ChatInputBar = ({
                   variant="outline"
                   onClick={openGarage}
                   disabled={isGuest}
-                  className={`h-auto flex items-center px-2 sm:px-3 py-1.5 rounded-full whitespace-nowrap border ${isGuest ? 'bg-gray-100 border-gray-200 cursor-default hover:bg-gray-100' : 'bg-primary/5 border-primary/20 hover:bg-primary/10'}`}
+                  className={`h-auto flex items-center px-2 sm:px-3 py-1.5 rounded-full whitespace-nowrap border ${isGuest ? 'bg-muted border-border cursor-default hover:bg-muted' : 'bg-primary/5 border-primary/20 hover:bg-primary/10'}`}
                 >
-                  <span className={`text-xs font-medium mr-1 w-[75px] sm:w-[100px] text-left truncate ${isGuest ? 'text-gray-500' : 'text-primary'}`}>
+                  <span className={`text-xs font-medium mr-1 w-[75px] sm:w-[100px] text-left truncate ${isGuest ? 'text-muted-foreground' : 'text-primary'}`}>
                     {selectedVehicle.make} {selectedVehicle.model}
                   </span>
                   {!isGuest && <ChevronDown className="text-primary w-3.5 h-3.5 opacity-70" />}
@@ -94,7 +94,7 @@ const ChatInputBar = ({
               }
             }}
             placeholder={isChatActive ? (isDiagnosisComplete && !hasAskedFollowUp ? "Ask a follow-up question..." : "Message Repyr...") : "Describe the issue..."}
-            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-sm sm:text-base ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
+            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-muted-foreground text-sm sm:text-base ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
             rows={1}
             style={{ overflowY: 'auto' }}
           />

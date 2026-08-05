@@ -12,13 +12,13 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
   <Button 
     variant="ghost"
     onClick={onClick}
-    className={`w-full h-auto flex items-center justify-between pl-4 pr-4 py-0 rounded-none bg-transparent hover:bg-gray-50/50 group ${!isLast ? 'border-b border-gray-200/60' : ''}`}
+    className={`w-full h-auto flex items-center justify-between pl-4 pr-4 py-0 rounded-none bg-transparent hover:bg-muted/50 group ${!isLast ? 'border-b border-border/60' : ''}`}
   >
     <div className="flex items-center">
       <div className="mr-3 py-3.5">
         <Icon className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
       </div>
-      <span className={`text-base tracking-tight ${isAction ? 'text-primary font-bold' : 'font-medium text-gray-900'}`}>
+      <span className={`text-base tracking-tight ${isAction ? 'text-primary font-bold' : 'font-medium text-foreground'}`}>
         {title}
       </span>
     </div>
@@ -34,11 +34,11 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
         </span>
       )}
       {value === 'Trial' && (
-        <span className="bg-gray-100 text-gray-500 text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
+        <span className="bg-muted text-muted-foreground text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
           Trial
         </span>
       )}
-      <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-400 transition-colors" strokeWidth={2.2} />
+      <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-muted-foreground transition-colors" strokeWidth={2.2} />
     </div>
   </Button>
 );
@@ -115,7 +115,7 @@ const Settings = () => {
   return (
     <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
       <div className="hidden md:block mb-6 px-1 mt-2">
-        <h1 className="text-3xl font-bold text-black tracking-tight leading-tight">Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight leading-tight">Settings</h1>
       </div>
 
       <div className="max-w-xl mx-auto px-1 mt-8">
@@ -124,7 +124,7 @@ const Settings = () => {
           animate={{ opacity: 1, y: 0 }}
           className="items-center mb-8 flex flex-col"
         >
-          <div className="w-24 h-24 rounded-full bg-white border-2 border-gray-100 items-center justify-center flex overflow-hidden mb-4 shadow-sm shadow-gray-200/50">
+          <div className="w-24 h-24 rounded-full bg-card border-2 border-border items-center justify-center flex overflow-hidden mb-4 shadow-sm shadow-border/50">
             {displayAvatar ? (
               <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -135,16 +135,16 @@ const Settings = () => {
               </div>
             )}
           </div>
-          <h2 className="text-xl font-bold text-black mb-1 tracking-tight">{displayName}</h2>
-          <p className="text-sm text-gray-500 font-medium">{isGuest ? 'Not signed in' : user?.email}</p>
+          <h2 className="text-xl font-bold text-foreground mb-1 tracking-tight">{displayName}</h2>
+          <p className="text-sm text-muted-foreground font-medium">{isGuest ? 'Not signed in' : user?.email}</p>
         </motion.div>
 
         <motion.div className="space-y-7" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}>
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
               Account
             </h4>
-            <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100 shadow-sm shadow-black/5">
+            <div className="bg-muted rounded-[28px] overflow-hidden border border-border shadow-sm shadow-black/5">
               <ActionRow 
                 icon={User} 
                 title="Edit Profile" 
@@ -161,10 +161,10 @@ const Settings = () => {
           </motion.div>
 
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
               Subscription
             </h4>
-            <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100 shadow-sm shadow-black/5">
+            <div className="bg-muted rounded-[28px] overflow-hidden border border-border shadow-sm shadow-black/5">
               <ActionRow 
                 icon={subscriptionTier === 'Trial' ? Sparkles : CreditCard} 
                 title={subscriptionTier === 'Trial' ? "Upgrade to Repyr Pro" : "Manage Subscription"} 
@@ -177,10 +177,10 @@ const Settings = () => {
           </motion.div>
 
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
               Support
             </h4>
-            <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100 shadow-sm shadow-black/5">
+            <div className="bg-muted rounded-[28px] overflow-hidden border border-border shadow-sm shadow-black/5">
               {/* TODO: Implement Privacy & Security page */}
               <ActionRow 
                 icon={Shield} 
@@ -211,7 +211,7 @@ const Settings = () => {
       </div>
 
       <div className="text-center pb-8 mt-2">
-        <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400">
+        <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
           Repyr Diagnostics v{packageJson.version}
         </p>
       </div>

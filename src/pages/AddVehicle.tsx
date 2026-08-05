@@ -223,9 +223,9 @@ const AddVehicle = () => {
                 disabled={isSubmitting}
                 className="w-full bg-transparent border-b-2 border-border focus:border-primary text-3xl md:text-4xl text-foreground font-medium pb-4 outline-none transition-colors disabled:opacity-50 appearance-none cursor-pointer"
               >
-                <option value="" disabled className="text-lg text-gray-500">Select option...</option>
+                <option value="" disabled className="text-lg text-muted-foreground">Select option...</option>
                 {currentStep.options.map((opt: string) => (
-                  <option key={opt} value={opt} className="text-lg text-black">{opt}</option>
+                  <option key={opt} value={opt} className="text-lg text-foreground">{opt}</option>
                 ))}
               </select>
               {/* Custom dropdown arrow */}

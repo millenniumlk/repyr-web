@@ -189,14 +189,14 @@ const Subscription = () => {
   if (subscriptionTier === 'Pro' || subscriptionTier === 'Plus') {
     return (
       <div className="max-w-3xl mx-auto pb-16 px-4 md:px-6 relative min-h-[80vh] flex flex-col items-center justify-center pt-10">
-        <div className="w-full max-w-md bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.08)] text-center relative overflow-hidden">
+        <div className="w-full max-w-md bg-card border border-border rounded-[32px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.08)] text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-indigo-500" />
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Sparkles className="w-10 h-10 text-primary" strokeWidth={2} />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2 text-black">Active Subscription</h2>
-          <p className="text-gray-500 font-medium mb-8 text-[15px]">
-            You are currently on the <strong className="text-black">Repyr {subscriptionTier}</strong> plan.
+          <h2 className="text-2xl font-bold tracking-tight mb-2 text-foreground">Active Subscription</h2>
+          <p className="text-muted-foreground font-medium mb-8 text-[15px]">
+            You are currently on the <strong className="text-foreground">Repyr {subscriptionTier}</strong> plan.
           </p>
           
           <Button
@@ -210,14 +210,14 @@ const Subscription = () => {
             )}
           </Button>
           
-          <p className="text-sm text-gray-400 mt-6 font-medium leading-relaxed">
+          <p className="text-sm text-muted-foreground mt-6 font-medium leading-relaxed">
             Update payment methods, change your plan, or cancel via Paddle's secure portal.
           </p>
         </div>
         <Button 
           variant="ghost"
           onClick={() => navigate('/settings')}
-          className="mt-10 flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold hover:bg-transparent"
+          className="mt-10 flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold hover:bg-transparent"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Settings
@@ -234,11 +234,11 @@ const Subscription = () => {
           variant="secondary"
           size="icon"
           onClick={() => navigate('/settings')}
-          className="bg-gray-100 hover:bg-gray-200"
+          className="bg-muted hover:bg-gray-200"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-900" />
+          <ChevronLeft className="w-6 h-6 text-foreground" />
         </Button>
-        <h1 className="text-xl md:text-2xl font-bold text-black tracking-tight leading-tight">Subscription</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">Subscription</h1>
       </div>
 
       <div className="text-center mb-10">
@@ -266,18 +266,18 @@ const Subscription = () => {
         transition={{ delay: 0.2 }}
         className="flex justify-center mb-8 md:mb-12"
       >
-        <div className="bg-gray-100 p-1.5 rounded-full flex items-center shadow-inner relative">
+        <div className="bg-muted p-1.5 rounded-full flex items-center shadow-inner relative">
           <Button
             variant="ghost"
             onClick={() => setBillingCycle('monthly')}
             className={`h-auto px-4 md:px-6 py-2 md:py-2.5 hover:bg-transparent rounded-full text-xs md:text-sm transition-all relative z-10 ${
-              billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'
+              billingCycle === 'monthly' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {billingCycle === 'monthly' && (
               <motion.div 
                 layoutId="active-pill"
-                className="absolute inset-0 bg-white rounded-full shadow-sm -z-10"
+                className="absolute inset-0 bg-card rounded-full shadow-sm -z-10"
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
               />
             )}
@@ -287,13 +287,13 @@ const Subscription = () => {
             variant="ghost"
             onClick={() => setBillingCycle('yearly')}
             className={`h-auto px-4 md:px-6 py-2 md:py-2.5 hover:bg-transparent rounded-full text-xs md:text-sm flex items-center gap-1.5 md:gap-2 relative z-10 ${
-              billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'
+              billingCycle === 'yearly' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {billingCycle === 'yearly' && (
               <motion.div 
                 layoutId="active-pill"
-                className="absolute inset-0 bg-white rounded-full shadow-sm -z-10"
+                className="absolute inset-0 bg-card rounded-full shadow-sm -z-10"
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
               />
             )}
@@ -316,7 +316,7 @@ const Subscription = () => {
             className={`relative rounded-3xl md:rounded-[32px] p-6 md:p-8 flex flex-col transition-all duration-300 ${
               plan.popular 
                 ? 'bg-gradient-to-br from-gray-900 to-black text-white shadow-2xl scale-[1.02]' 
-                : 'bg-white border border-gray-200 text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)]'
+                : 'bg-card border border-border text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)]'
             }`}
           >
             {plan.popular && (
@@ -336,7 +336,7 @@ const Subscription = () => {
               </div>
               <div>
                 <h3 className="text-lg md:text-xl font-bold tracking-tight">{plan.name}</h3>
-                <p className={`text-sm font-medium ${plan.popular ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className="text-sm font-medium text-muted-foreground">
                   {plan.description}
                 </p>
               </div>
@@ -346,7 +346,7 @@ const Subscription = () => {
               <span className="text-3xl md:text-4xl font-bold tracking-tight">
                 ${billingCycle === 'monthly' ? plan.priceMonthly : plan.priceYearly}
               </span>
-              <span className={`ml-2 text-sm font-medium ${plan.popular ? 'text-gray-400' : 'text-gray-500'}`}>
+              <span className="ml-2 text-sm font-medium text-muted-foreground">
                 / {billingCycle === 'monthly' ? 'month' : 'year'}
               </span>
             </div>
@@ -360,7 +360,7 @@ const Subscription = () => {
                     <Check className={`w-3 h-3 ${plan.popular ? 'text-primary' : 'text-primary'}`} strokeWidth={3} />
                   </div>
                   <span className={`text-[15px] font-medium leading-snug ${
-                    plan.popular ? 'text-gray-300' : 'text-gray-600'
+                    plan.popular ? 'text-gray-300' : 'text-muted-foreground'
                   }`}>
                     {feature}
                   </span>
@@ -375,7 +375,7 @@ const Subscription = () => {
               className={`w-full py-4 rounded-full ${
                 plan.popular
                   ? 'bg-primary text-white hover:bg-primary-dark shadow-[0_4px_20px_rgba(0,98,255,0.4)]'
-                  : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-muted text-foreground hover:bg-gray-200'
               }`}
             >
               {plan.buttonText}

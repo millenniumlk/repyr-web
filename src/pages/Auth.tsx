@@ -12,8 +12,8 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <div className={`mb-3 relative transition-all duration-200 rounded-2xl border-[1.5px] bg-white flex items-center px-4 h-12
-      ${isFocused ? 'border-primary shadow-[0_4px_12px_rgba(0,98,255,0.08)]' : 'border-gray-200'}
+    <div className={`mb-3 relative transition-all duration-200 rounded-2xl border-[1.5px] bg-card flex items-center px-4 h-12
+      ${isFocused ? 'border-primary shadow-[0_4px_12px_rgba(0,98,255,0.08)]' : 'border-border'}
       ${className}
     `}>
       <Icon className={`w-5 h-5 mr-3 transition-colors duration-200 ${isFocused ? 'text-primary' : 'text-primary'}`} />
@@ -27,7 +27,7 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
           setIsFocused(false);
           props.onBlur?.(e);
         }}
-        className="flex-1 bg-transparent border-none outline-none text-gray-900 font-medium placeholder:text-gray-400 w-full h-full"
+        className="flex-1 bg-transparent border-none outline-none text-foreground font-medium placeholder:text-muted-foreground w-full h-full"
         {...props}
       />
       {rightAccessory && <div className="ml-2">{rightAccessory()}</div>}
@@ -291,7 +291,7 @@ const Auth = () => {
         </Button>
       </div>
 
-      <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-white md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar max-h-[100dvh] md:max-h-[90dvh]">
+      <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-card md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar max-h-[100dvh] md:max-h-[90dvh]">
         <AnimatePresence mode="wait">
           <motion.div 
             key={isForgotPassword ? `forgot-${forgotStep}` : isSignUp ? 'signup' : 'login'}
@@ -302,13 +302,13 @@ const Auth = () => {
           >
             
             <div className="mb-6 text-center">
-              <h1 className="text-3xl font-black text-black tracking-tighter leading-tight mb-2">
+              <h1 className="text-3xl font-black text-foreground tracking-tighter leading-tight mb-2">
                 {isForgotPassword 
                   ? (forgotStep === 'otp' ? "Check your inbox" : forgotStep === 'new_password' ? "New Password" : "Reset Password") 
                   : isSignUp ? "Create Account" : "Welcome back"}
               </h1>
               {isForgotPassword && (
-                <p className="text-sm font-medium text-gray-500 tracking-wide px-4 mt-1">
+                <p className="text-sm font-medium text-muted-foreground tracking-wide px-4 mt-1">
                   {forgotStep === 'otp' 
                       ? `We sent a secure 6-digit code to ${maskEmail(email)}.`
                       : forgotStep === 'new_password'
@@ -366,7 +366,7 @@ const Auth = () => {
                         maxLength={6}
                         autoFocus={index === 0}
                         className={`w-full aspect-[4/5] rounded-xl text-center text-xl font-bold border-2 transition-all outline-none ${
-                          isActive ? 'border-primary bg-white shadow-sm text-primary' : 'border-gray-200 bg-gray-50 text-gray-900'
+                          isActive ? 'border-primary bg-card shadow-sm text-primary' : 'border-border bg-muted text-foreground'
                         }`}
                       />
                     );
@@ -433,12 +433,12 @@ const Auth = () => {
                     type="button"
                     onClick={() => setAcceptedTerms(!acceptedTerms)}
                     className={`mr-3 w-5 h-5 rounded flex items-center justify-center border transition-colors ${
-                      acceptedTerms ? 'bg-primary border-primary' : 'bg-white border-gray-300'
+                      acceptedTerms ? 'bg-primary border-primary' : 'bg-card border-gray-300'
                     }`}
                   >
                     {acceptedTerms && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                   </button>
-                  <p className="text-gray-600 text-sm flex-1 font-medium">
+                  <p className="text-muted-foreground text-sm flex-1 font-medium">
                     I agree to the <span className="text-primary font-semibold">Terms & Conditions</span> and <span className="text-primary font-semibold">Privacy Policy</span>
                   </p>
                 </div>
@@ -462,7 +462,7 @@ const Auth = () => {
               <>
                 <div className="flex items-center my-6">
                   <div className="flex-1 h-[1px] bg-gray-200" />
-                  <span className="mx-4 text-gray-400 text-[11px] font-bold uppercase tracking-widest">OR</span>
+                  <span className="mx-4 text-muted-foreground text-[11px] font-bold uppercase tracking-widest">OR</span>
                   <div className="flex-1 h-[1px] bg-gray-200" />
                 </div>
 
@@ -477,7 +477,7 @@ const Auth = () => {
                 </Button>
 
                 <div className="flex justify-center items-center mt-4">
-                  <span className="text-gray-900 font-medium text-[15px]">
+                  <span className="text-foreground font-medium text-[15px]">
                     {isSignUp ? "Already have an account? " : "Don't have an account? "}
                   </span>
                   <Button 

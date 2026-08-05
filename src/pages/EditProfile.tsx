@@ -12,22 +12,22 @@ const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandab
     variant="ghost"
     onClick={onClick}
     disabled={disabled}
-    className={`w-full h-auto flex items-center justify-between px-5 py-4 rounded-none hover:bg-gray-50/50 group ${!isLast ? 'border-b border-gray-100' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    className={`w-full h-auto flex items-center justify-between px-5 py-4 rounded-none hover:bg-muted/50 group ${!isLast ? 'border-b border-border' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
   >
     <div className="flex items-center">
       <div className="mr-4">
         <Icon className={`w-[22px] h-[22px] ${isDestructive ? 'text-red-500' : 'text-primary'} ${isSpinning ? 'animate-spin' : ''}`} strokeWidth={2.2} />
       </div>
-      <span className={`text-base tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-gray-900'}`}>
+      <span className={`text-base tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-foreground'}`}>
         {title}
       </span>
     </div>
     {expandable && (
       <div>
         {expanded ? (
-          <ChevronDown className="w-5 h-5 text-gray-400" strokeWidth={2} />
+          <ChevronDown className="w-5 h-5 text-muted-foreground" strokeWidth={2} />
         ) : (
-          <ChevronRight className="w-5 h-5 text-gray-400" strokeWidth={2} />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" strokeWidth={2} />
         )}
       </div>
     )}
@@ -220,11 +220,11 @@ const EditProfile = () => {
             variant="secondary"
             size="icon"
             onClick={() => navigate('/settings')}
-            className="bg-gray-100 hover:bg-gray-200"
+            className="bg-muted hover:bg-gray-200"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-900" />
+            <ChevronLeft className="w-6 h-6 text-foreground" />
           </Button>
-          <h1 className="text-xl md:text-2xl font-bold text-black tracking-tight leading-tight">Edit Profile</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">Edit Profile</h1>
         </div>
         {hasChanges && (
           <Button
@@ -253,7 +253,7 @@ const EditProfile = () => {
           className="items-center mb-12 flex flex-col"
         >
           <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-            <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-gray-50' : 'bg-blue-50 border-blue-100'}`}>
+            <div className={`w-28 h-28 rounded-full border-[4px] border-white items-center justify-center overflow-hidden shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex ${avatarUrl ? 'bg-muted' : 'bg-blue-50 border-blue-100'}`}>
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
@@ -293,22 +293,22 @@ const EditProfile = () => {
 
         {/* Group 1: Personal Details */}
         <div className="mb-7">
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
             Personal Details
           </h4>
-          <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
+          <div className="bg-muted rounded-[28px] overflow-hidden border border-border">
             {/* Full Name Row */}
-            <div className={`px-5 py-2 border-b border-gray-100 flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
+            <div className={`px-5 py-2 border-b border-border flex items-center ${(!isValidName && fullName.length > 0) ? 'bg-red-50' : 'bg-transparent'}`}>
               <div className="mr-4">
                 <User className={`w-[22px] h-[22px] ${(!isValidName && fullName.length > 0) ? "text-red-500" : "text-primary"}`} strokeWidth={2.2} />
               </div>
               <div className="flex-1 py-1">
-                <label className={`block text-xs font-bold mb-1 uppercase tracking-wider ${(!isValidName && fullName.length > 0) ? 'text-red-500' : 'text-gray-400'}`}>Full Name</label>
+                <label className={`block text-xs font-bold mb-1 uppercase tracking-wider ${(!isValidName && fullName.length > 0) ? 'text-red-500' : 'text-muted-foreground'}`}>Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-0.5 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-foreground text-base font-medium py-0.5 outline-none placeholder:text-muted-foreground"
                   placeholder="Enter your full name"
                 />
                 {(!isValidName && fullName.length > 0) && (
@@ -323,8 +323,8 @@ const EditProfile = () => {
                 <Mail className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
               </div>
               <div className="flex-1 py-1">
-                <label className="block text-xs font-bold mb-1 text-gray-400 uppercase tracking-wider">Email Address</label>
-                <p className="text-gray-900 text-base font-medium py-0.5">{user?.email}</p>
+                <label className="block text-xs font-bold mb-1 text-muted-foreground uppercase tracking-wider">Email Address</label>
+                <p className="text-foreground text-base font-medium py-0.5">{user?.email}</p>
               </div>
             </div>
           </div>
@@ -332,11 +332,11 @@ const EditProfile = () => {
 
         {/* Group 2: Password Security */}
         <div className="mb-7">
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-3 ml-3">
             Security
           </h4>
           {!showPasswordEdit ? (
-            <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
+            <div className="bg-muted rounded-[28px] overflow-hidden border border-border">
             <ActionRow 
               icon={Lock} 
               title="Change Password" 
@@ -347,11 +347,11 @@ const EditProfile = () => {
             />
           </div>
           ) : (
-            <div className="bg-gray-50 border border-gray-100 rounded-[28px] overflow-hidden animate-in slide-in-from-top-2 duration-300">
-              <div className="flex justify-between items-center px-5 pt-4 pb-3 border-b border-gray-100">
+            <div className="bg-muted border border-border rounded-[28px] overflow-hidden animate-in slide-in-from-top-2 duration-300">
+              <div className="flex justify-between items-center px-5 pt-4 pb-3 border-b border-border">
                 <div className="flex items-center">
                   <Shield className="w-5 h-5 text-primary mr-2.5" strokeWidth={2.2} />
-                  <span className="text-gray-900 font-bold text-[15px]">Update Password</span>
+                  <span className="text-foreground font-bold text-[15px]">Update Password</span>
                 </div>
                 <Button 
                   variant="ghost"
@@ -359,16 +359,16 @@ const EditProfile = () => {
                   onClick={() => setShowPasswordEdit(false)}
                   className="h-8 w-8 rounded-full bg-gray-200/80 hover:bg-gray-300"
                 >
-                  <X className="w-4 h-4 text-gray-600" strokeWidth={3} />
+                  <X className="w-4 h-4 text-muted-foreground" strokeWidth={3} />
                 </Button>
               </div>
 
-              <div className="px-5 py-4 border-b border-gray-100 bg-white/50">
+              <div className="px-5 py-4 border-b border-border bg-card/50">
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-1 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-foreground text-base font-medium py-1 outline-none placeholder:text-muted-foreground"
                   placeholder="New Password (Min 6 chars)"
                 />
                 {(newPassword.length > 0 && !isValidPassword) && (
@@ -376,12 +376,12 @@ const EditProfile = () => {
                 )}
               </div>
 
-              <div className="px-5 py-4 bg-white/50">
+              <div className="px-5 py-4 bg-card/50">
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-1 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-foreground text-base font-medium py-1 outline-none placeholder:text-muted-foreground"
                   placeholder="Confirm New Password"
                 />
                 {(confirmPassword.length > 0 && !passwordsMatch) && (
@@ -389,7 +389,7 @@ const EditProfile = () => {
                 )}
               </div>
 
-              <div className="p-4 border-t border-gray-100">
+              <div className="p-4 border-t border-border">
                 <Button 
                   onClick={handleUpdatePassword}
                   disabled={!canSavePassword}
@@ -405,7 +405,7 @@ const EditProfile = () => {
 
         {/* Danger Zone */}
         <div className="mt-8 mb-12">
-          <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100">
+          <div className="bg-muted rounded-[28px] overflow-hidden border border-border">
             <ActionRow 
               icon={isDeleting ? Loader2 : Trash2} 
               title={isDeleting ? "Deleting..." : "Delete Account"} 
@@ -416,7 +416,7 @@ const EditProfile = () => {
               isSpinning={isDeleting}
             />
           </div>
-          <p className="text-center text-sm mt-4 px-4 leading-snug text-gray-400 font-medium">
+          <p className="text-center text-sm mt-4 px-4 leading-snug text-muted-foreground font-medium">
              Once you delete your account, your diagnostic history will be permanently erased.
           </p>
         </div>

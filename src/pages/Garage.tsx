@@ -69,7 +69,7 @@ const Garage = () => {
   return (
     <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
       <div className="mb-6 px-1 mt-2">
-        <h1 className="hidden md:block text-3xl font-bold text-black tracking-tight leading-tight mb-6">Your Garage</h1>
+        <h1 className="hidden md:block text-3xl font-bold text-foreground tracking-tight leading-tight mb-6">Your Garage</h1>
       </div>
 
       {vehicles.length === 0 ? (
@@ -110,18 +110,18 @@ const Garage = () => {
                     whileHover={{ scale: 0.98 }}
                     whileTap={{ scale: 0.96 }}
                     key={vehicle.id} 
-                    className="bg-white border border-gray-100/80 rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
+                    className="bg-card border border-border rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
                   >
                     <div className="w-[46px] h-[46px] rounded-full bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
                       <Car className="w-5 h-5 text-primary" strokeWidth={2.2} />
                     </div>
 
                     <div className="flex-1 min-w-0 py-0.5">
-                      <div className="text-black font-medium text-base leading-snug truncate mb-0.5">
+                      <div className="text-foreground font-medium text-base leading-snug truncate mb-0.5">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </div>
                       {vehicle.mileage ? (
-                        <div className="text-gray-500 font-medium text-sm truncate">
+                        <div className="text-muted-foreground font-medium text-sm truncate">
                           {Number(vehicle.mileage).toLocaleString()} km
                         </div>
                       ) : null}

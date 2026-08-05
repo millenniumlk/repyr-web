@@ -455,7 +455,7 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-xl"
+              className="bg-card rounded-3xl p-6 w-full max-w-sm shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
@@ -520,7 +520,7 @@ const Home = () => {
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center border border-border"
+              className="bg-card rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center border border-border"
             >
               <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
               <h3 className="text-2xl font-bold mb-3 tracking-tight">Analyzing Symptoms...</h3>
