@@ -21,6 +21,7 @@ import CompleteVehicleProfile from './pages/CompleteVehicleProfile';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Support from './pages/Support';
+import AuthCallback from './pages/AuthCallback';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, isGuest, isLoading } = useAuth();
@@ -44,6 +45,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={<Auth />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/guest-intake" element={<GuestIntake />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
