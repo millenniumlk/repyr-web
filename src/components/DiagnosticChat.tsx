@@ -188,7 +188,7 @@ const DiagnosticChat = ({
         </motion.div>
       )}
 
-      {/* Spacer to prevent overlap with fixed input bar */}
+      {/* Bottom scroll padding — prevents the fixed ChatInputBar from covering the last message */}
       <div className="h-48 flex-shrink-0" />
       {/* Scroll anchor */}
       <div ref={bottomRef} />

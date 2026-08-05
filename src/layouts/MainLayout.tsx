@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 
 
+/** Routes where the mobile header should be hidden (these pages have their own headers) */
+const MOBILE_HEADER_EXCLUDED_ROUTES = ['/settings/profile', '/settings/subscription', '/garage/add'];
 
 const MainLayout = () => {
   const location = useLocation();
@@ -48,9 +50,9 @@ const MainLayout = () => {
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
-    return () => { document.body.style.overflow = 'unset'; };
+    if (isMobileMenuOpen) document.body.classList.add('overflow-hidden');
+    else document.body.classList.remove('overflow-hidden');
+    return () => { document.body.classList.remove('overflow-hidden'); };
   }, [isMobileMenuOpen]);
 
   const handleLogout = async () => {
@@ -181,7 +183,7 @@ const MainLayout = () => {
       </aside>
 
       {/* Standard Responsive Mobile Header */}
-      {!location.pathname.includes('/settings/profile') && !location.pathname.includes('/settings/subscription') && !location.pathname.includes('/garage/add') && (
+      {!MOBILE_HEADER_EXCLUDED_ROUTES.some(route => location.pathname.includes(route)) && (
         <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/' ? 'sticky top-0 z-30' : ''}`}>
         <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
           <h1 className={location.pathname === '/' ? "text-xl font-black text-black tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>

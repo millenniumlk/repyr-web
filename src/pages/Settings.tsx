@@ -1,3 +1,4 @@
+import packageJson from '../../package.json';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, Loader2, LogOut } from 'lucide-react';
@@ -163,6 +164,7 @@ const Settings = () => {
               Support
             </h4>
             <div className="bg-gray-50 rounded-[28px] overflow-hidden border border-gray-100 shadow-sm shadow-black/5">
+              {/* TODO: Implement Privacy & Security page */}
               <ActionRow 
                 icon={Shield} 
                 title="Privacy & Security" 
@@ -193,7 +195,7 @@ const Settings = () => {
 
       <div className="text-center pb-8 mt-2">
         <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400">
-          Repyr Diagnostics v1.0.4
+          Repyr Diagnostics v{packageJson.version}
         </p>
       </div>
     </div>

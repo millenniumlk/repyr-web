@@ -20,8 +20,8 @@ const Subscription = () => {
 
   useEffect(() => {
     initializePaddle({ 
-      environment: 'sandbox', 
-      token: 'test_47e18d0521de46b6c5571feccd4',
+      environment: (import.meta.env.VITE_PADDLE_ENV || 'sandbox') as 'sandbox' | 'production', 
+      token: import.meta.env.VITE_PADDLE_TOKEN || 'test_47e18d0521de46b6c5571feccd4',
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
           const items = data.data?.items || [];

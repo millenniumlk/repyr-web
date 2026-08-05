@@ -217,49 +217,22 @@ const Home = () => {
     }
   }, [isLoading, selectedVehicle, isChatActive, user]);
 
-  // Hide global mobile header on scroll down when chat is active
+  // Hide global mobile header when chat is active (CSS class toggle)
   useEffect(() => {
     const header = document.querySelector('header');
     if (!header) return;
 
-    header.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-
-    if (!isChatActive) {
-      header.style.opacity = '1';
-      header.style.transform = 'translateY(0)';
-      header.style.pointerEvents = 'auto';
-      return;
+    if (isChatActive) {
+      header.classList.add('header-hidden');
+    } else {
+      header.classList.remove('header-hidden');
     }
 
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        header.style.opacity = '0';
-        header.style.transform = 'translateY(-100%)';
-        header.style.pointerEvents = 'none';
-      } else if (currentScrollY < lastScrollY) {
-        header.style.opacity = '1';
-        header.style.transform = 'translateY(0)';
-        header.style.pointerEvents = 'auto';
-      }
-      
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (header) {
-        header.style.opacity = '1';
-        header.style.transform = 'translateY(0)';
-        header.style.pointerEvents = 'auto';
-      }
+      header?.classList.remove('header-hidden');
     };
   }, [isChatActive]);
+
 
 
   const handleStartOrReply = useCallback(async () => { // 🔴 Bug fix: useCallback prevents stale closure in the auto-start effect

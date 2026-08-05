@@ -472,7 +472,7 @@ const Auth = () => {
                   onClick={handleGoogleSignIn}
                   className="w-full mb-4 font-medium shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
                 >
-                  <img src={googleLogo} alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.style.display='none'; }} />
+                  <img src={googleLogo} alt="Google" className="w-[22px] h-[22px] mr-2.5" onError={(e) => { e.currentTarget.hidden = true; }} />
                   Continue with Google
                 </Button>
 

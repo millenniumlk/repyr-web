@@ -23,7 +23,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, isGuest, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-[3px] border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
   }
   
   if (!session && !isGuest) {
