@@ -44,6 +44,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="/guest-intake" element={<GuestIntake />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       
       <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
         <Route index element={<Home />} />
@@ -55,8 +57,6 @@ const AppRoutes = () => {
         <Route path="settings/profile" element={<EditProfile />} />
         <Route path="settings/subscription" element={<Subscription />} />
         <Route path="complete-profile" element={<CompleteVehicleProfile />} />
-        <Route path="terms" element={<Terms />} />
-        <Route path="privacy" element={<Privacy />} />
       </Route>
     </Routes>
   );
