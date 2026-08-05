@@ -1,4 +1,4 @@
-import { Trash2, Plus, Loader2, Car } from 'lucide-react';
+import { Trash2, Plus, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -47,8 +47,21 @@ const Garage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
+        <div className="mb-6 px-1 mt-2">
+          <div className="hidden md:block h-9 w-40 bg-muted animate-pulse rounded-xl" />
+        </div>
+        <div className="mt-4 px-1 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
+              <div className="w-[46px] h-[46px] rounded-full bg-muted animate-pulse" />
+              <div className="flex-1 space-y-2">
+                <div className="h-5 w-3/4 bg-muted animate-pulse rounded-lg" />
+                <div className="h-4 w-1/3 bg-muted animate-pulse rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -95,6 +108,7 @@ const Garage = () => {
                     exit={{ opacity: 0, scale: 0.95, height: 0, marginBottom: 0 }}
                     transition={{ delay: index * 0.05 }}
                     whileHover={{ scale: 0.98 }}
+                    whileTap={{ scale: 0.96 }}
                     key={vehicle.id} 
                     className="bg-white border border-gray-100/80 rounded-[20px] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] cursor-pointer flex flex-row items-center gap-4"
                   >

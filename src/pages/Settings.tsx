@@ -1,7 +1,7 @@
 import packageJson from '../../package.json';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, Loader2, LogOut } from 'lucide-react';
+import { User, Car, Shield, HelpCircle, CreditCard, Sparkles, ChevronRight, LogOut } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -85,8 +85,25 @@ const Settings = () => {
 
   if (loading || authLoading) {
     return (
-      <div className="flex justify-center items-center py-20 min-h-[80vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="max-w-3xl mx-auto pb-10 px-4 md:px-0">
+        <div className="max-w-xl mx-auto px-1 mt-8">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-24 h-24 rounded-full bg-muted animate-pulse mb-4" />
+            <div className="h-6 w-32 bg-muted animate-pulse rounded-lg mb-2" />
+            <div className="h-4 w-44 bg-muted animate-pulse rounded-lg" />
+          </div>
+          <div className="space-y-7">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-3 w-16 bg-muted animate-pulse rounded-lg ml-3" />
+                <div className="bg-card border border-border rounded-[28px] p-1 space-y-0.5">
+                  <div className="h-14 bg-muted/50 animate-pulse rounded-[24px]" />
+                  <div className="h-14 bg-muted/50 animate-pulse rounded-[24px]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -122,8 +139,8 @@ const Settings = () => {
           <p className="text-sm text-gray-500 font-medium">{isGuest ? 'Not signed in' : user?.email}</p>
         </motion.div>
 
-        <div className="space-y-7">
-          <div>
+        <motion.div className="space-y-7" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}>
+          <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
               Account
             </h4>
@@ -141,9 +158,9 @@ const Settings = () => {
                 isLast={true}
               />
             </div>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
               Subscription
             </h4>
@@ -157,9 +174,9 @@ const Settings = () => {
                 isLast={true}
               />
             </div>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
             <h4 className="text-[11px] font-bold uppercase tracking-widest text-black mb-3 ml-3">
               Support
             </h4>
@@ -178,8 +195,8 @@ const Settings = () => {
                 isLast={true}
               />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <div className="pt-8 mt-4 mb-8">
           <Button 

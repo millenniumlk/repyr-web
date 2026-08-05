@@ -180,8 +180,31 @@ const EditProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="max-w-3xl mx-auto pb-24 px-4 md:px-0">
+        <div className="flex items-center gap-4 mb-8 px-2 mt-2">
+          <div className="h-9 w-9 bg-muted animate-pulse rounded-full" />
+          <div className="h-7 w-32 bg-muted animate-pulse rounded-lg" />
+        </div>
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-24 h-24 rounded-full bg-muted animate-pulse mb-4" />
+        </div>
+        <div className="space-y-6">
+          {[1, 2].map((i) => (
+            <div key={i} className="space-y-3">
+              <div className="h-3 w-20 bg-muted animate-pulse rounded-lg ml-3" />
+              <div className="bg-card border border-border rounded-[28px] p-5 space-y-4">
+                <div className="space-y-2">
+                  <div className="h-3 w-16 bg-muted animate-pulse rounded-lg" />
+                  <div className="h-5 w-2/3 bg-muted animate-pulse rounded-lg" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-20 bg-muted animate-pulse rounded-lg" />
+                  <div className="h-5 w-3/4 bg-muted animate-pulse rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
