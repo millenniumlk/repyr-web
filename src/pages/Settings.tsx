@@ -69,9 +69,7 @@ const Settings = () => {
     navigate('/settings/subscription');
   };
 
-  const handleSupport = () => {
-    showToast('Support coming soon.', 'info');
-  };
+
 
   const handleLogout = async () => {
     if (isGuest) {
@@ -196,7 +194,7 @@ const Settings = () => {
               <ActionRow 
                 icon={HelpCircle} 
                 title="Help & Support" 
-                onClick={handleSupport}
+                onClick={() => navigate('/support')}
                 isLast={true}
               />
             </div>
