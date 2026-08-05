@@ -198,7 +198,7 @@ const CompleteVehicleProfile = () => {
   const isComplete = transmission && fuelType && location;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center px-4 py-4 relative overflow-hidden">
+    <div className="flex flex-col justify-center min-h-[80vh] px-4 py-4 relative">
       <div className="w-full max-w-md mx-auto relative z-10">
         
         <div className="text-center mb-6">
