@@ -398,7 +398,7 @@ const Home = () => {
             ) : (
               <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
                 <div className="mb-6 w-full">
-                  <h1 className="text-[28px] md:text-3xl font-normal text-primary tracking-tight leading-tight">
+                  <h1 className="text-2xl md:text-3xl font-normal text-primary tracking-tight leading-tight">
                     Let's fix your {selectedVehicle?.model || 'vehicle'}.
                   </h1>
                 </div>
@@ -409,12 +409,12 @@ const Home = () => {
                     <Button
                       key={i}
                       variant="outline"
+                      size="chip"
                       onClick={() => setCategory(category === cat ? '' : cat)}
-                      className={`h-auto px-4 py-2 rounded-full text-sm font-medium ${
-                        category === cat
-                          ? 'border-primary/20 text-primary shadow-glow-primary'
-                          : 'border-transparent text-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)]'
-                      }`}
+                      className={category === cat
+                        ? 'border-primary/20 text-primary shadow-glow-primary'
+                        : 'border-transparent text-muted-foreground shadow-soft-card'
+                      }
                     >
                       {cat}
                     </Button>
@@ -507,7 +507,7 @@ const Home = () => {
                     }`}
                   >
                     <div className="text-left">
-                      <p className="font-medium text-[16px] tracking-tight">{v.year} {v.make} {v.model}</p>
+                      <p className="font-medium text-base tracking-tight">{v.year} {v.make} {v.model}</p>
                       {v.vin && <p className="text-xs opacity-70 font-mono mt-0.5">{v.vin}</p>}
                     </div>
                     {selectedVehicle?.id === v.id && <CheckCircle className="w-5 h-5 text-primary" />}

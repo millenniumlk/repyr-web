@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from './Skeleton';
+import { cn } from '../../lib/utils';
 import { Button } from './Button';
 import { Plus } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export function EmptyState({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
-        className="text-[28px] md:text-3xl font-bold text-foreground tracking-tight leading-tight mb-4"
+        className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight mb-4"
       >
         {title}
       </motion.h3>

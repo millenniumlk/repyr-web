@@ -17,7 +17,7 @@ const QuickSelect = ({ options, value, onChange }: { options: string[], value: s
         type="button"
         variant="outline"
         onClick={() => onChange(value === opt ? '' : opt)}
-        className={`h-auto px-3 py-2 rounded-xl text-[14px] transition-all duration-200 font-medium ${
+        className={`h-auto px-3 py-2 rounded-xl text-sm transition-all duration-200 font-medium ${
           value === opt 
             ? 'bg-primary border-primary text-white shadow-md shadow-primary/20 scale-[0.98] hover:bg-primary/90 hover:text-white' 
             : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
@@ -51,7 +51,7 @@ const AnimatedInput = ({ icon: Icon, label, ...props }: any) => {
             <label 
               className={`absolute left-0 transition-all duration-200 pointer-events-none ${
                 isFocused || hasValue 
-                  ? 'text-[10px] -translate-y-2.5 font-bold text-primary tracking-wider uppercase' 
+                  ? 'text-[11px] -translate-y-2.5 font-bold text-primary tracking-wider uppercase' 
                   : 'text-[15px] text-gray-400 translate-y-0'
               }`}
             >

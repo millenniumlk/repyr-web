@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Car, Settings, Calendar, Activity } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
+import { Button } from '../components/ui/Button';
 
 const GuestIntake = () => {
   const navigate = useNavigate();
@@ -99,14 +100,14 @@ const GuestIntake = () => {
         <div className="mt-12 flex justify-between items-center w-full">
           <div className="flex items-center space-x-4 w-32">
             {step > 0 ? (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <Button
+                variant="secondary"
+                size="icon"
                 onClick={() => setStep(prev => prev - 1)}
-                className="flex items-center justify-center w-14 h-14 rounded-full bg-secondary text-muted-foreground hover:bg-secondary/80 transition-colors"
+                className="w-14 h-14"
               >
                 <ChevronLeft className="w-6 h-6" />
-              </motion.button>
+              </Button>
             ) : <div className="w-14 h-14" />}
           </div>
 
@@ -120,17 +121,15 @@ const GuestIntake = () => {
           </div>
 
           <div className="flex items-center justify-end w-32">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <Button
+              variant={currentStep.value.trim() ? "default" : "secondary"}
+              size="icon"
               onClick={handleNext}
               disabled={!currentStep.value.trim()}
-              className={`flex items-center justify-center w-14 h-14 rounded-full transition-colors ${
-                currentStep.value.trim() ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'bg-secondary text-muted-foreground cursor-not-allowed'
-              }`}
+              className="w-14 h-14"
             >
               <ChevronRight className="w-6 h-6" />
-            </motion.button>
+            </Button>
           </div>
         </div>
       </div>

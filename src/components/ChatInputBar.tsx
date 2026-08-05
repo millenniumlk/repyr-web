@@ -36,20 +36,22 @@ const ChatInputBar = ({
         {isChatActive && !isTyping && currentOptions?.length > 0 && !isDiagnosisComplete && hasAccess !== false && (
           <div className="flex overflow-x-auto no-scrollbar gap-2 mb-4 pb-2 pointer-events-auto">
             {currentOptions.map((opt: string, i: number) => (
-              <motion.button 
+              <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 key={i}
-                onClick={() => handleSendReply(opt)}
-                className={`whitespace-nowrap py-2.5 px-4 rounded-full text-sm font-medium transition-all shadow-sm flex-shrink-0 active:scale-[0.98] ${
-                  i === 0 
-                    ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:bg-primary/90' 
-                    : 'bg-white border border-gray-200 text-gray-900 shadow-sm hover:bg-gray-50'
-                }`}
+                className="flex-shrink-0"
               >
-                {opt}
-              </motion.button>
+                <Button
+                  variant={i === 0 ? "default" : "outline"}
+                  size="chip"
+                  onClick={() => handleSendReply(opt)}
+                  className="whitespace-nowrap py-2.5"
+                >
+                  {opt}
+                </Button>
+              </motion.div>
             ))}
           </div>
         )}
@@ -91,7 +93,7 @@ const ChatInputBar = ({
               }
             }}
             placeholder={isChatActive ? (isDiagnosisComplete && !hasAskedFollowUp ? "Ask a follow-up question..." : "Message Repyr...") : "Describe the issue..."}
-            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-[14px] sm:text-[16px] ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
+            className={`flex-1 max-h-32 min-h-[40px] px-2 sm:px-3 py-2.5 bg-transparent outline-none resize-none text-foreground placeholder:text-gray-400 text-sm sm:text-base ${!inputValue ? 'whitespace-nowrap overflow-hidden [&::placeholder]:whitespace-nowrap [&::placeholder]:text-ellipsis' : ''}`}
             rows={1}
             style={{ overflowY: 'auto' }}
           />
@@ -105,7 +107,7 @@ const ChatInputBar = ({
             }}
             disabled={!isButtonActive}
             className={`h-9 w-9 rounded-full shrink-0 ml-1 mr-0.5 transition-all ${
-              isButtonActive ? 'bg-primary text-white hover:bg-primary/90 hover:text-white shadow-md shadow-primary/30 hover:scale-105 active:scale-95' : 'bg-[#F2F4F7] text-gray-400 hover:bg-[#F2F4F7] hover:text-gray-400'
+              isButtonActive ? 'bg-primary text-white hover:bg-primary/90 hover:text-white shadow-md shadow-primary/30 hover:scale-105 active:scale-95' : 'bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground'
             }`}
           >
             <ArrowUp className="w-4 h-4" strokeWidth={2.5} />

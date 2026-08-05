@@ -76,19 +76,12 @@ const Garage = () => {
             <p className="text-muted-foreground leading-relaxed mb-8">
               Add a vehicle to manage its profile and get AI-powered diagnostics.
             </p>
-            <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all mx-auto w-fit">
-              <Link 
-                to="/garage/add"
-                className="flex items-center justify-center px-6 py-3.5 hover:bg-primary/90 transition-colors group"
-              >
-                <div className="mr-2 text-white">
-                  <Plus className="w-5 h-5" strokeWidth={2.2} />
-                </div>
-                <span className="text-[15px] tracking-tight font-medium text-white">
-                  Add Vehicle
-                </span>
-              </Link>
-            </div>
+            <Link to="/garage/add">
+              <Button className="mx-auto">
+                <Plus className="w-5 h-5 mr-2" strokeWidth={2.2} />
+                Add Vehicle
+              </Button>
+            </Link>
           </motion.div>
         </div>
       ) : (
@@ -110,11 +103,11 @@ const Garage = () => {
                     </div>
 
                     <div className="flex-1 min-w-0 py-0.5">
-                      <div className="text-black font-medium text-[16px] leading-snug truncate mb-0.5">
+                      <div className="text-black font-medium text-base leading-snug truncate mb-0.5">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </div>
                       {vehicle.mileage ? (
-                        <div className="text-gray-500 font-medium text-[13px] truncate">
+                        <div className="text-gray-500 font-medium text-sm truncate">
                           {Number(vehicle.mileage).toLocaleString()} km
                         </div>
                       ) : null}
@@ -138,19 +131,12 @@ const Garage = () => {
             </div>
             
             <div className="mt-auto pt-6 w-full">
-              <div className="bg-primary rounded-[28px] overflow-hidden shadow-sm shadow-primary/20 hover:shadow-md transition-all">
-                <Link 
-                  to="/garage/add"
-                  className="w-full flex items-center justify-center px-5 py-4 hover:bg-primary/90 transition-colors group"
-                >
-                  <div className="mr-3 text-white">
-                    <Plus className="w-[22px] h-[22px]" strokeWidth={2.2} />
-                  </div>
-                  <span className="text-[16px] tracking-tight font-medium text-white">
-                    Add Vehicle
-                  </span>
-                </Link>
-              </div>
+              <Link to="/garage/add" className="block">
+                <Button className="w-full">
+                  <Plus className="w-5 h-5 mr-2" strokeWidth={2.2} />
+                  Add Vehicle
+                </Button>
+              </Link>
             </div>
           </div>
         )}

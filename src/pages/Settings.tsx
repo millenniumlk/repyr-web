@@ -17,23 +17,23 @@ const ActionRow = ({ icon: Icon, title, onClick, value, isAction, isLast }: any)
       <div className="mr-3 py-3.5">
         <Icon className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
       </div>
-      <span className={`text-[16px] tracking-tight ${isAction ? 'text-primary font-bold' : 'font-medium text-gray-900'}`}>
+      <span className={`text-base tracking-tight ${isAction ? 'text-primary font-bold' : 'font-medium text-gray-900'}`}>
         {title}
       </span>
     </div>
     <div className="flex items-center gap-2 py-4 justify-end flex-1 pl-4">
       {value === 'Pro' && (
-        <span className="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-indigo-200">
+        <span className="bg-indigo-100 text-indigo-700 text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-indigo-200">
           Pro
         </span>
       )}
       {value === 'Plus' && (
-        <span className="bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-blue-200">
+        <span className="bg-blue-100 text-blue-700 text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-blue-200">
           Plus
         </span>
       )}
       {value === 'Trial' && (
-        <span className="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
+        <span className="bg-gray-100 text-gray-500 text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
           Trial
         </span>
       )}
@@ -111,14 +111,14 @@ const Settings = () => {
               <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-primary/10 flex items-center justify-center border border-primary/10">
-                <span className="text-primary text-[32px] font-black pt-1 leading-none">
+                <span className="text-primary text-3xl font-black pt-1 leading-none">
                   {displayInitial}
                 </span>
               </div>
             )}
           </div>
-          <h2 className="text-[20px] font-bold text-black mb-1 tracking-tight">{displayName}</h2>
-          <p className="text-[14px] text-gray-500 font-medium">{isGuest ? 'Not signed in' : user?.email}</p>
+          <h2 className="text-xl font-bold text-black mb-1 tracking-tight">{displayName}</h2>
+          <p className="text-sm text-gray-500 font-medium">{isGuest ? 'Not signed in' : user?.email}</p>
         </motion.div>
 
         <div className="space-y-7">
@@ -192,7 +192,7 @@ const Settings = () => {
       </div>
 
       <div className="text-center pb-8 mt-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
+        <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400">
           Repyr Diagnostics v1.0.4
         </p>
       </div>

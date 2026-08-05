@@ -315,12 +315,12 @@ const Auth = () => {
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-[13px] font-medium p-3 rounded-xl mb-4 border border-red-100 text-center">
+              <div className="bg-red-50 text-red-600 text-sm font-medium p-3 rounded-xl mb-4 border border-red-100 text-center">
                 {error}
               </div>
             )}
             {successMsg && (
-              <div className="bg-blue-50 text-blue-600 text-[13px] font-medium p-3 rounded-xl mb-4 border border-blue-100 text-center">
+              <div className="bg-blue-50 text-blue-600 text-sm font-medium p-3 rounded-xl mb-4 border border-blue-100 text-center">
                 {successMsg}
               </div>
             )}
@@ -361,7 +361,7 @@ const Auth = () => {
                         inputMode="numeric"
                         maxLength={6}
                         autoFocus={index === 0}
-                        className={`w-full aspect-[4/5] rounded-xl text-center text-[22px] font-bold border-2 transition-all outline-none ${
+                        className={`w-full aspect-[4/5] rounded-xl text-center text-xl font-bold border-2 transition-all outline-none ${
                           isActive ? 'border-primary bg-white shadow-sm text-primary' : 'border-gray-200 bg-gray-50 text-gray-900'
                         }`}
                       />
@@ -417,7 +417,7 @@ const Auth = () => {
 
               {!isSignUp && !isForgotPassword && (
                 <div className="flex justify-end pb-4 pt-1">
-                  <Button variant="link" size="sm" type="button" onClick={() => handleToggleState('forgot')} className="h-auto p-0 text-[13.5px]">
+                  <Button variant="link" size="sm" type="button" onClick={() => handleToggleState('forgot')} className="h-auto p-0 text-sm">
                     Forgot password?
                   </Button>
                 </div>
@@ -434,7 +434,7 @@ const Auth = () => {
                   >
                     {acceptedTerms && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                   </button>
-                  <p className="text-gray-600 text-[13px] flex-1 font-medium">
+                  <p className="text-gray-600 text-sm flex-1 font-medium">
                     I agree to the <span className="text-primary font-semibold">Terms & Conditions</span> and <span className="text-primary font-semibold">Privacy Policy</span>
                   </p>
                 </div>

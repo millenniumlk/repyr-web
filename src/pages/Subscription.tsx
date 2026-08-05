@@ -298,7 +298,7 @@ const Subscription = () => {
               />
             )}
             <span className="relative z-10">Yearly</span>
-            <span className="relative z-10 bg-green-100 text-green-700 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full border border-green-200">
+            <span className="relative z-10 bg-green-100 text-green-700 text-[11px] uppercase tracking-widest px-2 py-0.5 rounded-full border border-green-200">
               Save 20%
             </span>
           </Button>

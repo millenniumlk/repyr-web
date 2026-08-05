@@ -186,7 +186,7 @@ const MainLayout = () => {
       {!location.pathname.includes('/settings/profile') && !location.pathname.includes('/settings/subscription') && !location.pathname.includes('/garage/add') && (
         <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/' ? 'sticky top-0 z-30' : ''}`}>
         <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
-          <h1 className={location.pathname === '/' ? "text-xl font-black text-black tracking-tighter" : "text-[19px] font-bold text-foreground tracking-tight"}>
+          <h1 className={location.pathname === '/' ? "text-xl font-black text-black tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
             {location.pathname === '/' ? 'Repyr.' 
              : location.pathname.startsWith('/garage') ? 'Garage'
              : location.pathname.startsWith('/history') ? 'Diagnostic Logs'

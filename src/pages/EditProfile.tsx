@@ -18,7 +18,7 @@ const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandab
       <div className="mr-4">
         <Icon className={`w-[22px] h-[22px] ${isDestructive ? 'text-red-500' : 'text-primary'} ${isSpinning ? 'animate-spin' : ''}`} strokeWidth={2.2} />
       </div>
-      <span className={`text-[16px] tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-gray-900'}`}>
+      <span className={`text-base tracking-tight font-medium ${isDestructive ? 'text-red-500' : 'text-gray-900'}`}>
         {title}
       </span>
     </div>
@@ -209,7 +209,7 @@ const EditProfile = () => {
             onClick={handleSaveProfile}
             disabled={!canSaveProfile}
             isLoading={saving}
-            className={`font-bold text-[16px] px-4 py-2 hover:bg-transparent ${canSaveProfile ? 'text-primary' : 'text-gray-300'}`}
+            className={`font-bold text-base px-4 py-2 hover:bg-transparent ${canSaveProfile ? 'text-primary' : 'text-gray-300'}`}
           >
             Save
           </Button>
@@ -234,7 +234,7 @@ const EditProfile = () => {
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-primary text-[40px] font-black pt-1 leading-[44px]">
+                <span className="text-primary text-4xl font-black pt-1 leading-none">
                   {displayInitial}
                 </span>
               )}
@@ -253,7 +253,7 @@ const EditProfile = () => {
                 setAvatarUrl(null);
                 setAvatarFile(null);
               }}
-              className="mt-4 bg-red-50 text-red-500 text-[13px] font-medium hover:bg-red-100 hover:text-red-600 rounded-full px-4 py-1.5 h-auto"
+              className="mt-4 bg-red-50 text-red-500 text-sm font-medium hover:bg-red-100 hover:text-red-600 rounded-full px-4 py-1.5 h-auto"
             >
               Remove Photo
             </Button>
@@ -280,16 +280,16 @@ const EditProfile = () => {
                 <User className={`w-[22px] h-[22px] ${(!isValidName && fullName.length > 0) ? "text-red-500" : "text-primary"}`} strokeWidth={2.2} />
               </div>
               <div className="flex-1 py-1">
-                <label className={`block text-[12px] font-bold mb-1 uppercase tracking-wider ${(!isValidName && fullName.length > 0) ? 'text-red-500' : 'text-gray-400'}`}>Full Name</label>
+                <label className={`block text-xs font-bold mb-1 uppercase tracking-wider ${(!isValidName && fullName.length > 0) ? 'text-red-500' : 'text-gray-400'}`}>Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-[16px] font-medium py-0.5 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-0.5 outline-none placeholder:text-gray-400"
                   placeholder="Enter your full name"
                 />
                 {(!isValidName && fullName.length > 0) && (
-                  <p className="text-red-500 text-[12px] mt-1 font-medium">Name must be at least 2 characters.</p>
+                  <p className="text-red-500 text-xs mt-1 font-medium">Name must be at least 2 characters.</p>
                 )}
               </div>
             </div>
@@ -300,8 +300,8 @@ const EditProfile = () => {
                 <Mail className="w-[22px] h-[22px] text-primary" strokeWidth={2.2} />
               </div>
               <div className="flex-1 py-1">
-                <label className="block text-[12px] font-bold mb-1 text-gray-400 uppercase tracking-wider">Email Address</label>
-                <p className="text-gray-900 text-[16px] font-medium py-0.5">{user?.email}</p>
+                <label className="block text-xs font-bold mb-1 text-gray-400 uppercase tracking-wider">Email Address</label>
+                <p className="text-gray-900 text-base font-medium py-0.5">{user?.email}</p>
               </div>
             </div>
           </div>
@@ -345,11 +345,11 @@ const EditProfile = () => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-[16px] font-medium py-1 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-1 outline-none placeholder:text-gray-400"
                   placeholder="New Password (Min 6 chars)"
                 />
                 {(newPassword.length > 0 && !isValidPassword) && (
-                  <p className="text-red-500 text-[12px] mt-1.5 font-medium">Password must be at least 6 characters.</p>
+                  <p className="text-red-500 text-xs mt-1.5 font-medium">Password must be at least 6 characters.</p>
                 )}
               </div>
 
@@ -358,11 +358,11 @@ const EditProfile = () => {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="block w-full bg-transparent text-gray-900 text-[16px] font-medium py-1 outline-none placeholder:text-gray-400"
+                  className="block w-full bg-transparent text-gray-900 text-base font-medium py-1 outline-none placeholder:text-gray-400"
                   placeholder="Confirm New Password"
                 />
                 {(confirmPassword.length > 0 && !passwordsMatch) && (
-                  <p className="text-red-500 text-[12px] mt-1.5 font-medium">Passwords do not match.</p>
+                  <p className="text-red-500 text-xs mt-1.5 font-medium">Passwords do not match.</p>
                 )}
               </div>
 
@@ -393,7 +393,7 @@ const EditProfile = () => {
               isSpinning={isDeleting}
             />
           </div>
-          <p className="text-center text-[13px] mt-4 px-4 leading-snug text-gray-400 font-medium">
+          <p className="text-center text-sm mt-4 px-4 leading-snug text-gray-400 font-medium">
              Once you delete your account, your diagnostic history will be permanently erased.
           </p>
         </div>

@@ -1,38 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #F9FAFB;
+  /* ─── Core Palette ─── */
+  --color-background: #f9fafb;
   --color-foreground: #0f172a;
-  --color-primary: #0062FF;
+
+  /* ─── Brand ─── */
+  --color-primary: #0062ff;
   --color-primary-foreground: #ffffff;
-  --color-primary-dark: #004CCC;
+  --color-primary-dark: #004ccc;
+
+  /* ─── Surfaces ─── */
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
   --color-secondary: #f1f5f9;
   --color-secondary-foreground: #1e293b;
-  --color-muted: #F9FAFB;
-  --color-muted-foreground: #6B7280;
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: #6b7280;
   --color-accent: #f1f5f9;
   --color-accent-foreground: #1e293b;
+  --color-surface: #f8fafc;
+
+  /* ─── Semantic ─── */
   --color-destructive: #ef4444;
-  --color-destructive-foreground: #F9FAFB;
-  --color-border: #E5E7EB;
-  --color-input: #E5E7EB;
-  --color-ring: #0062FF;
-  
+  --color-destructive-foreground: #ffffff;
+  --color-success: #10b981;
+  --color-info: #3b82f6;
+
+  /* ─── Borders & Inputs ─── */
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #0062ff;
+
+  /* ─── Radius ─── */
   --radius: 0.75rem;
-  
+
+  /* ─── Shadows ─── */
   --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 
+  /* ─── Typography ─── */
   --font-sans: 'Inter', sans-serif;
 }
 
 @layer base {
   * {
     @apply border-border;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  *::-webkit-scrollbar {
-    display: none;
   }
   body {
     @apply bg-background text-foreground;
@@ -42,6 +54,7 @@
 }
 
 @layer utilities {
+  /* Opt-in scrollbar hiding for specific containers */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -49,9 +62,13 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Glassmorphism surface */
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-soft;
+    @apply bg-card/70 backdrop-blur-md border border-white/20 shadow-soft;
   }
+
+  /* Shadows */
   .shadow-glow-primary {
     @apply shadow-[0_4px_16px_rgba(0,98,255,0.2)];
   }
@@ -61,10 +78,17 @@
   .shadow-button-primary {
     @apply shadow-[0_8px_24px_rgba(0,98,255,0.25)];
   }
+
+  /* Gradients */
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-[#0062FF] to-[#004CCC];
+    @apply bg-gradient-to-br from-primary to-primary-dark;
   }
   .bg-gradient-indigo {
     @apply bg-gradient-to-br from-indigo-500 to-indigo-700;
+  }
+
+  /* App background gradient — single source of truth */
+  .bg-app-gradient {
+    @apply bg-gradient-to-b from-background to-primary/15;
   }
 }

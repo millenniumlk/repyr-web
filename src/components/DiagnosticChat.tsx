@@ -94,7 +94,7 @@ const DiagnosticChat = ({
                 transition={{ duration: 0.3 }}
                 className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} ${isFirstInGroup && index > 0 ? 'mt-4' : 'mt-1.5'}`}
               >
-                <div className={`max-w-[85%] px-5 py-3.5 text-[15px] leading-[22px] font-medium ${
+                <div className={`max-w-[85%] px-5 py-3.5 text-[15px] leading-snug font-medium ${
                   isAI 
                     ? `bg-white text-gray-800 border border-gray-50 shadow-soft-card ${isLastInGroup ? 'rounded-[20px] rounded-bl-sm' : 'rounded-[20px]'}` 
                     : `bg-gradient-primary text-white shadow-button-primary ${isLastInGroup ? 'rounded-[20px] rounded-br-sm' : 'rounded-[20px]'}`
