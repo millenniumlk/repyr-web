@@ -133,7 +133,7 @@ const Auth = () => {
           navigate(isFromGuestChat.current ? '/complete-profile' : '/');
         } else {
           localStorage.removeItem('diagnostics_run_count');
-          setSuccessMsg('Account created successfully! Please log in.');
+          setSuccessMsg('Account created successfully! Please check your email to verify your account.');
           handleToggleState('login');
         }
       } else {
