@@ -150,10 +150,19 @@ const DiagnosticChat = ({
           </div>
           
           {probabilities?.length > 0 && (
-            <div className="mb-4 bg-card rounded-xl p-3 border border-primary/10 shadow-sm">
-              <p className="text-xs font-medium text-primary mb-1">Most Likely</p>
-              <h4 className="text-sm font-bold text-foreground leading-tight">{probabilities[0].cause}</h4>
-              <p className="text-xs font-medium text-muted-foreground mt-0.5">{probabilities[0].confidence_score}% Match Confidence</p>
+            <div className="mb-4 bg-card rounded-xl p-4 border border-primary/10 shadow-sm flex flex-col gap-3">
+              <div>
+                <p className="text-xs font-medium text-primary mb-1">Most Likely</p>
+                <h4 className="text-sm font-bold text-foreground leading-tight">{probabilities[0].cause}</h4>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5">{probabilities[0].confidence_score}% Match Confidence</p>
+              </div>
+              
+              {probabilities[0].estimated_cost && (
+                <div className="pt-3 border-t border-border">
+                   <p className="text-xs font-medium text-primary mb-1">Estimated Repair Cost</p>
+                   <p className="text-sm font-bold text-foreground">{probabilities[0].estimated_cost}</p>
+                </div>
+              )}
             </div>
           )}
 
