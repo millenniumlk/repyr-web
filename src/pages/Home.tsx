@@ -202,6 +202,10 @@ const Home = () => {
       if (pendingChatRaw) {
         try {
           const pendingChat = JSON.parse(pendingChatRaw);
+          if (pendingChat.needsProfileComplete) {
+            navigate('/complete-profile');
+            return;
+          }
           if (pendingChat.symptoms) {
             setInputValue(pendingChat.symptoms);
             setShouldAutoStart(true);
@@ -215,7 +219,7 @@ const Home = () => {
         } catch (e) {}
       }
     }
-  }, [isLoading, selectedVehicle, isChatActive, user]);
+  }, [isLoading, selectedVehicle, isChatActive, user, navigate]);
 
   // Hide global mobile header when chat is active (CSS class toggle)
   useEffect(() => {

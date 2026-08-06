@@ -23,7 +23,19 @@ const AuthCallback = () => {
         if (data.session) {
           setStatus('success');
           // Brief pause so the user sees the success state
-          setTimeout(() => navigate('/', { replace: true }), 1500);
+          setTimeout(() => {
+            try {
+              const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+              if (pendingChatRaw) {
+                const pendingChat = JSON.parse(pendingChatRaw);
+                if (pendingChat?.needsProfileComplete) {
+                  navigate('/complete-profile', { replace: true });
+                  return;
+                }
+              }
+            } catch (e) {}
+            navigate('/', { replace: true });
+          }, 1500);
         } else {
           // No session yet — the hash tokens might still be processing.
           // Listen for the auth state change event instead.
@@ -31,7 +43,19 @@ const AuthCallback = () => {
             (event, session) => {
               if (event === 'SIGNED_IN' && session) {
                 setStatus('success');
-                setTimeout(() => navigate('/', { replace: true }), 1500);
+                setTimeout(() => {
+                  try {
+                    const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+                    if (pendingChatRaw) {
+                      const pendingChat = JSON.parse(pendingChatRaw);
+                      if (pendingChat?.needsProfileComplete) {
+                        navigate('/complete-profile', { replace: true });
+                        return;
+                      }
+                    }
+                  } catch (e) {}
+                  navigate('/', { replace: true });
+                }, 1500);
                 subscription.unsubscribe();
               }
             }

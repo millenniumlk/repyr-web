@@ -163,9 +163,16 @@ const Auth = () => {
         });
         if (error) throw error;
         if (data.session) {
-          // If they came from the guest chat intercept, collect the remaining vehicle
-          // details (fuel type, transmission, location) before starting the session.
-          navigate(isFromGuestChat.current ? '/complete-profile' : '/');
+          let shouldCompleteProfile = isFromGuestChat.current;
+          if (!shouldCompleteProfile) {
+            try {
+              const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+              if (pendingChatRaw && JSON.parse(pendingChatRaw)?.needsProfileComplete) {
+                shouldCompleteProfile = true;
+              }
+            } catch (e) {}
+          }
+          navigate(shouldCompleteProfile ? '/complete-profile' : '/');
         } else {
           handleToggleState('login');
           setSuccessMsg('Account created successfully! Please check your email to verify your account.');
@@ -174,7 +181,18 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         setFailedAttempts(0);
-        navigate('/');
+        
+        let shouldCompleteProfile = isFromGuestChat.current;
+        if (!shouldCompleteProfile) {
+          try {
+            const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+            if (pendingChatRaw && JSON.parse(pendingChatRaw)?.needsProfileComplete) {
+              shouldCompleteProfile = true;
+            }
+          } catch (e) {}
+        }
+        
+        navigate(shouldCompleteProfile ? '/complete-profile' : '/');
       }
     } catch (err: any) {
       handleError(err);
