@@ -69,6 +69,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        // Validate the session against the server to catch deleted accounts
+        const { data: { user: serverUser }, error } = await supabase.auth.getUser();
+        if (error || !serverUser) {
+          // User is no longer valid (e.g. deleted from another device)
+          await supabase.auth.signOut();
+          setSession(null);
+          setUser(null);
+          userIdRef.current = null;
+          setSubscriptionTierState('Trial');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
