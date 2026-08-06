@@ -69,6 +69,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (window.location.hash.includes('access_token')) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+
       if (session) {
         // Validate the session against the server to catch deleted accounts
         const { data: { user: serverUser }, error } = await supabase.auth.getUser();
@@ -98,6 +102,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (_event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
