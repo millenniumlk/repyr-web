@@ -6,7 +6,7 @@ import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
-
+import { IosAlert } from '../components/ui/IosAlert';
 const ActionRow = ({ icon: Icon, title, onClick, isDestructive, isLast, expandable, expanded, disabled, isSpinning }: any) => (
   <Button 
     variant="ghost"
@@ -44,6 +44,7 @@ const EditProfile = () => {
   const [saving, setSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -133,8 +134,12 @@ const EditProfile = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return;
+  const handleDeleteAccount = () => {
+    setDeleteAlertOpen(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    setDeleteAlertOpen(false);
     
     setSaving(true);
     setIsDeleting(true);
@@ -440,6 +445,17 @@ const EditProfile = () => {
         </div>
 
       </div>
+
+      <IosAlert 
+        isOpen={deleteAlertOpen}
+        title="Delete Account"
+        message="Are you sure you want to permanently delete your account? This action cannot be undone."
+        cancelText="Cancel"
+        confirmText="Delete"
+        isDestructive={true}
+        onCancel={() => setDeleteAlertOpen(false)}
+        onConfirm={confirmDeleteAccount}
+      />
     </div>
   );
 };

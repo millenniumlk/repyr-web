@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Trash2, Plus, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -5,12 +6,14 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
 import { useToast } from '../lib/ToastContext';
 import { Button } from '../components/ui/Button';
+import { IosAlert } from '../components/ui/IosAlert';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Garage = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
+  const [vehicleToDelete, setVehicleToDelete] = useState<{id: string, make: string, model: string} | null>(null);
 
   const { data: vehicles = [], isLoading } = useQuery({
     queryKey: ['vehicles', user?.id],
@@ -27,24 +30,31 @@ const Garage = () => {
     enabled: !!user,
   });
 
-  const handleDeleteVehicle = async (id: string, make: string, model: string) => {
-    if (window.confirm(`Are you sure you want to remove this ${make} ${model}?`)) {
-      // Detach diagnostic sessions from this vehicle before deleting it
-      // so they aren't cascade-deleted. This prevents users from bypassing daily chat limits.
-      // Scoped to user_id to prevent IDOR — only detach sessions belonging to this user.
-      await supabase.from('diagnostic_sessions').update({ vehicle_id: null }).eq('vehicle_id', id).eq('user_id', user?.id);
+  const handleDeleteVehicle = (id: string, make: string, model: string) => {
+    setVehicleToDelete({ id, make, model });
+  };
 
-      // Delete is also scoped to user_id to prevent deleting another user's vehicle.
-      const { error } = await supabase.from('vehicles').delete().eq('id', id).eq('user_id', user?.id);
-      if (!error) {
-        queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 
-          old ? old.filter(v => v.id !== id) : []
-        );
-        showToast(`Vehicle removed.`, 'success');
-      } else {
-        showToast('Could not delete vehicle.', 'error');
-      }
+  const confirmDeleteVehicle = async () => {
+    if (!vehicleToDelete) return;
+    const { id, make, model } = vehicleToDelete;
+
+    // Detach diagnostic sessions from this vehicle before deleting it
+    // so they aren't cascade-deleted. This prevents users from bypassing daily chat limits.
+    // Scoped to user_id to prevent IDOR — only detach sessions belonging to this user.
+    await supabase.from('diagnostic_sessions').update({ vehicle_id: null }).eq('vehicle_id', id).eq('user_id', user?.id);
+
+    // Delete is also scoped to user_id to prevent deleting another user's vehicle.
+    const { error } = await supabase.from('vehicles').delete().eq('id', id).eq('user_id', user?.id);
+    if (!error) {
+      queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 
+        old ? old.filter(v => v.id !== id) : []
+      );
+      showToast(`Vehicle removed.`, 'success');
+    } else {
+      showToast('Could not delete vehicle.', 'error');
     }
+    
+    setVehicleToDelete(null);
   };
 
   if (isLoading) {
@@ -156,6 +166,17 @@ const Garage = () => {
             </div>
           </div>
         )}
+
+      <IosAlert 
+        isOpen={!!vehicleToDelete}
+        title="Remove Vehicle"
+        message={vehicleToDelete ? `Are you sure you want to remove this ${vehicleToDelete.make} ${vehicleToDelete.model}?` : ''}
+        cancelText="Cancel"
+        confirmText="Remove"
+        isDestructive={true}
+        onCancel={() => setVehicleToDelete(null)}
+        onConfirm={confirmDeleteVehicle}
+      />
     </div>
   );
 };
