@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useOutlet } from 'react-router-dom';
 import { Home, Car, FileText, Settings as SettingsIcon, LogOut, ChevronLeft, ChevronRight, Bell, Menu, X, User } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -12,6 +12,7 @@ const MOBILE_HEADER_EXCLUDED_ROUTES = ['/settings/profile', '/settings/subscript
 
 const MainLayout = () => {
   const location = useLocation();
+  const currentOutlet = useOutlet();
   const { isGuest, user } = useAuth();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -220,7 +221,7 @@ const MainLayout = () => {
               transition={{ duration: 0.2 }}
               className="w-full h-full"
             >
-              <Outlet />
+              {currentOutlet}
             </motion.div>
           </AnimatePresence>
         </div>
