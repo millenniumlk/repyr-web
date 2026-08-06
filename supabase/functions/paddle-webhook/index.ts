@@ -36,6 +36,15 @@ serve(async (req) => {
       return new Response('Invalid signature format', { status: 401 });
     }
 
+    // Replay attack protection (MED-2)
+    // Check if the timestamp is within the last 5 minutes (300 seconds)
+    const currentTs = Math.floor(Date.now() / 1000);
+    const signatureTs = parseInt(ts, 10);
+    if (Math.abs(currentTs - signatureTs) > 300) {
+      console.error('Webhook timestamp out of acceptable window (replay attack protection)');
+      return new Response('Timestamp invalid', { status: 401 });
+    }
+
     // Verify HMAC-SHA256 signature
     const signedPayload = `${ts}:${rawBody}`;
     const encoder = new TextEncoder();

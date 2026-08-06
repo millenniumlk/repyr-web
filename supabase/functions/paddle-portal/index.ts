@@ -50,7 +50,10 @@ serve(async (req) => {
     }
 
     // Call Paddle API to create a Customer Portal Session
-    const paddleResponse = await fetch(`https://sandbox-api.paddle.com/customers/${profile.paddle_customer_id}/portal-sessions`, {
+    const isProd = Deno.env.get("PADDLE_ENV") === 'production';
+    const baseUrl = isProd ? 'https://api.paddle.com' : 'https://sandbox-api.paddle.com';
+    
+    const paddleResponse = await fetch(`${baseUrl}/customers/${profile.paddle_customer_id}/portal-sessions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${paddleApiKey}`,

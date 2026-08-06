@@ -89,6 +89,15 @@ const EditProfile = () => {
       let finalAvatarUrl = avatarUrl;
       
       if (avatarFile && user?.id) {
+        // MED-4: File validation
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(avatarFile.type)) {
+          throw new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
+        }
+        if (avatarFile.size > 5 * 1024 * 1024) {
+          throw new Error('File size exceeds 5MB limit.');
+        }
+
         const fileExt = avatarFile.name.split('.').pop();
         const filePath = `${user.id}-${Math.random()}.${fileExt}`;
         
@@ -130,10 +139,19 @@ const EditProfile = () => {
     setSaving(true);
     setIsDeleting(true);
     try {
-      // Attempt to delete profile data
-      await supabase.from('profiles').delete().eq('id', user?.id);
+      // MED-5: Explicitly delete related data to prevent orphans
+      if (user?.id) {
+        // Delete diagnostic sessions first to avoid foreign key constraints
+        await supabase.from('diagnostic_sessions').delete().eq('user_id', user.id);
+        
+        // Delete vehicles
+        await supabase.from('vehicles').delete().eq('user_id', user.id);
+        
+        // Attempt to delete profile data
+        await supabase.from('profiles').delete().eq('id', user.id);
+      }
       
-      // Attempt to call RPC if it exists
+      // Attempt to call RPC if it exists to delete auth.user
       await supabase.rpc('delete_user');
       
       // Sign out and redirect
