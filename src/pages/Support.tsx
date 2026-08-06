@@ -42,7 +42,7 @@ const Support = () => {
               Drop us an email anytime. We typically respond within 24 hours.
             </p>
             <Button 
-              onClick={() => window.location.href = 'mailto:support@repyr.com'}
+              onClick={() => window.location.href = 'mailto:support@repyrai.com'}
               className="w-full mt-auto"
             >
               Contact Support
