@@ -82,22 +82,13 @@ serve(async (req) => {
       const firstItemPriceId = items.length > 0 ? items[0].price?.id : '';
       
       let tier = 'Trial';
-      if (status === 'active' || status === 'trialing' || status === 'canceled' || status === 'past_due') {
+      if (status === 'active' || status === 'trialing') {
         const isPlus = firstItemPriceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || firstItemPriceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
-        const intendedTier = isPlus ? 'Plus' : 'Pro';
-        
-        if (status === 'canceled' || status === 'past_due') {
-            if (endsAt && new Date(endsAt).getTime() > Date.now()) {
-                tier = intendedTier;
-            } else {
-                tier = 'Trial';
-            }
-        } else {
-            tier = intendedTier;
-        }
+        tier = isPlus ? 'Plus' : 'Pro';
       }
       
       // If a user cancels, their status usually becomes 'canceled' or remains 'active' until the end of the billing period
+      // (Depends on Paddle settings, but typically it's 'active' with scheduled_change, then 'canceled' when it expires)
       // We rely on the status and expiration date.
       
       if (userId) {

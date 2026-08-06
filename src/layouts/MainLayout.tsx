@@ -220,7 +220,7 @@ const MainLayout = () => {
               transition={{ duration: 0.2 }}
               className="w-full h-full"
             >
-              <Outlet context={{ isSidebarCollapsed }} />
+              <Outlet />
             </motion.div>
           </AnimatePresence>
         </div>

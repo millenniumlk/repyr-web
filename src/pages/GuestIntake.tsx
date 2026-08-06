@@ -26,8 +26,6 @@ const GuestIntake = () => {
     }
   }, [step]);
 
-  const sanitizeInput = (str: string) => str.replace(/[<>]/g, '').trim().substring(0, 50);
-
   const handleNext = () => {
     if (step === 0 && !make) return;
     if (step === 1 && !model) return;
@@ -38,8 +36,8 @@ const GuestIntake = () => {
       // Finish and enter guest mode
       setGuestMode(true, {
         id: 'guest-vehicle',
-        make: sanitizeInput(make),
-        model: sanitizeInput(model),
+        make,
+        model,
         year,
         mileage: parseInt(mileage, 10) || 0,
         type: 'car'

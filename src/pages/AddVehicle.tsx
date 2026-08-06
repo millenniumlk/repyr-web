@@ -112,12 +112,10 @@ const AddVehicle = () => {
         throw new Error(`Vehicle limit reached. The ${subscriptionTier} plan allows up to ${limit} vehicles. Please upgrade to add more.`);
       }
 
-      const sanitizeInput = (str: string) => str.replace(/[<>]/g, '').trim().substring(0, 50);
-
       const { error } = await supabase.from('vehicles').insert({
         user_id: user.id,
-        make: sanitizeInput(make),
-        model: sanitizeInput(model),
+        make: make.trim(),
+        model: model.trim(),
         year: parseInt(year.trim(), 10) || 2020,
         mileage: parseInt(mileage.trim(), 10),
         transmission: transmission.trim(),

@@ -92,7 +92,7 @@ const Support = () => {
             <div className="bg-muted p-5 rounded-[20px] border border-border">
               <h4 className="font-bold mb-2">Can I delete my account and data?</h4>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Yes. You can permanently delete your account and all associated data at any time from the Settings &gt; Edit Profile page. This will securely erase all your vehicle profiles and diagnostic history.
+                Yes. You can delete your account by contacting support. We will securely erase all your vehicle profiles and diagnostic history within 30 days of your request.
               </p>
             </div>
           </div>
