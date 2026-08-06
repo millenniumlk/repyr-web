@@ -36,7 +36,7 @@ const Garage = () => {
 
   const confirmDeleteVehicle = async () => {
     if (!vehicleToDelete) return;
-    const { id, make, model } = vehicleToDelete;
+    const { id } = vehicleToDelete;
 
     // Detach diagnostic sessions from this vehicle before deleting it
     // so they aren't cascade-deleted. This prevents users from bypassing daily chat limits.
