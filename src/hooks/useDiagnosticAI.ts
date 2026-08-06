@@ -38,7 +38,7 @@ export function useDiagnosticAI(vehicle: any) {
         "thought_process": "Evaluate the user's response. Did they ask a question? If so, I must answer it and my status MUST remain 'investigating'. Did they provide the test result? Have I isolated the EXACT specific failing component (e.g. 'AC Condenser', not just 'AC System')? Do I have 95%+ confidence based on ACTUAL user observations to conclude?",
         "status": "investigating" | "diagnosis_complete", 
         "current_probabilities": [
-          {"cause": "AC Condenser (SPECIFIC part, NOT a generic system)", "confidence_score": 98, "reasoning": "Why this is likely"}
+          {"cause": "AC Condenser", "confidence_score": 98, "reasoning": "Why this is likely"}
         ],
         "next_diagnostic_question": "The next question to ask the user OR the final summary if complete.",
         "suggested_options": ["Direct answer 1 to your question", "Direct answer 2 to your question", "I'm not sure"]
