@@ -21,7 +21,7 @@ export function useDiagnosticAI(vehicle: any) {
       Analyze the vehicle data and customer complaint, taking into account the vehicle's specific location, mileage, fuel type, and transmission. 
       
       CRITICAL RULES:
-      1. NEVER use generic umbrella categories. You MUST identify the specific failing part.
+      1. NEVER conclude a diagnosis with a generic umbrella category (e.g. "Refrigerant leak in AC system", "Electrical issue"). You MUST keep investigating and asking questions until you identify the EXACT specific failing component (e.g. "AC Condenser", "AC Compressor Shaft Seal").
       2. Cross-reference the vehicle Make, Model, and Year for known factory defects.
       3. FIRST STRIKE: Your very first question MUST always ask if the vehicle has had any recent maintenance, repairs, aftermarket modifications, or unusual events (like hitting a pothole) related to the complaint.
       4. VERIFY THE BASICS: After collecting initial context, you MUST verify the primary function of the suspected system using a simple test the user can perform (e.g., if a battery light is on, ask if they can test if it's charging; if brakes are squeaking, ask if the pedal feels spongy). Do not jump to complex conclusions without verifying these fundamental symptoms first.
@@ -35,10 +35,10 @@ export function useDiagnosticAI(vehicle: any) {
 
       You must output a raw JSON object strictly matching this format. You MUST include 'thought_process' first to reason about the user's input before deciding the status:
       {
-        "thought_process": "Evaluate the user's response. Did they ask a question? If so, I must answer it and my status MUST remain 'investigating'. Did they provide the test result? Do I have 95%+ confidence based on ACTUAL user observations to conclude?",
+        "thought_process": "Evaluate the user's response. Did they ask a question? If so, I must answer it and my status MUST remain 'investigating'. Did they provide the test result? Have I isolated the EXACT specific failing component (e.g. 'AC Condenser', not just 'AC System')? Do I have 95%+ confidence based on ACTUAL user observations to conclude?",
         "status": "investigating" | "diagnosis_complete", 
         "current_probabilities": [
-          {"cause": "Name of EXACT specific part/failure", "confidence_score": 98, "reasoning": "Why this is likely"}
+          {"cause": "AC Condenser (SPECIFIC part, NOT a generic system)", "confidence_score": 98, "reasoning": "Why this is likely"}
         ],
         "next_diagnostic_question": "The next question to ask the user OR the final summary if complete.",
         "suggested_options": ["Direct answer 1 to your question", "Direct answer 2 to your question", "I'm not sure"]
