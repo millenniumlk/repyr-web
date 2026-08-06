@@ -77,7 +77,7 @@ const EditProfile = () => {
   const canSaveProfile = hasChanges && isValidName && !saving;
   
   const passwordsMatch = newPassword === confirmPassword;
-  const isValidPassword = newPassword.length >= 6;
+  const isValidPassword = newPassword.length >= 8 && /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) && /[0-9]/.test(newPassword);
   const canSavePassword = newPassword.length > 0 && passwordsMatch && isValidPassword && !saving;
 
   const handleSaveProfile = async () => {

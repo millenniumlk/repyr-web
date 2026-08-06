@@ -11,58 +11,83 @@ import { Button } from '../components/ui/Button';
 
 const Subscription = () => {
   const navigate = useNavigate();
-  const { user, subscriptionTier, setSubscriptionTier, isLoading } = useAuth();
+  const { user, subscriptionTier, refreshSubscriptionTier, isLoading } = useAuth();
   const { showToast } = useToast();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [paddle, setPaddle] = useState<Paddle | undefined>();
   const [managing, setManaging] = useState(false);
+  const [awaitingWebhook, setAwaitingWebhook] = useState(false);
 
   useEffect(() => {
     initializePaddle({ 
       environment: (import.meta.env.VITE_PADDLE_ENV || 'sandbox') as 'sandbox' | 'production', 
-      token: import.meta.env.VITE_PADDLE_TOKEN || 'test_47e18d0521de46b6c5571feccd4',
+      token: import.meta.env.VITE_PADDLE_TOKEN,
       eventCallback: async (data) => {
         if (data.name === 'checkout.completed') {
-          const items = data.data?.items || [];
-          const priceId = items.length > 0 ? (items[0] as any).price?.id : '';
-          const isPlus = priceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || priceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
-          const tier = isPlus ? 'Plus' : 'Pro';
-
-          // Fallback UI update until webhooks are ready
-          setSubscriptionTier(tier); 
-          if (user) {
-             await supabase.from('profiles').upsert({ id: user.id, subscription_tier: tier });
-          }
-          
-          let needsCompleteProfile = false;
-          const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-          if (pendingChatRaw) {
-             try {
-                const pendingChat = JSON.parse(pendingChatRaw);
-                if (pendingChat.needsProfileComplete) {
-                   needsCompleteProfile = true;
-                }
-             } catch (e) {}
-          }
-          
-          if (!needsCompleteProfile && user) {
-             const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-             if (vData && vData.length > 0) {
-                const v = vData[0];
-                if (!v.transmission || !v.fuel_type || !v.location) {
-                   needsCompleteProfile = true;
-                }
-             }
-          }
-      
+          // Do NOT set the tier client-side or write to the DB.
+          // The Paddle webhook (server-side, using service role key) is the only
+          // trusted source for subscription tier changes. We poll until it lands.
+          setAwaitingWebhook(true);
           setProcessingPlan(null);
-          
-          if (needsCompleteProfile) {
-             navigate('/complete-profile');
-          } else {
-             navigate('/');
-          }
+
+          let pollAttempts = 0;
+          const maxAttempts = 15; // 15 × 2s = 30s max wait
+
+          const pollInterval = setInterval(async () => {
+            pollAttempts++;
+            
+            // Query the DB directly for the freshest tier
+            const { data: freshProfile } = await supabase
+              .from('profiles')
+              .select('subscription_tier')
+              .eq('id', user?.id)
+              .single();
+            
+            const freshTier = freshProfile?.subscription_tier?.trim();
+            const isPaid = freshTier === 'Plus' || freshTier === 'Pro' || freshTier === 'plus' || freshTier === 'pro';
+            
+            if (isPaid || pollAttempts >= maxAttempts) {
+              clearInterval(pollInterval);
+              
+              // Sync the context with the new DB value
+              await refreshSubscriptionTier();
+              setAwaitingWebhook(false);
+              
+              if (!isPaid) {
+                // Webhook didn't arrive in time — still navigate, the tier will update on next page load
+                showToast("Subscription is being processed. It may take a moment to activate.", 'info');
+              }
+              
+              // Navigate based on whether vehicle profile needs completion
+              let needsCompleteProfile = false;
+              const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+              if (pendingChatRaw) {
+                try {
+                  const pendingChat = JSON.parse(pendingChatRaw);
+                  if (pendingChat.needsProfileComplete) {
+                    needsCompleteProfile = true;
+                  }
+                } catch (e) {}
+              }
+              
+              if (!needsCompleteProfile && user) {
+                const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+                if (vData && vData.length > 0) {
+                  const v = vData[0];
+                  if (!v.transmission || !v.fuel_type || !v.location) {
+                    needsCompleteProfile = true;
+                  }
+                }
+              }
+              
+              if (needsCompleteProfile) {
+                navigate('/complete-profile');
+              } else {
+                navigate('/');
+              }
+            }
+          }, 2000);
         }
       }
     }).then(
@@ -72,7 +97,7 @@ const Subscription = () => {
         }
       }
     );
-  }, [navigate, user]);
+  }, [navigate, user, refreshSubscriptionTier, showToast]);
 
   const plans = [
     {
@@ -178,10 +203,13 @@ const Subscription = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || awaitingWebhook) {
     return (
-      <div className="flex justify-center items-center py-20 min-h-[80vh]">
+      <div className="flex flex-col justify-center items-center py-20 min-h-[80vh] gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        {awaitingWebhook && (
+          <p className="text-muted-foreground text-sm font-medium animate-pulse">Processing your subscription...</p>
+        )}
       </div>
     );
   }

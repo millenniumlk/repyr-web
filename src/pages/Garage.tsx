@@ -31,9 +31,11 @@ const Garage = () => {
     if (window.confirm(`Are you sure you want to remove this ${make} ${model}?`)) {
       // Detach diagnostic sessions from this vehicle before deleting it
       // so they aren't cascade-deleted. This prevents users from bypassing daily chat limits.
-      await supabase.from('diagnostic_sessions').update({ vehicle_id: null }).eq('vehicle_id', id);
+      // Scoped to user_id to prevent IDOR — only detach sessions belonging to this user.
+      await supabase.from('diagnostic_sessions').update({ vehicle_id: null }).eq('vehicle_id', id).eq('user_id', user?.id);
 
-      const { error } = await supabase.from('vehicles').delete().eq('id', id);
+      // Delete is also scoped to user_id to prevent deleting another user's vehicle.
+      const { error } = await supabase.from('vehicles').delete().eq('id', id).eq('user_id', user?.id);
       if (!error) {
         queryClient.setQueryData(['vehicles', user?.id], (old: any[]) => 
           old ? old.filter(v => v.id !== id) : []

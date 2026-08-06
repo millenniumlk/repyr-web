@@ -120,10 +120,23 @@ const Auth = () => {
     setForgotStep('email');
   };
 
+  // Password strength validation
+  const passwordChecks = {
+    minLength: password.length >= 8,
+    hasUpper: /[A-Z]/.test(password),
+    hasLower: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+  };
+  const isPasswordStrong = passwordChecks.minLength && passwordChecks.hasUpper && passwordChecks.hasLower && passwordChecks.hasNumber;
+
   const handleAuth = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!email || !password || (isSignUp && (!fullName || !acceptedTerms))) {
       setError('Please fill in all fields and accept the terms');
+      return;
+    }
+    if (isSignUp && !isPasswordStrong) {
+      setError('Password must be at least 8 characters with uppercase, lowercase, and a number.');
       return;
     }
     
@@ -419,18 +432,28 @@ const Auth = () => {
               )}
 
               {!isForgotPassword && (
-                <AnimatedInput
-                  icon={Lock}
-                  value={password}
-                  onChange={(e: any) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  rightAccessory={() => password.length > 0 && (
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 text-primary">
-                      {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-                    </button>
+                <>
+                  <AnimatedInput
+                    icon={Lock}
+                    value={password}
+                    onChange={(e: any) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    rightAccessory={() => password.length > 0 && (
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 text-primary">
+                        {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                      </button>
+                    )}
+                  />
+                  {isSignUp && password.length > 0 && (
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 px-1 -mt-1 pb-1">
+                      <span className={`text-[11px] font-medium ${passwordChecks.minLength ? 'text-green-600' : 'text-muted-foreground'}`}>✓ 8+ chars</span>
+                      <span className={`text-[11px] font-medium ${passwordChecks.hasUpper ? 'text-green-600' : 'text-muted-foreground'}`}>✓ Uppercase</span>
+                      <span className={`text-[11px] font-medium ${passwordChecks.hasLower ? 'text-green-600' : 'text-muted-foreground'}`}>✓ Lowercase</span>
+                      <span className={`text-[11px] font-medium ${passwordChecks.hasNumber ? 'text-green-600' : 'text-muted-foreground'}`}>✓ Number</span>
+                    </div>
                   )}
-                />
+                </>
               )}
 
               {!isSignUp && !isForgotPassword && (

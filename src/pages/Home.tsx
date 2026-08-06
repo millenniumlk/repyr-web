@@ -258,7 +258,10 @@ const Home = () => {
         return;
       }
       
-      // Check paywall limits
+      // NOTE: This client-side limit check is a UX optimization only.
+      // The authoritative enforcement happens server-side in the diagnostic-ai edge function,
+      // which checks limits BEFORE creating a session. If a user bypasses this client check
+      // (e.g., by manipulating subscriptionTier), the edge function will still reject the request.
       let limitReached = false;
       
       if (subscriptionTier !== 'Pro') {

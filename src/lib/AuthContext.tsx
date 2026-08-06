@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 
@@ -10,7 +10,8 @@ interface AuthContextType {
   guestVehicle: any | null;
   subscriptionTier: 'Trial' | 'Plus' | 'Pro';
   setGuestMode: (mode: boolean, vehicle?: any) => void;
-  setSubscriptionTier: (tier: 'Trial' | 'Plus' | 'Pro') => void;
+  /** Re-fetch the subscription tier from the database. This is the ONLY way to update the tier on the client. */
+  refreshSubscriptionTier: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,7 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   guestVehicle: null,
   subscriptionTier: 'Trial',
   setGuestMode: () => {},
-  setSubscriptionTier: () => {},
+  refreshSubscriptionTier: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isGuest, setIsGuest] = useState(false);
   const [guestVehicle, setGuestVehicle] = useState<any | null>(null);
   const [subscriptionTier, setSubscriptionTierState] = useState<'Trial' | 'Plus' | 'Pro'>('Trial');
+  const userIdRef = useRef<string | null>(null);
 
   const handleSetGuestMode = (mode: boolean, vehicle?: any) => {
     setIsGuest(mode);
@@ -38,43 +40,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     else setGuestVehicle(null);
   };
 
-  const fetchProfileTier = async (userId: string) => {
+  const fetchProfileTier = useCallback(async (userId?: string) => {
+    const resolvedId = userId || userIdRef.current;
+    if (!resolvedId) return;
     try {
-      console.log("Fetching profile tier for user:", userId);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('subscription_tier')
-        .eq('id', userId)
+        .eq('id', resolvedId)
         .single();
-      
-      console.log("DB returned data:", data, "error:", error);
 
       if (data?.subscription_tier) {
          const rawTier = String(data.subscription_tier).trim();
          const normalized = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
-         console.log("Normalized tier:", normalized);
          if (['Trial', 'Plus', 'Pro'].includes(normalized)) {
-            console.log("Setting tier to:", normalized);
             setSubscriptionTierState(normalized as 'Trial' | 'Plus' | 'Pro');
-         } else {
-            console.warn("Tier did not match expected values:", normalized);
          }
-      } else {
-         console.warn("No subscription_tier found in data.");
       }
-    } catch (e) {
-      console.error("Failed to fetch subscription tier", e);
+    } catch {
+      // Silently fail — tier stays at current value
     }
-  };
+  }, []);
+
+  /** Public method: re-fetch the tier from the database. Cannot set an arbitrary value. */
+  const refreshSubscriptionTier = useCallback(async () => {
+    await fetchProfileTier();
+  }, [fetchProfileTier]);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        userIdRef.current = session.user.id;
         setIsGuest(false);
         await fetchProfileTier(session.user.id);
       } else {
+        userIdRef.current = null;
         setSubscriptionTierState('Trial');
       }
       setIsLoading(false);
@@ -84,16 +86,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        userIdRef.current = session.user.id;
         setIsGuest(false);
         await fetchProfileTier(session.user.id);
       } else {
+        userIdRef.current = null;
         setSubscriptionTierState('Trial');
       }
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchProfileTier]);
 
   return (
     <AuthContext.Provider value={{ 
@@ -104,7 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       guestVehicle, 
       subscriptionTier,
       setGuestMode: handleSetGuestMode,
-      setSubscriptionTier: setSubscriptionTierState 
+      refreshSubscriptionTier,
     }}>
       {children}
     </AuthContext.Provider>

@@ -2,12 +2,21 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') || 'https://repyrai.com';
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('Origin') || '';
+  // Allow the configured production origin, or localhost for development
+  const isAllowed = origin === ALLOWED_ORIGIN || origin.startsWith('http://localhost');
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGIN,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -30,25 +39,9 @@ serve(async (req) => {
       throw new Error("Unauthorized user");
     }
 
-    const { sessionId, chatContext, newMessage } = await req.json();
+    const { sessionId, chatContext, newMessage, vehicleData } = await req.json();
 
-    if (!sessionId) {
-      throw new Error("Missing sessionId");
-    }
-
-    // Verify session belongs to user and get current state
-    const { data: session, error: sessionError } = await supabaseClient
-      .from('diagnostic_sessions')
-      .select('*')
-      .eq('id', sessionId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (sessionError || !session) {
-      throw new Error("Session not found or access denied");
-    }
-
-    // Check limits
+    // ── Resolve subscription tier (used by both flows) ──
     const { data: profile } = await supabaseClient
       .from('profiles')
       .select('subscription_tier')
@@ -58,44 +51,102 @@ serve(async (req) => {
     const rawTier = profile?.subscription_tier ? String(profile.subscription_tier).trim() : 'Trial';
     const tier = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
 
-    if (tier !== 'Pro') {
-      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    let session: any;
+    let activeSessionId = sessionId;
 
-      const { count, error: countError } = await supabaseClient
-        .from('diagnostic_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('created_at', twentyFourHoursAgo)
-        .lte('created_at', session.created_at);
+    if (!sessionId && vehicleData) {
+      // ═══════════════════════════════════════════════════
+      // NEW SESSION FLOW — create session server-side
+      // ═══════════════════════════════════════════════════
 
-      if (!countError && count !== null) {
-        let adjustedCount = count;
+      // 1. Check limits BEFORE creating the session
+      if (tier !== 'Pro') {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-        if (tier === 'Plus') {
-          const { data: firstSession } = await supabaseClient
-            .from('diagnostic_sessions')
-            .select('created_at')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: true })
-            .limit(1)
-            .single();
+        const { count, error: countError } = await supabaseClient
+          .from('diagnostic_sessions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .gte('created_at', twentyFourHoursAgo);
 
-          if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
-            adjustedCount = Math.max(0, adjustedCount - 1);
+        if (!countError && count !== null) {
+          let adjustedCount = count;
+
+          if (tier === 'Plus') {
+            const { data: firstSession } = await supabaseClient
+              .from('diagnostic_sessions')
+              .select('created_at')
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: true })
+              .limit(1)
+              .single();
+
+            if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
+              adjustedCount = Math.max(0, adjustedCount - 1);
+            }
+          }
+
+          const maxSessions = tier === 'Plus' ? 5 : 1;
+          if (adjustedCount >= maxSessions) {
+            return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
           }
         }
-
-        const maxSessions = tier === 'Plus' ? 5 : 1;
-        if (adjustedCount > maxSessions) {
-          return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
-            status: 403,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
       }
+
+      // 2. Create the session server-side
+      const vehicleId = vehicleData.id && vehicleData.id !== 'guest-vehicle' && vehicleData.id !== 'pending-vehicle'
+        ? vehicleData.id
+        : null;
+
+      const { data: newSession, error: insertError } = await supabaseClient
+        .from('diagnostic_sessions')
+        .insert([{
+          vehicle_id: vehicleId,
+          user_id: user.id,
+          vehicle_make: vehicleData.make,
+          vehicle_model: vehicleData.model,
+          vehicle_year: vehicleData.year,
+          vehicle_mileage: vehicleData.mileage,
+          vehicle_engine: vehicleData.fuel_type,
+          location: vehicleData.location,
+          initial_category: vehicleData.category || 'General',
+          user_description: vehicleData.description,
+        }])
+        .select()
+        .single();
+
+      if (insertError || !newSession) {
+        throw new Error("Failed to create session: " + (insertError?.message || 'Unknown error'));
+      }
+
+      session = newSession;
+      activeSessionId = newSession.id;
+
+    } else if (sessionId) {
+      // ═══════════════════════════════════════════════════
+      // EXISTING SESSION FLOW — follow-up messages
+      // ═══════════════════════════════════════════════════
+
+      const { data: existingSession, error: sessionError } = await supabaseClient
+        .from('diagnostic_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (sessionError || !existingSession) {
+        throw new Error("Session not found or access denied");
+      }
+
+      session = existingSession;
+    } else {
+      throw new Error("Must provide either sessionId or vehicleData");
     }
 
-    // Manage Chat History Securely
+    // ── Build chat context ──
     let finalChatContext = [];
     if (!session.chat_history || session.chat_history.length === 0) {
       if (!chatContext || !Array.isArray(chatContext)) {
@@ -109,6 +160,7 @@ serve(async (req) => {
       finalChatContext = [...session.chat_history, { role: 'user', content: newMessage }];
     }
 
+    // ── Call OpenAI ──
     const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAiApiKey) {
       throw new Error("Missing OPENAI_API_KEY environment variable");
@@ -143,9 +195,7 @@ serve(async (req) => {
     
     finalChatContext.push({ role: 'assistant', content: JSON.stringify(aiResponse) });
 
-    // Important: Update DB securely via Edge Function so client cannot modify it directly
-    // Using service role key if available because the user may not have update permissions if we lockdown RLS, 
-    // but using the user JWT is fine if RLS allows it (it currently allows it based on existing code).
+    // ── Update session in DB ──
     await supabaseClient
       .from('diagnostic_sessions')
       .update({
@@ -153,9 +203,10 @@ serve(async (req) => {
         status: aiResponse.status,
         final_probabilities: aiResponse.current_probabilities || null,
       })
-      .eq('id', sessionId);
+      .eq('id', activeSessionId);
 
-    return new Response(JSON.stringify(aiResponse), {
+    // Include sessionId in the response so the client can use it for follow-up messages
+    return new Response(JSON.stringify({ ...aiResponse, sessionId: activeSessionId }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
@@ -167,3 +218,4 @@ serve(async (req) => {
     });
   }
 });
+

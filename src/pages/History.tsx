@@ -17,6 +17,7 @@ const History = () => {
       const { data, error } = await supabase
         .from('diagnostic_sessions')
         .select('*, vehicles(make, model)')
+        .eq('user_id', user.id)
         .eq('status', 'diagnosis_complete')
         .order('created_at', { ascending: false });
         
