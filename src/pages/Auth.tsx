@@ -62,6 +62,8 @@ const Auth = () => {
 
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'new_password'>('email');
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
   
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -131,6 +133,12 @@ const Auth = () => {
 
   const handleAuth = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      setError(`Too many attempts. Please try again in ${Math.ceil((lockoutUntil - Date.now()) / 1000)} seconds.`);
+      return;
+    }
+
     if (!email || !password || (isSignUp && (!fullName || !acceptedTerms))) {
       setError('Please fill in all fields and accept the terms');
       return;
@@ -159,17 +167,23 @@ const Auth = () => {
           // details (fuel type, transmission, location) before starting the session.
           navigate(isFromGuestChat.current ? '/complete-profile' : '/');
         } else {
-          localStorage.removeItem('diagnostics_run_count');
           handleToggleState('login');
           setSuccessMsg('Account created successfully! Please check your email to verify your account.');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setFailedAttempts(0);
         navigate('/');
       }
     } catch (err: any) {
       handleError(err);
+      const newAttempts = failedAttempts + 1;
+      setFailedAttempts(newAttempts);
+      if (newAttempts >= 5) {
+        setLockoutUntil(Date.now() + 60000); // 1 minute lockout
+        setError("Too many failed attempts. Please wait 60 seconds.");
+      }
     } finally {
       setLoading(false);
     }
@@ -476,7 +490,7 @@ const Auth = () => {
                     {acceptedTerms && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                   </button>
                   <p className="text-muted-foreground text-sm flex-1 font-medium">
-                    I agree to the <Link to="/terms" target="_blank" className="text-primary font-semibold hover:underline">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" className="text-primary font-semibold hover:underline">Privacy Policy</Link>
+                    I agree to the <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Privacy Policy</Link>
                   </p>
                 </div>
               )}

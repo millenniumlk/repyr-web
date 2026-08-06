@@ -494,12 +494,7 @@ const Home = () => {
                 variant="outline"
                 onClick={() => {
                   setIsVehicleSelectorOpen(false);
-                  const count = parseInt(localStorage.getItem('diagnostics_run_count') || '0', 10);
-                  if (count >= 1 && subscriptionTier === 'Trial') {
-                    navigate('/settings/subscription');
-                  } else {
-                    navigate('/garage/add');
-                  }
+                  navigate('/garage/add');
                 }}
                 className="w-full mt-4 rounded-full border-dashed border-primary/40 text-primary hover:bg-primary/10"
               >
