@@ -16,7 +16,8 @@ const ChatInputBar = ({
   handleStartOrReply,
   currentOptions,
   handleSendReply,
-  isGuest
+  isGuest,
+  isSidebarCollapsed
 }: any) => {
   
   const canSubmit = isChatActive 
