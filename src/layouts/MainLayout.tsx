@@ -168,7 +168,7 @@ const MainLayout = () => {
           >
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20 shadow-sm group-hover:border-primary/40 transition-colors shrink-0">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" />
+                <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 isGuest ? 'G' : displayInitial
               )}
@@ -306,7 +306,7 @@ const MainLayout = () => {
                 <div className="flex items-center gap-3 px-2 py-2 mb-2">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20 shrink-0">
                     {avatarUrl ? (
-                      <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" />
+                      <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       isGuest ? 'G' : displayInitial
                     )}

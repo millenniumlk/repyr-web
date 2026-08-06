@@ -124,7 +124,7 @@ const Settings = () => {
         >
           <div className="w-24 h-24 rounded-full bg-card border-2 border-border items-center justify-center flex overflow-hidden mb-4 shadow-sm shadow-border/50">
             {displayAvatar ? (
-              <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
               <div className="w-full h-full bg-primary/10 flex items-center justify-center border border-primary/10">
                 <span className="text-primary text-3xl font-black pt-1 leading-none">
