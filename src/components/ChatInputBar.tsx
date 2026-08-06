@@ -27,9 +27,8 @@ const ChatInputBar = ({
 
   const shouldShowSelector = !isChatActive && !!selectedVehicle && inputValue.length === 0;
 
-  // TODO: md:left-64 is hardcoded — should be dynamic based on sidebar collapse state (w-64 vs w-20)
   return (
-    <div className="fixed bottom-0 left-0 md:left-64 right-0 px-4 md:px-8 pb-6 pt-4 z-20 flex justify-center pointer-events-none">
+    <div className={`fixed bottom-0 left-0 ${isSidebarCollapsed ? 'md:left-20' : 'md:left-64'} right-0 px-4 md:px-8 pb-6 pt-4 z-20 flex justify-center pointer-events-none`}>
       <div className="w-full max-w-7xl flex justify-center">
         <div className="max-w-3xl w-full flex flex-col justify-end">
         

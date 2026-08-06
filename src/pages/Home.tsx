@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Loader2, X, CheckCircle, Plus, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { isSidebarCollapsed } = useOutletContext<{ isSidebarCollapsed: boolean }>() || { isSidebarCollapsed: false };
   const { user, guestVehicle, subscriptionTier } = useAuth();
   
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -85,104 +86,102 @@ const Home = () => {
     enabled: !!user,
   });
 
+  const hasMigratedGuestVehicle = useRef(false);
+
+  // Separate effect for guest vehicle migration to prevent infinite loops
+  useEffect(() => {
+    if (!user || isQueryLoading || hasMigratedGuestVehicle.current) return;
+    
+    const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+    if (!pendingChatRaw) {
+      hasMigratedGuestVehicle.current = true;
+      return;
+    }
+
+    try {
+      const pendingChat = JSON.parse(pendingChatRaw);
+      if (pendingChat.vehicle && !pendingChat.needsProfileComplete) {
+        hasMigratedGuestVehicle.current = true;
+        
+        const gv = pendingChat.vehicle;
+        const alreadyExists = dbVehicles.find((v: any) => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
+        
+        if (!alreadyExists) {
+          supabase.from('vehicles').insert({
+            user_id: user.id,
+            make: gv.make,
+            model: gv.model,
+            year: parseInt(gv.year, 10) || 2020,
+            mileage: parseInt(gv.mileage, 10) || 0,
+            transmission: gv.transmission || '',
+            fuel_type: gv.fuel_type || '',
+            location: gv.location || ''
+          }).then(({ error }) => {
+            if (!error) queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
+          });
+        }
+        
+        delete pendingChat.vehicle;
+        if (Object.keys(pendingChat).length === 0) {
+          localStorage.removeItem('pending_guest_chat');
+        } else {
+          localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
+        }
+      }
+    } catch (e) {}
+  }, [user, dbVehicles, isQueryLoading, queryClient]);
+
+  // Main vehicle loading effect
   useEffect(() => {
     let isMounted = true;
 
-    const loadVehicles = async () => {
-      if (user) {
-        if (isQueryLoading) return; // Wait until react-query completes
-        
-        let finalData = [...dbVehicles];
-        
-        // Save pending guest chat vehicle to the database.
-        // If needsProfileComplete is true, the user hasn't filled in fuel/transmission/location yet —
-        // defer the insert to CompleteVehicleProfile so we don't save an incomplete record.
-        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-        if (pendingChatRaw) {
-          try {
-            const pendingChat = JSON.parse(pendingChatRaw);
-            if (pendingChat.vehicle) {
-              const gv = pendingChat.vehicle;
-              const alreadyExists = finalData.find(v => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
-
-              if (pendingChat.needsProfileComplete) {
-                // Profile not yet completed — surface the vehicle in state for display only,
-                // but do NOT insert into the DB. CompleteVehicleProfile will do the insert.
-                if (!alreadyExists) {
-                  finalData = [{ id: 'pending-vehicle', ...gv }, ...finalData];
-                } else {
-                  finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
-                }
-              } else {
-                // Profile already complete — safe to insert / reorder.
-                if (!alreadyExists) {
-                  const { data: newVehicle, error: insertError } = await supabase.from('vehicles').insert({
-                    user_id: user.id,
-                    make: gv.make,
-                    model: gv.model,
-                    year: parseInt(gv.year, 10) || 2020,
-                    mileage: parseInt(gv.mileage, 10) || 0,
-                    transmission: gv.transmission || '',
-                    fuel_type: gv.fuel_type || '',
-                    location: gv.location || ''
-                  }).select().single();
-
-                  if (insertError) {
-                    console.error('Failed to save guest vehicle:', insertError);
-                  }
-
-                  if (newVehicle) {
-                    finalData = [newVehicle, ...finalData];
-                    queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
-                  }
-                } else {
-                  finalData = [alreadyExists, ...finalData.filter(v => v.id !== alreadyExists.id)];
-                }
-
-                delete pendingChat.vehicle;
-                if (Object.keys(pendingChat).length === 0) {
-                  localStorage.removeItem('pending_guest_chat');
-                } else {
-                  localStorage.setItem('pending_guest_chat', JSON.stringify(pendingChat));
-                }
-              }
+    if (user) {
+      if (isQueryLoading) return;
+      let finalData = [...dbVehicles];
+      
+      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+      if (pendingChatRaw) {
+        try {
+          const pendingChat = JSON.parse(pendingChatRaw);
+          if (pendingChat.vehicle && pendingChat.needsProfileComplete) {
+            const gv = pendingChat.vehicle;
+            const alreadyExists = finalData.find((v: any) => v.make === gv.make && v.model === gv.model && String(v.year) === String(gv.year));
+            if (!alreadyExists) {
+              finalData = [{ id: 'pending-vehicle', ...gv }, ...finalData];
             }
-          } catch (e) {}
-        }
-        
-        if (isMounted) {
-          setVehicles(finalData);
-          setIsLoading(false);
-        }
-      } else {
-        let tempVehicles: any[] = [];
-        if (guestVehicle) {
-          tempVehicles = [guestVehicle];
-        }
-        
-        const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-        if (pendingChatRaw) {
-          try {
-            const pendingChat = JSON.parse(pendingChatRaw);
-            if (pendingChat.vehicle) {
-              const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
-              if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
-                tempVehicles = [vehicle, ...tempVehicles];
-              }
-            }
-          } catch (e) {}
-        }
-        if (isMounted) {
-          setVehicles(tempVehicles);
-          setIsLoading(false);
-        }
+          }
+        } catch (e) {}
       }
-    };
-
-    loadVehicles();
+      
+      if (isMounted) {
+        setVehicles(finalData);
+        setIsLoading(false);
+      }
+    } else {
+      let tempVehicles: any[] = [];
+      if (guestVehicle) {
+        tempVehicles = [guestVehicle];
+      }
+      const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+      if (pendingChatRaw) {
+        try {
+          const pendingChat = JSON.parse(pendingChatRaw);
+          if (pendingChat.vehicle) {
+            const vehicle = { id: 'pending-vehicle', ...pendingChat.vehicle };
+            if (!tempVehicles.find(v => v.make === vehicle.make && v.model === vehicle.model)) {
+              tempVehicles = [vehicle, ...tempVehicles];
+            }
+          }
+        } catch (e) {}
+      }
+      if (isMounted) {
+        setVehicles(tempVehicles);
+        setIsLoading(false);
+      }
+    }
 
     return () => { isMounted = false; };
-  }, [user, guestVehicle, dbVehicles, isQueryLoading, queryClient]);
+  }, [user, guestVehicle, dbVehicles, isQueryLoading]);
 
   // Set selected vehicle once loaded
   useEffect(() => {
@@ -190,6 +189,11 @@ const Home = () => {
       setSelectedVehicle(vehicles[0]);
     }
   }, [vehicles, selectedVehicle]);
+
+  // Reset diagnosis when selected vehicle changes
+  useEffect(() => {
+    resetDiagnosis();
+  }, [selectedVehicle?.id, resetDiagnosis]);
 
   // Pre-fill symptoms if there was a pending chat
   useEffect(() => {
@@ -445,6 +449,7 @@ const Home = () => {
           currentOptions={currentOptions}
           handleSendReply={handleSendReply}
           isGuest={!user}
+          isSidebarCollapsed={isSidebarCollapsed}
         />
       )}
 

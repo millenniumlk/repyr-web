@@ -34,6 +34,7 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
     </div>
   );
 });
+AnimatedInput.displayName = 'AnimatedInput';
 
 const Auth = () => {
   const navigate = useNavigate();
