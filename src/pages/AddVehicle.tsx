@@ -237,9 +237,17 @@ const AddVehicle = () => {
           ) : (
             <input
               ref={inputRef}
-              type={currentStep.type || 'text'}
+              type={currentStep.type === 'number' ? 'text' : (currentStep.type || 'text')}
+              inputMode={currentStep.type === 'number' ? 'numeric' : undefined}
+              pattern={currentStep.type === 'number' ? '[0-9]*' : undefined}
               value={currentStep.value}
-              onChange={(e) => currentStep.setter(e.target.value)}
+              onChange={(e) => {
+                let val = e.target.value;
+                if (currentStep.type === 'number') {
+                  val = val.replace(/\D/g, ''); // Remove non-digits
+                }
+                currentStep.setter(val);
+              }}
               onKeyDown={handleKeyDown}
               placeholder={currentStep.placeholder}
               disabled={isSubmitting}
