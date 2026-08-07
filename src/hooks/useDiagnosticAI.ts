@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 export function useDiagnosticAI(vehicle: any) {
@@ -147,14 +147,14 @@ export function useDiagnosticAI(vehicle: any) {
     await pingOpenAI({ newMessage: text });
   };
 
-  const resetDiagnosis = () => {
+  const resetDiagnosis = useCallback(() => {
     sessionIdRef.current = null;
     vehicleDescriptionRef.current = '';
     vehicleCategoryRef.current = '';
     setMessages([]);
     setProbabilities([]);
     setIsTyping(false);
-  };
+  }, []);
 
   const diagnosisCompleteIndex = messages.findIndex(m => {
     if (m.role !== 'assistant') return false;
