@@ -212,14 +212,14 @@ const MainLayout = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-transparent">
         <div className="md:p-8 flex-1 max-w-7xl mx-auto w-full relative">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              exit={{ opacity: 0, y: -10, position: 'absolute' }}
               transition={{ duration: 0.2 }}
-              className="w-full h-full"
+              className="w-full h-full top-0 left-0 md:top-8 md:left-8 md:w-[calc(100%-4rem)]"
             >
               {currentOutlet}
             </motion.div>
