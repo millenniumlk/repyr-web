@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { Vehicle, ChatMessage, DiagnosticProbability } from '../types';
+import type { Vehicle, ChatMessage, DiagnosticProbability } from '../types';
 
 export function useDiagnosticAI(vehicle: Vehicle) {
   const sessionIdRef = useRef<string | null>(null);
@@ -63,7 +63,7 @@ export function useDiagnosticAI(vehicle: Vehicle) {
       const safeDescription = sanitize(vehicleDescriptionRef.current, 500);
       const safeMake = sanitize(vehicle.make);
       const safeModel = sanitize(vehicle.model);
-      const safeYear = sanitize(vehicle.year?.toString());
+      const safeYear = sanitize(vehicle.year?.toString() || 'Unknown');
       const safeTransmission = sanitize(vehicle.transmission || 'Unknown Transmission');
       const safeFuelType = sanitize(vehicle.fuel_type || 'Unknown Fuel');
       const safeMileage = sanitize(vehicle.mileage?.toString() || 'Unknown');
@@ -72,7 +72,7 @@ export function useDiagnosticAI(vehicle: Vehicle) {
 
       const initialUserMessage = `Vehicle: ${safeYear} ${safeMake} ${safeModel} (${safeTransmission}, ${safeFuelType}). Mileage: ${safeMileage} KM. Location: ${safeLocation}. Category: ${safeCategory}. Complaint: "${safeDescription}"`;
 
-      const chatContext = [
+      const chatContext: ChatMessage[] = [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: initialUserMessage }
       ];

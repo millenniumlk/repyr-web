@@ -39,9 +39,8 @@ const GuestIntake = () => {
         make,
         model,
         year,
-        mileage: parseInt(mileage, 10) || 0,
-        type: 'car'
-      });
+        mileage: parseInt(mileage, 10) || 0
+      } as any);
       navigate('/');
       return; // never fall through to setStep
     }

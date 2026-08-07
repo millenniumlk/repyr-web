@@ -420,16 +420,14 @@ const Home = () => {
             className="flex-1 flex flex-col"
           >
             <DiagnosticChat 
-              hasAccess={hasAccess}
+              hasAccess={hasAccess ?? undefined}
               handleUpgrade={() => navigate('/settings/subscription')}
               isUpgrading={false}
               exitChat={exitChat}
-              selectedVehicle={selectedVehicle}
               probabilities={probabilities}
               displayMessages={displayMessages}
               isTyping={isTyping}
               isDiagnosisComplete={isDiagnosisComplete}
-              hasAskedFollowUp={hasAskedFollowUp}
             />
           </motion.div>
         )}
@@ -442,7 +440,7 @@ const Home = () => {
           isTyping={isTyping}
           isDiagnosisComplete={isDiagnosisComplete}
           hasAskedFollowUp={hasAskedFollowUp}
-          hasAccess={hasAccess}
+          hasAccess={hasAccess ?? undefined}
           inputValue={inputValue}
           setInputValue={setInputValue}
           selectedVehicle={selectedVehicle}

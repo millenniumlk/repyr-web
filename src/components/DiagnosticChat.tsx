@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from './ui/Button';
-import { ChatMessage, DiagnosticProbability } from '../types';
+import type { ChatMessage, DiagnosticProbability } from '../types';
 
 interface DiagnosticChatProps {
   hasAccess?: boolean;
