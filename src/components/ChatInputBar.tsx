@@ -1,6 +1,24 @@
 import { ArrowUp, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/Button';
+import { Vehicle } from '../types';
+
+interface ChatInputBarProps {
+  isChatActive: boolean;
+  isTyping: boolean;
+  isDiagnosisComplete: boolean;
+  hasAskedFollowUp: boolean;
+  hasAccess?: boolean;
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  selectedVehicle: Vehicle;
+  openGarage: () => void;
+  category: string;
+  handleStartOrReply: () => void;
+  currentOptions: string[];
+  handleSendReply: (opt: string) => void;
+  isGuest: boolean;
+}
 
 const ChatInputBar = ({
   isChatActive,
@@ -17,7 +35,7 @@ const ChatInputBar = ({
   currentOptions,
   handleSendReply,
   isGuest
-}: any) => {
+}: ChatInputBarProps) => {
   
   const canSubmit = isChatActive 
     ? inputValue.trim().length > 0 

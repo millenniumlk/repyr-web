@@ -1,13 +1,14 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { Vehicle, ChatMessage, DiagnosticProbability } from '../types';
 
-export function useDiagnosticAI(vehicle: any) {
+export function useDiagnosticAI(vehicle: Vehicle) {
   const sessionIdRef = useRef<string | null>(null);
   const vehicleDescriptionRef = useRef<string>('');
   const vehicleCategoryRef = useRef<string>('');
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [probabilities, setProbabilities] = useState<any[]>([]);
+  const [probabilities, setProbabilities] = useState<DiagnosticProbability[]>([]);
 
   const startInvestigation = async () => {
     // Snapshot synchronously before any await
@@ -101,7 +102,7 @@ export function useDiagnosticAI(vehicle: any) {
     }
   };
 
-  const pingOpenAI = async ({ chatContext, newMessage, vehicleData, currentSessionId = sessionIdRef.current }: { chatContext?: any[], newMessage?: string, vehicleData?: any, currentSessionId?: string | null }) => {
+  const pingOpenAI = async ({ chatContext, newMessage, vehicleData, currentSessionId = sessionIdRef.current }: { chatContext?: ChatMessage[], newMessage?: string, vehicleData?: any, currentSessionId?: string | null }) => {
     setIsTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke('diagnostic-ai', {
@@ -158,11 +159,8 @@ export function useDiagnosticAI(vehicle: any) {
 
   const diagnosisCompleteIndex = messages.findIndex(m => {
     if (m.role !== 'assistant') return false;
-    try { return JSON.parse(m).status === 'diagnosis_complete'; } 
-    catch {
-      try { return JSON.parse(m.content).status === 'diagnosis_complete'; }
-      catch { return false; }
-    }
+    try { return JSON.parse(m.content).status === 'diagnosis_complete'; }
+    catch { return false; }
   });
 
   const isDiagnosisComplete = diagnosisCompleteIndex !== -1;

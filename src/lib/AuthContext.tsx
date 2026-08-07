@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+import { Vehicle } from '../types';
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   isLoading: boolean;
   isGuest: boolean;
-  guestVehicle: any | null;
+  guestVehicle: Vehicle | null;
   subscriptionTier: 'Trial' | 'Plus' | 'Pro';
-  setGuestMode: (mode: boolean, vehicle?: any) => void;
+  setGuestMode: (mode: boolean, vehicle?: Vehicle) => void;
   /** Re-fetch the subscription tier from the database. This is the ONLY way to update the tier on the client. */
   refreshSubscriptionTier: () => Promise<void>;
 }
@@ -30,11 +31,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
-  const [guestVehicle, setGuestVehicle] = useState<any | null>(null);
+  const [guestVehicle, setGuestVehicle] = useState<Vehicle | null>(null);
   const [subscriptionTier, setSubscriptionTierState] = useState<'Trial' | 'Plus' | 'Pro'>('Trial');
   const userIdRef = useRef<string | null>(null);
 
-  const handleSetGuestMode = (mode: boolean, vehicle?: any) => {
+  const handleSetGuestMode = (mode: boolean, vehicle?: Vehicle) => {
     setIsGuest(mode);
     if (vehicle) setGuestVehicle(vehicle);
     else setGuestVehicle(null);

@@ -4,6 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from './ui/Button';
+import { ChatMessage, DiagnosticProbability } from '../types';
+
+interface DiagnosticChatProps {
+  hasAccess?: boolean;
+  handleUpgrade: () => void;
+  isUpgrading: boolean;
+  exitChat: () => void;
+  probabilities: DiagnosticProbability[];
+  displayMessages: ChatMessage[];
+  isTyping: boolean;
+  isDiagnosisComplete: boolean;
+}
 
 const DiagnosticChat = ({
   hasAccess,
@@ -14,7 +26,7 @@ const DiagnosticChat = ({
   displayMessages,
   isTyping,
   isDiagnosisComplete,
-}: any) => {
+}: DiagnosticChatProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { subscriptionTier } = useAuth();
@@ -68,7 +80,7 @@ const DiagnosticChat = ({
       {!isDiagnosisComplete && probabilities?.length > 0 && (
         <div className="glass rounded-2xl overflow-hidden mb-6 border border-white/60 p-3 shadow-lg">
           <h3 className="text-sm font-medium text-primary mb-2">Most Likely</h3>
-          {probabilities.slice(0, 2).map((prob: any, i: number) => (
+          {probabilities.slice(0, 2).map((prob: DiagnosticProbability, i: number) => (
             <div key={i} className={`flex justify-between items-center ${i === 0 ? 'mb-1.5' : ''}`}>
               <span className="text-sm text-foreground flex-1 pr-3 leading-tight font-medium">{prob.cause}</span>
               <span className="font-bold text-sm text-foreground">{prob.confidence_score}%</span>
@@ -80,7 +92,7 @@ const DiagnosticChat = ({
       {/* Messages */}
       <div className="flex flex-col">
         <AnimatePresence>
-          {displayMessages.map((item: any, index: number) => {
+          {displayMessages.map((item: ChatMessage, index: number) => {
             const isAI = item.role === 'assistant';
             const content = isAI ? parseMessage(item.content) : item.content;
             const isLastInGroup = index === displayMessages.length - 1 || displayMessages[index + 1]?.role !== item.role;
