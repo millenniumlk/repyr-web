@@ -487,6 +487,10 @@ const Home = () => {
                     onClick={() => {
                       setSelectedVehicle(v);
                       setIsVehicleSelectorOpen(false);
+                      setCategory('');
+                      setInputValue('');
+                      setIsChatActive(false);
+                      resetDiagnosis();
                     }}
                     className={`w-full h-auto text-left px-4 py-3 rounded-full flex items-center justify-between font-normal ${
                       selectedVehicle?.id === v.id 
