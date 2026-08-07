@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
@@ -81,6 +82,7 @@ const AnimatedInput = ({ icon: Icon, label, ...props }: any) => {
 
 const CompleteVehicleProfile = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   
   const [transmission, setTransmission] = useState('');
@@ -186,6 +188,8 @@ const CompleteVehicleProfile = () => {
           }
         } catch (e) {}
       }
+
+      await queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
 
       navigate('/');
     } catch (error) {
