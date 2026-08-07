@@ -250,6 +250,9 @@ const AddVehicle = () => {
                 if (val.length > maxLen) {
                   val = val.slice(0, maxLen);
                 }
+                if (e.target.value !== val) {
+                  e.target.value = val;
+                }
                 currentStep.setter(val);
               }}
               onKeyDown={handleKeyDown}
