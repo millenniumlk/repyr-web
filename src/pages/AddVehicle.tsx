@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Car, Settings, Calendar, Activity, MapPin, Loader2, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { sanitizeInput } from '../lib/utils';
 import { Button } from '../components/ui/Button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -114,13 +115,13 @@ const AddVehicle = () => {
 
       const { error } = await supabase.from('vehicles').insert({
         user_id: user.id,
-        make: make.trim(),
-        model: model.trim(),
-        year: parseInt(year.trim(), 10) || 2020,
-        mileage: parseInt(mileage.trim(), 10),
-        transmission: transmission.trim(),
-        fuel_type: fuelType.trim(),
-        location: location.trim()
+        make: sanitizeInput(make),
+        model: sanitizeInput(model),
+        year: parseInt(sanitizeInput(year), 10) || 2020,
+        mileage: parseInt(sanitizeInput(mileage), 10),
+        transmission: sanitizeInput(transmission),
+        fuel_type: sanitizeInput(fuelType),
+        location: sanitizeInput(location)
       });
 
       if (error) throw error;
@@ -242,6 +243,7 @@ const AddVehicle = () => {
               onKeyDown={handleKeyDown}
               placeholder={currentStep.placeholder}
               disabled={isSubmitting}
+              maxLength={currentStep.type === 'number' ? (currentStep.label.includes('year') ? 4 : 7) : 50}
               className="w-full bg-transparent border-b-2 border-border focus:border-primary text-3xl md:text-4xl text-foreground font-medium pb-4 outline-none transition-colors placeholder:text-muted-foreground/50 disabled:opacity-50"
             />
           )}

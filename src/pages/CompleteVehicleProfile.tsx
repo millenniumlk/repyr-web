@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/AuthContext';
+import { sanitizeInput } from '../lib/utils';
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 
@@ -157,19 +158,23 @@ const CompleteVehicleProfile = () => {
         // Update the existing row with the completed details
         await supabase
           .from('vehicles')
-          .update({ transmission, fuel_type: fuelType, location })
+          .update({ 
+            transmission: sanitizeInput(transmission), 
+            fuel_type: sanitizeInput(fuelType), 
+            location: sanitizeInput(location) 
+          })
           .eq('id', existingId);
       } else if (baseVehicle) {
         // Vehicle isn't in the DB yet — insert with all fields at once
         await supabase.from('vehicles').insert([{
           user_id: user.id,
-          make: baseVehicle.make,
-          model: baseVehicle.model,
-          year: parseInt(String(baseVehicle.year), 10) || 2020,
-          mileage: parseInt(String(baseVehicle.mileage), 10) || 0,
-          transmission,
-          fuel_type: fuelType,
-          location
+          make: sanitizeInput(baseVehicle.make),
+          model: sanitizeInput(baseVehicle.model),
+          year: parseInt(sanitizeInput(String(baseVehicle.year)), 10) || 2020,
+          mileage: parseInt(sanitizeInput(String(baseVehicle.mileage)), 10) || 0,
+          transmission: sanitizeInput(transmission),
+          fuel_type: sanitizeInput(fuelType),
+          location: sanitizeInput(location)
         }]);
       }
 
@@ -257,6 +262,7 @@ const CompleteVehicleProfile = () => {
                   placeholder="e.g. Chicago, IL"
                   value={location}
                   onChange={(e: any) => setLocation(e.target.value)}
+                  maxLength={50}
                   required
                 />
               </div>
