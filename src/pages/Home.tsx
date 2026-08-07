@@ -190,9 +190,12 @@ const Home = () => {
     }
   }, [vehicles, selectedVehicle]);
 
-  // Reset diagnosis when selected vehicle changes
+  // Reset diagnosis and state when selected vehicle changes
   useEffect(() => {
     resetDiagnosis();
+    setCategory('');
+    setInputValue('');
+    setIsChatActive(false);
   }, [selectedVehicle?.id, resetDiagnosis]);
 
   // Pre-fill symptoms if there was a pending chat
