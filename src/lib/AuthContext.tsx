@@ -46,12 +46,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('subscription_tier')
+        .select('subscription_tier, subscription_expires_at')
         .eq('id', resolvedId)
         .single();
 
       if (data?.subscription_tier) {
-         const rawTier = String(data.subscription_tier).trim();
+         let rawTier = String(data.subscription_tier).trim();
+         
+         if (data.subscription_expires_at && new Date(data.subscription_expires_at).getTime() < Date.now()) {
+           rawTier = 'Trial';
+         }
+
          const normalized = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
          if (['Trial', 'Plus', 'Pro'].includes(normalized)) {
             setSubscriptionTierState(normalized as 'Trial' | 'Plus' | 'Pro');

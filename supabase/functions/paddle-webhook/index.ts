@@ -82,7 +82,7 @@ serve(async (req) => {
       const firstItemPriceId = items.length > 0 ? items[0].price?.id : '';
       
       let tier = 'Trial';
-      if (status === 'active' || status === 'trialing') {
+      if (status === 'active' || status === 'trialing' || status === 'canceled') {
         const isPlus = firstItemPriceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || firstItemPriceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
         tier = isPlus ? 'Plus' : 'Pro';
       }

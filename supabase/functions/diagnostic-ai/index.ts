@@ -44,11 +44,16 @@ serve(async (req) => {
     // ── Resolve subscription tier (used by both flows) ──
     const { data: profile } = await supabaseClient
       .from('profiles')
-      .select('subscription_tier')
+      .select('subscription_tier, subscription_expires_at')
       .eq('id', user.id)
       .single();
 
-    const rawTier = profile?.subscription_tier ? String(profile.subscription_tier).trim() : 'Trial';
+    let rawTier = profile?.subscription_tier ? String(profile.subscription_tier).trim() : 'Trial';
+    
+    if (profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now()) {
+      rawTier = 'Trial';
+    }
+
     const tier = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
 
     let session: any;
