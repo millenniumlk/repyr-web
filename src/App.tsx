@@ -1,5 +1,6 @@
-import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 import { AuthProvider, useAuth } from './lib/AuthContext';
 import { ToastProvider } from './lib/ToastContext';
 
@@ -23,10 +24,29 @@ import Privacy from './pages/Privacy';
 import Support from './pages/Support';
 import AuthCallback from './pages/AuthCallback';
 
+// Initialize GA
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+if (GA_MEASUREMENT_ID) {
+  ReactGA.initialize(GA_MEASUREMENT_ID);
+}
+
+const AnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (GA_MEASUREMENT_ID) {
+      ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+    }
+  }, [location]);
+
+  return null;
+};
+
 /** Root layout that wraps the entire app with context providers */
 const RootLayout = () => (
   <AuthProvider>
     <ToastProvider>
+      <AnalyticsTracker />
       <Outlet />
     </ToastProvider>
   </AuthProvider>
