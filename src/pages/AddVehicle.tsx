@@ -246,6 +246,10 @@ const AddVehicle = () => {
                 if (currentStep.type === 'number') {
                   val = val.replace(/\D/g, ''); // Remove non-digits
                 }
+                const maxLen = currentStep.type === 'number' ? (currentStep.label.includes('year') ? 4 : 7) : 50;
+                if (val.length > maxLen) {
+                  val = val.slice(0, maxLen);
+                }
                 currentStep.setter(val);
               }}
               onKeyDown={handleKeyDown}
