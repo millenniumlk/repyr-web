@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/AuthContext';
 import { ToastProvider } from './lib/ToastContext';
 
@@ -23,6 +23,15 @@ import Privacy from './pages/Privacy';
 import Support from './pages/Support';
 import AuthCallback from './pages/AuthCallback';
 
+/** Root layout that wraps the entire app with context providers */
+const RootLayout = () => (
+  <AuthProvider>
+    <ToastProvider>
+      <Outlet />
+    </ToastProvider>
+  </AuthProvider>
+);
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, isGuest, isLoading } = useAuth();
   
@@ -41,41 +50,59 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const AppRoutes = () => {
-  return (
-    <Routes>
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/guest-intake" element={<GuestIntake />} />
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/support" element={<Support />} />
-      
-      <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-        <Route index element={<Home />} />
-        <Route path="garage" element={<Garage />} />
-        <Route path="garage/add" element={<AddVehicle />} />
-        <Route path="history" element={<History />} />
-        <Route path="notifications" element={<Notifications />} />
-        <Route path="settings" element={<Settings />} />
-        <Route path="settings/profile" element={<EditProfile />} />
-        <Route path="settings/subscription" element={<Subscription />} />
-        <Route path="complete-profile" element={<CompleteVehicleProfile />} />
-      </Route>
-    </Routes>
-  );
-};
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      {
+        path: '/auth',
+        element: <Auth />,
+      },
+      {
+        path: '/auth/callback',
+        element: <AuthCallback />,
+      },
+      {
+        path: '/guest-intake',
+        element: <GuestIntake />,
+      },
+      {
+        path: '/terms',
+        element: <Terms />,
+      },
+      {
+        path: '/privacy',
+        element: <Privacy />,
+      },
+      {
+        path: '/support',
+        element: <Support />,
+      },
+      {
+        path: '/',
+        element: (
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <Home /> },
+          { path: 'garage', element: <Garage /> },
+          { path: 'garage/add', element: <AddVehicle /> },
+          { path: 'history', element: <History /> },
+          { path: 'notifications', element: <Notifications /> },
+          { path: 'settings', element: <Settings /> },
+          { path: 'settings/profile', element: <EditProfile /> },
+          { path: 'settings/subscription', element: <Subscription /> },
+          { path: 'complete-profile', element: <CompleteVehicleProfile /> },
+        ],
+      },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
