@@ -114,8 +114,8 @@ const Subscription = () => {
       ],
       color: 'blue',
       buttonText: 'Start 7-Day Free Trial',
-      paddlePriceIdMonthly: 'pri_01kyy15yhbjgftzkcsjyjmm9pm',
-      paddlePriceIdYearly: 'pri_01kyy16sh5qt3wyybn04r1ypkr'
+      paddlePriceIdMonthly: 'pri_01m0cpr7d6thdhf3hcejg7fhvv',
+      paddlePriceIdYearly: 'pri_01m0cpsc7a4m0v52vctzpt1w7s'
     },
     {
       name: 'Repyr Pro',
@@ -134,8 +134,8 @@ const Subscription = () => {
       color: 'indigo',
       popular: true,
       buttonText: 'Start 7-Day Free Trial',
-      paddlePriceIdMonthly: 'pri_01kyy11tk9bzmpe7jaj4sq74e2',
-      paddlePriceIdYearly: 'pri_01kyy14epj1ndxbe4gbwchfn37'
+      paddlePriceIdMonthly: 'pri_01m0cpwhyjvx26x1jd6rbjddcg',
+      paddlePriceIdYearly: 'pri_01m0cpyqg00gcqpbv628r7v6zv'
     },
   ];
 

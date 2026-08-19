@@ -83,7 +83,7 @@ serve(async (req) => {
       
       let tier = 'Trial';
       if (status === 'active' || status === 'trialing' || status === 'canceled') {
-        const isPlus = firstItemPriceId === 'pri_01kyy15yhbjgftzkcsjyjmm9pm' || firstItemPriceId === 'pri_01kyy16sh5qt3wyybn04r1ypkr';
+        const isPlus = firstItemPriceId === 'pri_01m0cpr7d6thdhf3hcejg7fhvv' || firstItemPriceId === 'pri_01m0cpsc7a4m0v52vctzpt1w7s';
         tier = isPlus ? 'Plus' : 'Pro';
       }
       
