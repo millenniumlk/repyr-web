@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, ChevronLeft, ShieldCheck, Loader2, ExternalLink } from 'lucide-react';
-import { initializePaddle } from '@paddle/paddle-js';
-import type { Paddle } from '@paddle/paddle-js';
 import { useAuth } from '../lib/AuthContext';
 import { useToast } from '../lib/ToastContext';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/ui/Button';
+
+declare global {
+  interface Window {
+    createLemonSqueezy: () => void;
+    LemonSqueezy: any;
+  }
+}
 
 const Subscription = () => {
   const navigate = useNavigate();
@@ -15,88 +20,82 @@ const Subscription = () => {
   const { showToast } = useToast();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
-  const [paddle, setPaddle] = useState<Paddle | undefined>();
+  const [isLemonSqueezyReady, setIsLemonSqueezyReady] = useState(false);
   const [managing, setManaging] = useState(false);
   const [awaitingWebhook, setAwaitingWebhook] = useState(false);
 
   useEffect(() => {
-    initializePaddle({ 
-      environment: (import.meta.env.VITE_PADDLE_ENV || 'sandbox') as 'sandbox' | 'production', 
-      token: import.meta.env.VITE_PADDLE_TOKEN,
-      eventCallback: async (data) => {
-        if (data.name === 'checkout.completed') {
-          // Do NOT set the tier client-side or write to the DB.
-          // The Paddle webhook (server-side, using service role key) is the only
-          // trusted source for subscription tier changes. We poll until it lands.
-          setAwaitingWebhook(true);
-          setProcessingPlan(null);
+    if (window.createLemonSqueezy) {
+      window.createLemonSqueezy();
+      setIsLemonSqueezyReady(true);
+      
+      window.LemonSqueezy.Setup({
+        eventHandler: async (event: any) => {
+          if (event.event === 'Checkout.Success') {
+            setAwaitingWebhook(true);
+            setProcessingPlan(null);
 
-          let pollAttempts = 0;
-          const maxAttempts = 15; // 15 × 2s = 30s max wait
+            let pollAttempts = 0;
+            const maxAttempts = 15; // 15 × 2s = 30s max wait
 
-          const pollInterval = setInterval(async () => {
-            pollAttempts++;
-            
-            // Query the DB directly for the freshest tier
-            const { data: freshProfile } = await supabase
-              .from('profiles')
-              .select('subscription_tier')
-              .eq('id', user?.id)
-              .single();
-            
-            const freshTier = freshProfile?.subscription_tier?.trim();
-            const isPaid = freshTier === 'Plus' || freshTier === 'Pro' || freshTier === 'plus' || freshTier === 'pro';
-            
-            if (isPaid || pollAttempts >= maxAttempts) {
-              clearInterval(pollInterval);
+            const pollInterval = setInterval(async () => {
+              pollAttempts++;
               
-              // Sync the context with the new DB value
-              await refreshSubscriptionTier();
-              setAwaitingWebhook(false);
+              // Query the DB directly for the freshest tier
+              const { data: freshProfile } = await supabase
+                .from('profiles')
+                .select('subscription_tier')
+                .eq('id', user?.id)
+                .single();
               
-              if (!isPaid) {
-                // Webhook didn't arrive in time — still navigate, the tier will update on next page load
-                showToast("Subscription is being processed. It may take a moment to activate.", 'info');
-              }
+              const freshTier = freshProfile?.subscription_tier?.trim();
+              const isPaid = freshTier === 'Plus' || freshTier === 'Pro' || freshTier === 'plus' || freshTier === 'pro';
               
-              // Navigate based on whether vehicle profile needs completion
-              let needsCompleteProfile = false;
-              const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-              if (pendingChatRaw) {
-                try {
-                  const pendingChat = JSON.parse(pendingChatRaw);
-                  if (pendingChat.needsProfileComplete) {
-                    needsCompleteProfile = true;
-                  }
-                } catch (e) {}
-              }
-              
-              if (!needsCompleteProfile && user) {
-                const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-                if (vData && vData.length > 0) {
-                  const v = vData[0];
-                  if (!v.transmission || !v.fuel_type || !v.location) {
-                    needsCompleteProfile = true;
+              if (isPaid || pollAttempts >= maxAttempts) {
+                clearInterval(pollInterval);
+                
+                // Sync the context with the new DB value
+                await refreshSubscriptionTier();
+                setAwaitingWebhook(false);
+                
+                if (!isPaid) {
+                  // Webhook didn't arrive in time
+                  showToast("Subscription is being processed. It may take a moment to activate.", 'info');
+                }
+                
+                // Navigate based on whether vehicle profile needs completion
+                let needsCompleteProfile = false;
+                const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+                if (pendingChatRaw) {
+                  try {
+                    const pendingChat = JSON.parse(pendingChatRaw);
+                    if (pendingChat.needsProfileComplete) {
+                      needsCompleteProfile = true;
+                    }
+                  } catch (e) {}
+                }
+                
+                if (!needsCompleteProfile && user) {
+                  const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+                  if (vData && vData.length > 0) {
+                    const v = vData[0];
+                    if (!v.transmission || !v.fuel_type || !v.location) {
+                      needsCompleteProfile = true;
+                    }
                   }
                 }
+                
+                if (needsCompleteProfile) {
+                  navigate('/complete-profile');
+                } else {
+                  navigate('/');
+                }
               }
-              
-              if (needsCompleteProfile) {
-                navigate('/complete-profile');
-              } else {
-                navigate('/');
-              }
-            }
-          }, 2000);
+            }, 2000);
+          }
         }
-      }
-    }).then(
-      (paddleInstance) => {
-        if (paddleInstance) {
-          setPaddle(paddleInstance);
-        }
-      }
-    );
+      });
+    }
   }, [navigate, user, refreshSubscriptionTier, showToast]);
 
   const plans = [
@@ -114,8 +113,8 @@ const Subscription = () => {
       ],
       color: 'blue',
       buttonText: 'Start 7-Day Free Trial',
-      paddlePriceIdMonthly: 'pri_01m0cpr7d6thdhf3hcejg7fhvv',
-      paddlePriceIdYearly: 'pri_01m0cpsc7a4m0v52vctzpt1w7s'
+      lsVariantIdMonthly: '2068458',
+      lsVariantIdYearly: '2068450'
     },
     {
       name: 'Repyr Pro',
@@ -134,42 +133,32 @@ const Subscription = () => {
       color: 'indigo',
       popular: true,
       buttonText: 'Start 7-Day Free Trial',
-      paddlePriceIdMonthly: 'pri_01m0cpwhyjvx26x1jd6rbjddcg',
-      paddlePriceIdYearly: 'pri_01m0cpyqg00gcqpbv628r7v6zv'
+      lsVariantIdMonthly: '2068462',
+      lsVariantIdYearly: '2068467'
     },
   ];
 
   const handleUpgrade = async (planName: string) => {
-    if (!paddle) {
+    if (!isLemonSqueezyReady) {
       showToast("Billing system is loading. Please try again in a moment.", 'info');
       return;
     }
     setProcessingPlan(planName);
     
     const plan = plans.find(p => p.name === planName);
-    const priceId = billingCycle === 'monthly' ? plan?.paddlePriceIdMonthly : plan?.paddlePriceIdYearly;
-
-    const checkoutOptions: any = {
-      items: [{ priceId: priceId, quantity: 1 }],
-      customer: {
-        email: user?.email || 'guest@repyrai.com',
-      }
-    };
-
-    if (user?.id) {
-      checkoutOptions.customData = {
-        userId: user.id,
-      };
-    }
+    const variantId = billingCycle === 'monthly' ? plan?.lsVariantIdMonthly : plan?.lsVariantIdYearly;
 
     try {
-      paddle.Checkout.open(checkoutOptions);
+      const email = user?.email || 'guest@repyrai.com';
+      const checkoutUrl = `https://repyr.lemonsqueezy.com/checkout/buy/${variantId}?checkout[email]=${encodeURIComponent(email)}&checkout[custom][userId]=${user?.id || ''}`;
+      
+      window.LemonSqueezy.Url.Open(checkoutUrl);
     } catch (e) {
       console.error(e);
       showToast("Failed to initialize checkout.", 'error');
     }
     
-    // Safety timeout in case modal fails to open or is closed manually
+    // Safety timeout in case modal fails to open
     setTimeout(() => {
       setProcessingPlan(null);
     }, 2000);
@@ -177,30 +166,8 @@ const Subscription = () => {
 
   const handleManagePortal = async () => {
     setManaging(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("No session");
-
-      const response = await fetch('https://cqhsvdipojpqhucfrdfx.supabase.co/functions/v1/paddle-portal', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-      });
-      
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || "Failed to load portal");
-      }
-    } catch (e) {
-      console.error(e);
-      showToast("Failed to open customer portal.", 'error');
-      setManaging(false);
-    }
+    // Lemon Squeezy provides a generic customer portal for billing
+    window.location.href = 'https://repyr.lemonsqueezy.com/billing';
   };
 
   if (isLoading || awaitingWebhook) {
@@ -239,7 +206,7 @@ const Subscription = () => {
           </Button>
           
           <p className="text-sm text-muted-foreground mt-6 font-medium leading-relaxed">
-            Update payment methods, change your plan, or cancel via Paddle's secure portal.
+            Update payment methods, change your plan, or cancel via Lemon Squeezy's secure portal.
           </p>
         </div>
         <Button 
@@ -415,7 +382,7 @@ const Subscription = () => {
       <div className="mt-8 md:mt-12 flex items-center justify-center gap-2 text-muted-foreground px-4">
         <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
         <span className="text-xs md:text-sm font-medium text-center">
-          Secure payment processed by Paddle. Cancel anytime.
+          Secure payment processed by Lemon Squeezy. Cancel anytime.
         </span>
       </div>
     </div>
