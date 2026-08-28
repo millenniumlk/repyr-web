@@ -170,7 +170,7 @@ const Subscription = () => {
 
     try {
       const email = user?.email || 'guest@repyrai.com';
-      const checkoutUrl = `https://repyr.lemonsqueezy.com/checkout/buy/${variantId}?checkout[email]=${encodeURIComponent(email)}&checkout[custom][userId]=${user?.id || ''}`;
+      const checkoutUrl = `https://repyr.lemonsqueezy.com/buy/${variantId}?checkout[email]=${encodeURIComponent(email)}&checkout[custom][userId]=${user?.id || ''}`;
       
       window.LemonSqueezy.Url.Open(checkoutUrl);
     } catch (e) {
