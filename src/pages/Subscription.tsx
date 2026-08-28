@@ -25,76 +25,99 @@ const Subscription = () => {
   const [awaitingWebhook, setAwaitingWebhook] = useState(false);
 
   useEffect(() => {
-    if (window.createLemonSqueezy) {
-      window.createLemonSqueezy();
-      setIsLemonSqueezyReady(true);
-      
-      window.LemonSqueezy.Setup({
-        eventHandler: async (event: any) => {
-          if (event.event === 'Checkout.Success') {
-            setAwaitingWebhook(true);
-            setProcessingPlan(null);
+    const initLemonSqueezy = () => {
+      if (window.createLemonSqueezy) {
+        window.createLemonSqueezy();
+        setIsLemonSqueezyReady(true);
+        
+        window.LemonSqueezy.Setup({
+          eventHandler: async (event: any) => {
+            if (event.event === 'Checkout.Success') {
+              setAwaitingWebhook(true);
+              setProcessingPlan(null);
 
-            let pollAttempts = 0;
-            const maxAttempts = 15; // 15 × 2s = 30s max wait
+              let pollAttempts = 0;
+              const maxAttempts = 15; // 15 × 2s = 30s max wait
 
-            const pollInterval = setInterval(async () => {
-              pollAttempts++;
-              
-              // Query the DB directly for the freshest tier
-              const { data: freshProfile } = await supabase
-                .from('profiles')
-                .select('subscription_tier')
-                .eq('id', user?.id)
-                .single();
-              
-              const freshTier = freshProfile?.subscription_tier?.trim();
-              const isPaid = freshTier === 'Plus' || freshTier === 'Pro' || freshTier === 'plus' || freshTier === 'pro';
-              
-              if (isPaid || pollAttempts >= maxAttempts) {
-                clearInterval(pollInterval);
+              const pollInterval = setInterval(async () => {
+                pollAttempts++;
                 
-                // Sync the context with the new DB value
-                await refreshSubscriptionTier();
-                setAwaitingWebhook(false);
+                // Query the DB directly for the freshest tier
+                const { data: freshProfile } = await supabase
+                  .from('profiles')
+                  .select('subscription_tier')
+                  .eq('id', user?.id)
+                  .single();
                 
-                if (!isPaid) {
-                  // Webhook didn't arrive in time
-                  showToast("Subscription is being processed. It may take a moment to activate.", 'info');
-                }
+                const freshTier = freshProfile?.subscription_tier?.trim();
+                const isPaid = freshTier === 'Plus' || freshTier === 'Pro' || freshTier === 'plus' || freshTier === 'pro';
                 
-                // Navigate based on whether vehicle profile needs completion
-                let needsCompleteProfile = false;
-                const pendingChatRaw = localStorage.getItem('pending_guest_chat');
-                if (pendingChatRaw) {
-                  try {
-                    const pendingChat = JSON.parse(pendingChatRaw);
-                    if (pendingChat.needsProfileComplete) {
-                      needsCompleteProfile = true;
-                    }
-                  } catch (e) {}
-                }
-                
-                if (!needsCompleteProfile && user) {
-                  const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-                  if (vData && vData.length > 0) {
-                    const v = vData[0];
-                    if (!v.transmission || !v.fuel_type || !v.location) {
-                      needsCompleteProfile = true;
+                if (isPaid || pollAttempts >= maxAttempts) {
+                  clearInterval(pollInterval);
+                  
+                  // Sync the context with the new DB value
+                  await refreshSubscriptionTier();
+                  setAwaitingWebhook(false);
+                  
+                  if (!isPaid) {
+                    // Webhook didn't arrive in time
+                    showToast("Subscription is being processed. It may take a moment to activate.", 'info');
+                  }
+                  
+                  // Navigate based on whether vehicle profile needs completion
+                  let needsCompleteProfile = false;
+                  const pendingChatRaw = localStorage.getItem('pending_guest_chat');
+                  if (pendingChatRaw) {
+                    try {
+                      const pendingChat = JSON.parse(pendingChatRaw);
+                      if (pendingChat.needsProfileComplete) {
+                        needsCompleteProfile = true;
+                      }
+                    } catch (e) {}
+                  }
+                  
+                  if (!needsCompleteProfile && user) {
+                    const { data: vData } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+                    if (vData && vData.length > 0) {
+                      const v = vData[0];
+                      if (!v.transmission || !v.fuel_type || !v.location) {
+                        needsCompleteProfile = true;
+                      }
                     }
                   }
+                  
+                  if (needsCompleteProfile) {
+                    navigate('/complete-profile');
+                  } else {
+                    navigate('/');
+                  }
                 }
-                
-                if (needsCompleteProfile) {
-                  navigate('/complete-profile');
-                } else {
-                  navigate('/');
-                }
-              }
-            }, 2000);
+              }, 2000);
+            }
           }
-        }
-      });
+        });
+      }
+    };
+
+    if (window.createLemonSqueezy) {
+      initLemonSqueezy();
+    } else {
+      const scriptId = 'lemonsqueezy-script';
+      let script = document.getElementById(scriptId) as HTMLScriptElement;
+      
+      if (!script) {
+        script = document.createElement('script');
+        script.id = scriptId;
+        script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+      
+      script.addEventListener('load', initLemonSqueezy);
+      
+      return () => {
+        script.removeEventListener('load', initLemonSqueezy);
+      };
     }
   }, [navigate, user, refreshSubscriptionTier, showToast]);
 
