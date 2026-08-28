@@ -25,12 +25,14 @@ const Subscription = () => {
   const [awaitingWebhook, setAwaitingWebhook] = useState(false);
 
   useEffect(() => {
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
     const initLemonSqueezy = () => {
       if (window.createLemonSqueezy) {
         window.createLemonSqueezy();
         setIsLemonSqueezyReady(true);
-        
-        window.LemonSqueezy.Setup({
+
+        window.LemonSqueezy?.Setup({
           eventHandler: async (event: any) => {
             if (event.event === 'Checkout.Success') {
               setAwaitingWebhook(true);
@@ -99,26 +101,21 @@ const Subscription = () => {
       }
     };
 
+    // Poll every 100ms until the Lemon Squeezy script is available
     if (window.createLemonSqueezy) {
       initLemonSqueezy();
     } else {
-      const scriptId = 'lemonsqueezy-script';
-      let script = document.getElementById(scriptId) as HTMLScriptElement;
-      
-      if (!script) {
-        script = document.createElement('script');
-        script.id = scriptId;
-        script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
-        script.async = true;
-        document.body.appendChild(script);
-      }
-      
-      script.addEventListener('load', initLemonSqueezy);
-      
-      return () => {
-        script.removeEventListener('load', initLemonSqueezy);
-      };
+      pollTimer = setInterval(() => {
+        if (window.createLemonSqueezy) {
+          if (pollTimer) clearInterval(pollTimer);
+          initLemonSqueezy();
+        }
+      }, 100);
     }
+
+    return () => {
+      if (pollTimer) clearInterval(pollTimer);
+    };
   }, [navigate, user, refreshSubscriptionTier, showToast]);
 
   const plans = [
