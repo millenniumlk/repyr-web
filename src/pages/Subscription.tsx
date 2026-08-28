@@ -9,8 +9,8 @@ import { Button } from '../components/ui/Button';
 
 declare global {
   interface Window {
-    createLemonSqueezy: () => void;
-    LemonSqueezy: any;
+    createLemonSqueezy?: () => void;
+    LemonSqueezy?: any;
   }
 }
 
