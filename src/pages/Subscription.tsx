@@ -123,7 +123,7 @@ const Subscription = () => {
       name: 'Repyr Plus',
       icon: Zap,
       priceMonthly: 6.99,
-      priceYearly: 67.99,
+      priceYearly: 83.99,
       description: 'Perfect for enthusiasts who want more control over their garage.',
       features: [
         '5 diagnostics a day',
@@ -140,7 +140,7 @@ const Subscription = () => {
       name: 'Repyr Pro',
       icon: Sparkles,
       priceMonthly: 12.99,
-      priceYearly: 124.99,
+      priceYearly: 155.88,
       description: 'The ultimate toolkit for serious gearheads and professionals.',
       features: [
         'Unlimited diagnostics',
