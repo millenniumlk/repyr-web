@@ -133,8 +133,8 @@ const Subscription = () => {
       ],
       color: 'blue',
       buttonText: 'Start 7-Day Free Trial',
-      lsVariantIdMonthly: '2068458',
-      lsVariantIdYearly: '2068450'
+      lsVariantIdMonthly: 'b5f3c583-3b7f-47ee-954b-d16be1a3f4a5',
+      lsVariantIdYearly: '3a8a4080-d528-4a0a-aac4-31baff92aeb5'
     },
     {
       name: 'Repyr Pro',
@@ -153,8 +153,8 @@ const Subscription = () => {
       color: 'indigo',
       popular: true,
       buttonText: 'Start 7-Day Free Trial',
-      lsVariantIdMonthly: '2068462',
-      lsVariantIdYearly: '2068467'
+      lsVariantIdMonthly: 'd61bd8c0-955c-46cb-9ae9-02df484a3583',
+      lsVariantIdYearly: '59ab09ce-dea7-4945-b8cc-afa47b98f19d'
     },
   ];
 
@@ -170,7 +170,7 @@ const Subscription = () => {
 
     try {
       const email = user?.email || 'guest@repyrai.com';
-      const checkoutUrl = `https://repyr.lemonsqueezy.com/buy/${variantId}?checkout[email]=${encodeURIComponent(email)}&checkout[custom][userId]=${user?.id || ''}`;
+      const checkoutUrl = `https://repyr.lemonsqueezy.com/checkout/buy/${variantId}?checkout[email]=${encodeURIComponent(email)}&checkout[custom][userId]=${user?.id || ''}`;
       
       window.LemonSqueezy.Url.Open(checkoutUrl);
     } catch (e) {
