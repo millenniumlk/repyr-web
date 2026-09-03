@@ -75,9 +75,9 @@ export async function fetchRecalls(make: string, model: string, year: string) {
   return fetchWithCache(cacheKey, async () => {
     try {
       const url = NHTSA_API_BASE + '/recalls/recallsByVehicle?make=' + encodeURIComponent(make) + '&model=' + encodeURIComponent(model) + '&modelYear=' + encodeURIComponent(year);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch recalls');
-      return await res.json();
+      const res = await supabase.functions.invoke('nhtsa-proxy', { body: { url } });
+      if (res.error) throw res.error;
+      return res.data;
     } catch (error) {
       console.error('Error fetching recalls:', error);
       return { Count: 0, results: [] };
@@ -91,9 +91,9 @@ export async function fetchComplaints(make: string, model: string, year: string)
   return fetchWithCache(cacheKey, async () => {
     try {
       const url = NHTSA_API_BASE + '/complaints/complaintsByVehicle?make=' + encodeURIComponent(make) + '&model=' + encodeURIComponent(model) + '&modelYear=' + encodeURIComponent(year);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch complaints');
-      return await res.json();
+      const res = await supabase.functions.invoke('nhtsa-proxy', { body: { url } });
+      if (res.error) throw res.error;
+      return res.data;
     } catch (error) {
       console.error('Error fetching complaints:', error);
       return { Count: 0, results: [] };
@@ -107,9 +107,9 @@ export async function fetchInvestigations(make: string, model: string, year: str
   return fetchWithCache(cacheKey, async () => {
     try {
       const url = NHTSA_API_BASE + '/SafetyIssues/ByVehicle?make=' + encodeURIComponent(make) + '&model=' + encodeURIComponent(model) + '&year=' + encodeURIComponent(year) + '&issueType=i';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch investigations');
-      return await res.json();
+      const res = await supabase.functions.invoke('nhtsa-proxy', { body: { url } });
+      if (res.error) throw res.error;
+      return res.data;
     } catch (error) {
       console.error('Error fetching investigations:', error);
       return { Count: 0, results: [] };
@@ -123,10 +123,9 @@ export async function fetchModelsForMake(make: string) {
   return fetchWithCache(cacheKey, async () => {
     try {
       const url = 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/' + encodeURIComponent(make) + '?format=json';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch models');
-      const data = await res.json();
-      return data.Results || [];
+      const res = await supabase.functions.invoke('nhtsa-proxy', { body: { url } });
+      if (res.error) throw res.error;
+      return res.data.Results || [];
     } catch (error) {
       console.error('Error fetching models:', error);
       return [];
@@ -136,9 +135,9 @@ export async function fetchModelsForMake(make: string) {
 export async function decodeVIN(vin: string) {
   try {
     const url = `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Failed to decode VIN');
-    const data = await res.json();
+    const res = await supabase.functions.invoke('nhtsa-proxy', { body: { url } });
+    if (res.error) throw res.error;
+    const data = res.data;
     
     if (data.Results) {
       let make = '';
