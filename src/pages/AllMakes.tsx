@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { HomeHeader } from '../components/HomeHeader';
+import { getBrandColor } from '../lib/brandColors';
 
 const EXTENDED_BRANDS = [
   { name: 'Acura', url: 'acura' },
@@ -104,20 +105,21 @@ export default function AllMakes() {
             <button
               key={brand.name}
               onClick={() => navigate('/cars/' + brand.name.toLowerCase())}
-              className="group relative flex flex-col items-center justify-center p-4 rounded-2xl border bg-card border-border hover:border-primary/20 hover:bg-muted/40 transition-all cursor-pointer shadow-sm hover:shadow-md text-center"
+              style={{ '--brand-color': getBrandColor(brand.name) } as React.CSSProperties}
+              className="group relative flex flex-col items-center justify-center p-4 rounded-2xl border bg-card border-border hover:border-transparent hover:bg-muted/40 hover:shadow-[0_0_15px_-3px_var(--brand-color)] transition-all cursor-pointer text-center"
             >
               <div className="w-16 h-16 sm:w-20 sm:h-20 mb-3 flex items-center justify-center">
                 <img 
-                  src={'https://www.carlogos.org/car-logos/' + brand.url + '-logo.png'} 
+                  src={'/logos/' + brand.url + '.png'} 
                   alt={brand.name + ' logo'}
                   className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-110"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
-                    e.currentTarget.parentElement!.innerHTML = '<span class="text-xl font-black text-foreground/80">' + brand.name.slice(0,2).toUpperCase() + '</span>';
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-2xl font-black text-foreground/80 group-hover:text-[color:var(--brand-color)] transition-colors">' + brand.name.slice(0,2).toUpperCase() + '</span>';
                   }}
                 />
               </div>
-              <span className="font-semibold text-sm sm:text-base text-foreground/90 group-hover:text-primary transition-colors">
+              <span className="font-semibold text-sm sm:text-base text-foreground/90 group-hover:text-[color:var(--brand-color)] transition-colors">
                 {brand.name}
               </span>
             </button>
