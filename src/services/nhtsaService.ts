@@ -40,19 +40,23 @@ async function fetchWithCache(cacheKey: string, fetcher: () => Promise<any>) {
       .single();
 
     if (cached?.data) {
-      console.log('? Using cached NHTSA data for:', cacheKey);
-      return cached.data;
+      if (Array.isArray(cached.data) && cached.data.length === 0) {
+        console.log('Ignoring bad empty cache for:', cacheKey);
+      } else {
+        console.log('🟢 Using cached NHTSA data for:', cacheKey);
+        return cached.data;
+      }
     }
   } catch (error) {
     // Ignore cache read errors and proceed to fetch
   }
 
   // 2. Fetch fresh from NHTSA API
-  console.log('?? Fetching fresh NHTSA data for:', cacheKey);
+  console.log('🔄 Fetching fresh NHTSA data for:', cacheKey);
   const freshData = await fetcher();
 
   // 3. Save to Supabase (Fire and forget)
-  if (freshData) {
+  if (freshData && (!Array.isArray(freshData) || freshData.length > 0)) {
     supabase.from('nhtsa_cache').upsert({
       cache_key: cacheKey,
       data: freshData,
