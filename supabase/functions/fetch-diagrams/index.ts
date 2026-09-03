@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { make, model, year, category, rawQuery, rawCacheKey } = await req.json()
-    const cacheKey = rawCacheKey || `diagram_v2_${year}_${make}_${model}_${category}`.toLowerCase().replace(/\s+/g, '_')
+    const cacheKey = rawCacheKey || `diagram_v3_${year}_${make}_${model}_${category}`.toLowerCase().replace(/\s+/g, '_')
 
     // Initialize Supabase Client
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
