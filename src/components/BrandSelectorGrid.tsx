@@ -3,6 +3,8 @@ import { motion, type Variants } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { CAR_BRANDS } from '../lib/constants';
 
+import { getBrandColor } from '../lib/brandColors';
+
 export interface BrandSelectorGridProps {
   selectedMake: string | null;
   onSelectMake: (make: string | null) => void;
@@ -86,6 +88,7 @@ const BrandCard = React.memo(function BrandCard({
   const [imageError, setImageError] = React.useState(false);
   const monogram = BRAND_ABBREVIATIONS[brand] || brand.slice(0, 2).toUpperCase();
   const logoUrl = BRAND_LOGOS[brand] || null;
+  const brandColor = getBrandColor(brand);
 
   return (
     <motion.button
@@ -94,6 +97,7 @@ const BrandCard = React.memo(function BrandCard({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(brand)}
+      style={{ '--brand-color': brandColor } as React.CSSProperties}
       className={cn(
         'group relative flex flex-col items-center justify-center p-4 rounded-[20px] border transition-all duration-200 text-center w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         isSelected
@@ -106,7 +110,7 @@ const BrandCard = React.memo(function BrandCard({
           'w-16 h-16 flex items-center justify-center font-bold text-lg transition-all duration-200 mb-2.5',
           (!logoUrl || imageError) && (isSelected
             ? 'bg-primary text-primary-foreground rounded-full shadow-sm shadow-primary/20'
-            : 'bg-muted text-foreground/80 rounded-full group-hover:bg-primary/10 group-hover:text-primary')
+            : 'bg-muted text-foreground/80 rounded-full group-hover:bg-primary/5 group-hover:text-[color:var(--brand-color)] group-hover:shadow-[0_0_15px_-3px_var(--brand-color)] border border-transparent group-hover:border-[color:var(--brand-color)]')
         )}
       >
         {!imageError && logoUrl ? (
@@ -115,6 +119,7 @@ const BrandCard = React.memo(function BrandCard({
             alt={`${brand} logo`} 
             className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-110"
             onError={() => setImageError(true)}
+            referrerPolicy="no-referrer"
           />
         ) : (
           monogram
@@ -123,7 +128,7 @@ const BrandCard = React.memo(function BrandCard({
       <span
         className={cn(
           'text-xs sm:text-sm font-medium tracking-tight truncate w-full transition-colors',
-          isSelected ? 'text-primary font-semibold' : 'text-foreground'
+          isSelected ? 'text-[color:var(--brand-color)] font-semibold' : 'text-foreground group-hover:text-[color:var(--brand-color)]'
         )}
       >
         {brand}
