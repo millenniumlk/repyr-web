@@ -131,6 +131,7 @@ export function OEMPartsCatalog({ make, model, year }: OEMPartsCatalogProps) {
                       alt="Part Diagram" 
                       className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-lighten"
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
                       <span className="opacity-0 group-hover:opacity-100 bg-background/90 text-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all transform translate-y-2 group-hover:translate-y-0">
