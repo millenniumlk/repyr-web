@@ -101,7 +101,7 @@ const Garage = () => {
             <p className="text-muted-foreground leading-relaxed mb-8">
               Add a vehicle to manage its profile and get AI-powered diagnostics.
             </p>
-            <Link to="/garage/add">
+            <Link to="/diagnose/garage/add">
               <Button className="mx-auto">
                 <Plus className="w-5 h-5 mr-2" strokeWidth={2.2} />
                 Add Vehicle
@@ -157,7 +157,7 @@ const Garage = () => {
             </div>
             
             <div className="mt-auto pt-6 w-full">
-              <Link to="/garage/add" className="block">
+              <Link to="/diagnose/garage/add" className="block">
                 <Button className="w-full">
                   <Plus className="w-5 h-5 mr-2" strokeWidth={2.2} />
                   Add Vehicle

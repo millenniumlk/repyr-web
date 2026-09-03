@@ -105,11 +105,19 @@ export function useDiagnosticAI(vehicle: Vehicle) {
   const pingOpenAI = async ({ chatContext, newMessage, vehicleData, currentSessionId = sessionIdRef.current }: { chatContext?: ChatMessage[], newMessage?: string, vehicleData?: any, currentSessionId?: string | null }) => {
     setIsTyping(true);
     try {
+      // If we only have a newMessage, we need to send the full history for guests
+      // so the edge function has context since it doesn't load it from DB
+      let payloadChatContext = chatContext;
+      if (!payloadChatContext && newMessage) {
+        // Build context from current messages
+        payloadChatContext = [...messages, { role: 'user', content: newMessage }];
+      }
+
       const { data, error } = await supabase.functions.invoke('diagnostic-ai', {
         body: { 
           sessionId: currentSessionId,
-          ...(chatContext ? { chatContext } : {}),
-          ...(newMessage ? { newMessage } : {}),
+          ...(payloadChatContext ? { chatContext: payloadChatContext } : {}),
+          ...(newMessage ? { newMessage } : {}), // still send this if edge function expects it
           ...(vehicleData ? { vehicleData } : {}),
         }
       });
@@ -131,7 +139,7 @@ export function useDiagnosticAI(vehicle: Vehicle) {
         if (chatContext) {
           return [...chatContext, { role: 'assistant', content: JSON.stringify(aiResponse) }];
         } else {
-          return [...prev, { role: 'assistant', content: JSON.stringify(aiResponse) }];
+          return [...prev, { role: 'user', content: newMessage as string }, { role: 'assistant', content: JSON.stringify(aiResponse) }];
         }
       });
 
@@ -144,7 +152,7 @@ export function useDiagnosticAI(vehicle: Vehicle) {
 
   const handleSendReply = async (text: string) => {
     if (!text.trim()) return;
-    setMessages(prev => [...prev, { role: 'user', content: text }]);
+    // Don't set messages here locally anymore, let pingOpenAI do it
     await pingOpenAI({ newMessage: text });
   };
 

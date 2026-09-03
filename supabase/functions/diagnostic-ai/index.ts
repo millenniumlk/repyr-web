@@ -1,23 +1,12 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') || 'https://repyrai.com';
-
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get('Origin') || '';
-  // Allow the configured production origin, or localhost for development
-  const isAllowed = origin === ALLOWED_ORIGIN || origin.startsWith('http://localhost');
-  return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGIN,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
-}
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
-
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -34,126 +23,131 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      throw new Error("Unauthorized user");
-    }
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const isGuest = !user;
 
     const { sessionId, chatContext, newMessage, vehicleData } = await req.json();
 
-    // ── Resolve subscription tier (used by both flows) ──
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('subscription_tier, subscription_expires_at')
-      .eq('id', user.id)
-      .single();
+    let tier = 'Trial';
+    if (!isGuest && user) {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('subscription_tier, subscription_expires_at')
+        .eq('id', user.id)
+        .single();
 
-    let rawTier = profile?.subscription_tier ? String(profile.subscription_tier).trim() : 'Trial';
-    
-    if (profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now()) {
-      rawTier = 'Trial';
+      let rawTier = profile?.subscription_tier ? String(profile.subscription_tier).trim() : 'Trial';
+      
+      if (profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now()) {
+        rawTier = 'Trial';
+      }
+      tier = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
     }
 
-    const tier = rawTier.charAt(0).toUpperCase() + rawTier.slice(1).toLowerCase();
-
-    let session: any;
+    let session: any = null;
     let activeSessionId = sessionId;
 
     if (!sessionId && vehicleData) {
-      // ═══════════════════════════════════════════════════
-      // NEW SESSION FLOW — create session server-side
-      // ═══════════════════════════════════════════════════
+      // NEW SESSION FLOW
+      
+      if (!isGuest && user) {
+        // 1. Check limits BEFORE creating the session for auth users
+        if (tier !== 'Pro') {
+          const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-      // 1. Check limits BEFORE creating the session
-      if (tier !== 'Pro') {
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+          const { count, error: countError } = await supabaseClient
+            .from('diagnostic_sessions')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .gte('created_at', twentyFourHoursAgo);
 
-        const { count, error: countError } = await supabaseClient
-          .from('diagnostic_sessions')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .gte('created_at', twentyFourHoursAgo);
+          if (!countError && count !== null) {
+            let adjustedCount = count;
 
-        if (!countError && count !== null) {
-          let adjustedCount = count;
+            if (tier === 'Plus') {
+              const { data: firstSession } = await supabaseClient
+                .from('diagnostic_sessions')
+                .select('created_at')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: true })
+                .limit(1)
+                .single();
 
-          if (tier === 'Plus') {
-            const { data: firstSession } = await supabaseClient
-              .from('diagnostic_sessions')
-              .select('created_at')
-              .eq('user_id', user.id)
-              .order('created_at', { ascending: true })
-              .limit(1)
-              .single();
+              if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
+                adjustedCount = Math.max(0, adjustedCount - 1);
+              }
+            }
 
-            if (firstSession && new Date(firstSession.created_at) >= new Date(twentyFourHoursAgo)) {
-              adjustedCount = Math.max(0, adjustedCount - 1);
+            const maxSessions = tier === 'Plus' ? 5 : 1;
+            if (adjustedCount >= maxSessions) {
+              return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
+                status: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
             }
           }
-
-          const maxSessions = tier === 'Plus' ? 5 : 1;
-          if (adjustedCount >= maxSessions) {
-            return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
-              status: 403,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-          }
         }
+
+        // 2. Create the session server-side for auth users
+        const vehicleId = vehicleData.id && vehicleData.id !== 'guest-vehicle' && vehicleData.id !== 'pending-vehicle'
+          ? vehicleData.id
+          : null;
+
+        const { data: newSession, error: insertError } = await supabaseClient
+          .from('diagnostic_sessions')
+          .insert([{
+            vehicle_id: vehicleId,
+            user_id: user.id,
+            vehicle_make: vehicleData.make,
+            vehicle_model: vehicleData.model,
+            vehicle_year: vehicleData.year,
+            vehicle_mileage: vehicleData.mileage,
+            vehicle_engine: vehicleData.fuel_type,
+            location: vehicleData.location,
+            initial_category: vehicleData.category || 'General',
+            user_description: vehicleData.description,
+          }])
+          .select()
+          .single();
+
+        if (insertError || !newSession) {
+          throw new Error("Failed to create session: " + (insertError?.message || 'Unknown error'));
+        }
+
+        session = newSession;
+        activeSessionId = newSession.id;
+      } else {
+        // GUEST FLOW - Don't create a DB session, just use the context
+        session = null;
+        // Generate a random ID for the active session to maintain client state
+        activeSessionId = crypto.randomUUID();
       }
-
-      // 2. Create the session server-side
-      const vehicleId = vehicleData.id && vehicleData.id !== 'guest-vehicle' && vehicleData.id !== 'pending-vehicle'
-        ? vehicleData.id
-        : null;
-
-      const { data: newSession, error: insertError } = await supabaseClient
-        .from('diagnostic_sessions')
-        .insert([{
-          vehicle_id: vehicleId,
-          user_id: user.id,
-          vehicle_make: vehicleData.make,
-          vehicle_model: vehicleData.model,
-          vehicle_year: vehicleData.year,
-          vehicle_mileage: vehicleData.mileage,
-          vehicle_engine: vehicleData.fuel_type,
-          location: vehicleData.location,
-          initial_category: vehicleData.category || 'General',
-          user_description: vehicleData.description,
-        }])
-        .select()
-        .single();
-
-      if (insertError || !newSession) {
-        throw new Error("Failed to create session: " + (insertError?.message || 'Unknown error'));
-      }
-
-      session = newSession;
-      activeSessionId = newSession.id;
-
     } else if (sessionId) {
-      // ═══════════════════════════════════════════════════
-      // EXISTING SESSION FLOW — follow-up messages
-      // ═══════════════════════════════════════════════════
+      // EXISTING SESSION FLOW
+      
+      if (!isGuest && user) {
+        const { data: existingSession, error: sessionError } = await supabaseClient
+          .from('diagnostic_sessions')
+          .select('*')
+          .eq('id', sessionId)
+          .eq('user_id', user.id)
+          .single();
 
-      const { data: existingSession, error: sessionError } = await supabaseClient
-        .from('diagnostic_sessions')
-        .select('*')
-        .eq('id', sessionId)
-        .eq('user_id', user.id)
-        .single();
-
-      if (sessionError || !existingSession) {
-        throw new Error("Session not found or access denied");
+        if (sessionError || !existingSession) {
+          throw new Error("Session not found or access denied");
+        }
+        session = existingSession;
+      } else {
+        // GUEST FLOW - we don't fetch from DB
+        session = null;
       }
-
-      session = existingSession;
     } else {
       throw new Error("Must provide either sessionId or vehicleData");
     }
 
-    // ── Build chat context ──
+    // Build chat context
     let finalChatContext = [];
-    if (!session.chat_history || session.chat_history.length === 0) {
+    if (!session || !session.chat_history || session.chat_history.length === 0) {
       if (!chatContext || !Array.isArray(chatContext)) {
         throw new Error("Initial chatContext is missing");
       }
@@ -165,7 +159,7 @@ serve(async (req) => {
       finalChatContext = [...session.chat_history, { role: 'user', content: newMessage }];
     }
 
-    // ── Call OpenAI ──
+    // Call OpenAI
     const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAiApiKey) {
       throw new Error("Missing OPENAI_API_KEY environment variable");
@@ -200,15 +194,17 @@ serve(async (req) => {
     
     finalChatContext.push({ role: 'assistant', content: JSON.stringify(aiResponse) });
 
-    // ── Update session in DB ──
-    await supabaseClient
-      .from('diagnostic_sessions')
-      .update({
-        chat_history: finalChatContext,
-        status: aiResponse.status,
-        final_probabilities: aiResponse.current_probabilities || null,
-      })
-      .eq('id', activeSessionId);
+    // Update session in DB (ONLY if authenticated user)
+    if (!isGuest && user && session) {
+      await supabaseClient
+        .from('diagnostic_sessions')
+        .update({
+          chat_history: finalChatContext,
+          status: aiResponse.status,
+          final_probabilities: aiResponse.current_probabilities || null,
+        })
+        .eq('id', activeSessionId);
+    }
 
     // Include sessionId in the response so the client can use it for follow-up messages
     return new Response(JSON.stringify({ ...aiResponse, sessionId: activeSessionId }), {
@@ -223,4 +219,3 @@ serve(async (req) => {
     });
   }
 });
-

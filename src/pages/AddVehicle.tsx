@@ -127,7 +127,7 @@ const AddVehicle = () => {
       if (error) throw error;
       
       await queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
-      navigate('/garage');
+      navigate('/diagnose/garage');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to save vehicle.');
       setIsSubmitting(false);
@@ -170,10 +170,10 @@ const AddVehicle = () => {
         <p className="text-center text-muted-foreground mb-8 px-4 text-[15px] max-w-sm">
           {limitCheck.tier} users are allowed to add up to {limitCheck.limit} vehicle{limitCheck.limit > 1 ? 's' : ''}. Please upgrade your plan to add more.
         </p>
-        <Button onClick={() => navigate('/settings/subscription')} className="w-full max-w-[240px] font-medium mb-4">
+        <Button onClick={() => navigate('/diagnose/settings/subscription')} className="w-full max-w-[240px] font-medium mb-4">
           Upgrade Plan
         </Button>
-        <Button variant="ghost" onClick={() => navigate('/garage')} className="font-medium text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" onClick={() => navigate('/diagnose/garage')} className="font-medium text-muted-foreground hover:text-foreground">
           Back to Garage
         </Button>
       </div>

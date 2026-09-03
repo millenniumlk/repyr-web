@@ -66,7 +66,7 @@ const Settings = () => {
   }, [user]);
 
   const handleManageSubscription = () => {
-    navigate('/settings/subscription');
+    navigate('/diagnose/settings/subscription');
   };
 
 
@@ -146,13 +146,13 @@ const Settings = () => {
               <ActionRow 
                 icon={User} 
                 title="Edit Profile" 
-                onClick={() => navigate('/settings/profile')} 
+                onClick={() => navigate('/diagnose/settings/profile')} 
                 isLast={false}
               />
               <ActionRow 
                 icon={Car} 
                 title="Manage Garage" 
-                onClick={() => navigate('/garage')} 
+                onClick={() => navigate('/diagnose/garage')} 
                 isLast={true}
               />
             </div>

@@ -127,7 +127,7 @@ const EditProfile = () => {
       setOriginalFullName(fullName);
       setOriginalAvatarUrl(finalAvatarUrl);
       setAvatarFile(null);
-      navigate('/settings');
+      navigate('/diagnose/settings');
     } catch (err: any) {
       setError(err.message || 'Failed to update profile');
       setSaving(false);
@@ -242,7 +242,7 @@ const EditProfile = () => {
           <Button 
             variant="secondary"
             size="icon"
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/diagnose/settings')}
             className="bg-muted hover:bg-gray-200"
           >
             <ChevronLeft className="w-6 h-6 text-foreground" />

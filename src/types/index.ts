@@ -22,3 +22,18 @@ export interface DiagnosticProbability {
   reasoning?: string;
   estimated_cost?: string;
 }
+
+export interface MaintenanceRecord {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  vehicle_id: string | null;
+  service_date: string;
+  service_type: string;
+  description?: string;
+  cost?: number;
+  mileage?: number;
+  photo_urls: string[];
+  notes?: string;
+}

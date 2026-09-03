@@ -2,3 +2,25 @@
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/lemonsqueezy-webhook/index.ts"
+
+[functions.obd-enrichment]
+enabled = true
+verify_jwt = false
+import_map = "./functions/obd-enrichment/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/obd-enrichment/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/obd-enrichment/*.html" ]
+
+[functions.fetch-diagrams]
+enabled = true
+verify_jwt = false
+import_map = "./functions/fetch-diagrams/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/fetch-diagrams/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/fetch-diagrams/*.html" ]

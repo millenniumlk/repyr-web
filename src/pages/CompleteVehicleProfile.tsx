@@ -196,7 +196,7 @@ const CompleteVehicleProfile = () => {
 
       await queryClient.invalidateQueries({ queryKey: ['vehicles', user.id] });
 
-      navigate('/');
+      navigate('/diagnose');
     } catch (error) {
       console.error(error);
     } finally {

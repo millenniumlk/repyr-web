@@ -89,9 +89,9 @@ const Subscription = () => {
                   }
                   
                   if (needsCompleteProfile) {
-                    navigate('/complete-profile');
+                    navigate('/diagnose/complete-profile');
                   } else {
-                    navigate('/');
+                    navigate('/diagnose');
                   }
                 }
               }, 2000);
@@ -231,7 +231,7 @@ const Subscription = () => {
         </div>
         <Button 
           variant="ghost"
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/diagnose/settings')}
           className="mt-10 flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold hover:bg-transparent"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -248,7 +248,7 @@ const Subscription = () => {
         <Button 
           variant="secondary"
           size="icon"
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/diagnose/settings')}
           className="bg-muted hover:bg-gray-200"
         >
           <ChevronLeft className="w-6 h-6 text-foreground" />

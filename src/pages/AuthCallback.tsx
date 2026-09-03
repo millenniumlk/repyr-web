@@ -29,12 +29,12 @@ const AuthCallback = () => {
               if (pendingChatRaw) {
                 const pendingChat = JSON.parse(pendingChatRaw);
                 if (pendingChat?.needsProfileComplete) {
-                  navigate('/complete-profile', { replace: true });
+                  navigate('/diagnose/complete-profile', { replace: true });
                   return;
                 }
               }
             } catch (e) {}
-            navigate('/', { replace: true });
+            navigate('/diagnose', { replace: true });
           }, 1500);
         } else {
           // No session yet — the hash tokens might still be processing.
@@ -49,12 +49,12 @@ const AuthCallback = () => {
                     if (pendingChatRaw) {
                       const pendingChat = JSON.parse(pendingChatRaw);
                       if (pendingChat?.needsProfileComplete) {
-                        navigate('/complete-profile', { replace: true });
+                        navigate('/diagnose/complete-profile', { replace: true });
                         return;
                       }
                     }
                   } catch (e) {}
-                  navigate('/', { replace: true });
+                  navigate('/diagnose', { replace: true });
                 }, 1500);
                 subscription.unsubscribe();
               }

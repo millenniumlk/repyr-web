@@ -34,6 +34,13 @@ const MainLayout = () => {
     fetchProfile();
   }, [user, isGuest]);
 
+  useEffect(() => {
+    if (isGuest && location.pathname !== '/diagnose' && location.pathname !== '/diagnose/') {
+      // For the time being, completely block guests from restricted routes
+      window.location.href = '/diagnose';
+    }
+  }, [isGuest, location.pathname]);
+
   const userName = isGuest ? 'Guest User' : (profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0]);
   const avatarUrl = !isGuest && (profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture);
   const displayInitial = userName ? userName.charAt(0).toUpperCase() : 'U';
@@ -64,11 +71,11 @@ const MainLayout = () => {
   };
 
   const navItems = [
-    { name: 'Home', path: '/', icon: Home, exact: true },
-    { name: 'Garage', path: '/garage', icon: Car, exact: false },
-    { name: 'Diagnostic Logs', path: '/history', icon: FileText, exact: false },
-    { name: 'Notifications', path: '/notifications', icon: Bell, exact: false },
-    { name: 'Settings', path: '/settings', icon: SettingsIcon, exact: false },
+    { name: 'Home', path: '/diagnose', icon: Home, exact: true },
+    { name: 'Garage', path: '/diagnose/garage', icon: Car, exact: false },
+    { name: 'Diagnostic Logs', path: '/diagnose/history', icon: FileText, exact: false },
+    { name: 'Notifications', path: '/diagnose/notifications', icon: Bell, exact: false },
+    { name: 'Settings', path: '/diagnose/settings', icon: SettingsIcon, exact: false },
   ];
 
   return (
@@ -80,7 +87,7 @@ const MainLayout = () => {
       <aside className={`hidden md:flex flex-col bg-card border-r border-border h-screen sticky top-0 transition-all duration-300 z-40 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isSidebarCollapsed && (
-            <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
+            <Link to="/diagnose" onClick={(e) => { if (location.pathname === '/diagnose') { e.preventDefault(); window.location.href = '/diagnose'; } }}>
               <h1 className="text-2xl font-black text-foreground tracking-tighter hover:opacity-80 transition-opacity">Repyr</h1>
             </Link>
           )}
@@ -105,14 +112,14 @@ const MainLayout = () => {
                 key={item.name}
                 to={item.path}
                 onClick={(e) => {
-                  if (isGuest && item.path !== '/') {
+                  if (isGuest && item.path !== '/diagnose') {
                     e.preventDefault();
                     setGuestRestrictedFeature(item.name);
                     return;
                   }
-                  if (location.pathname === item.path && item.path === '/') {
+                  if (location.pathname === item.path && item.path === '/diagnose') {
                     e.preventDefault();
-                    window.location.href = '/';
+                    window.location.href = '/diagnose';
                   }
                 }}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
@@ -126,6 +133,50 @@ const MainLayout = () => {
               </Link>
             );
           })}
+
+          <div className="pt-6 mt-6 border-t border-border">
+            {!isSidebarCollapsed && (
+              <h3 className="px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
+                Popular OBD Codes
+              </h3>
+            )}
+            <div className="space-y-1">
+              {[
+                { code: 'P0300', title: 'Random Misfire' },
+                { code: 'P0420', title: 'Catalyst Efficiency' },
+                { code: 'P0171', title: 'System Too Lean' },
+                { code: 'P0455', title: 'Evap Gross Leak' },
+                { code: 'P0113', title: 'Intake Air Temp' },
+                { code: 'P0135', title: 'O2 Sensor Heater' },
+                { code: 'P0101', title: 'MAF Sensor Circuit' },
+                { code: 'P0340', title: 'Camshaft Position' },
+                { code: 'P0401', title: 'EGR Flow Insufficient' },
+                { code: 'P0700', title: 'Transmission Control' }
+              ].map((item) => (
+                <Link
+                  key={item.code}
+                  to={`/obd/${item.code}`}
+                  className="flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-foreground/80 hover:bg-secondary hover:text-primary group"
+                >
+                  <div className="w-5 h-5 shrink-0 flex items-center justify-center bg-primary/10 text-primary text-[10px] font-black rounded border border-primary/20 group-hover:border-primary/40">
+                    {item.code.charAt(1)}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <div className="overflow-hidden">
+                      <span className="text-sm font-bold block">{item.code}</span>
+                      <span className="text-xs text-muted-foreground truncate block">{item.title}</span>
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+            
+            {!isSidebarCollapsed && (
+              <Link to="/obd" className="block px-4 mt-4 text-xs font-bold text-primary hover:underline">
+                View all codes →
+              </Link>
+            )}
+          </div>
         </nav>
         
         <div className="p-4 border-t border-border relative" ref={menuRef}>
@@ -133,7 +184,7 @@ const MainLayout = () => {
           {isProfileMenuOpen && !isGuest && (
             <div className={`absolute bottom-full left-4 mb-2 bg-card rounded-xl shadow-lg border border-border overflow-hidden z-50 ${isSidebarCollapsed ? 'w-48 left-2' : 'right-4'}`}>
               <Link 
-                to="/settings/profile"
+                to="/diagnose/settings/profile"
                 onClick={() => setIsProfileMenuOpen(false)}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
               >
@@ -186,14 +237,14 @@ const MainLayout = () => {
 
       {/* Standard Responsive Mobile Header */}
       {!MOBILE_HEADER_EXCLUDED_ROUTES.some(route => location.pathname.includes(route)) && (
-        <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/' ? 'sticky top-0 z-30' : ''}`}>
-        <Link to="/" onClick={(e) => { if (location.pathname === '/') { e.preventDefault(); window.location.href = '/'; } }}>
-          <h1 className={location.pathname === '/' ? "text-xl font-black text-foreground tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
-            {location.pathname === '/' ? 'Repyr.' 
-             : location.pathname.startsWith('/garage') ? 'Garage'
-             : location.pathname.startsWith('/history') ? 'Diagnostic Logs'
-             : location.pathname.startsWith('/settings') ? 'Settings'
-             : location.pathname.startsWith('/notifications') ? 'Notifications'
+        <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/diagnose' ? 'sticky top-0 z-30' : ''}`}>
+        <Link to="/diagnose" onClick={(e) => { if (location.pathname === '/diagnose') { e.preventDefault(); window.location.href = '/diagnose'; } }}>
+          <h1 className={location.pathname === '/diagnose' ? "text-xl font-black text-foreground tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
+            {location.pathname === '/diagnose' ? 'Repyr.' 
+             : location.pathname.startsWith('/diagnose/garage') ? 'Garage'
+             : location.pathname.startsWith('/diagnose/history') ? 'Diagnostic Logs'
+             : location.pathname.startsWith('/diagnose/settings') ? 'Settings'
+             : location.pathname.startsWith('/diagnose/notifications') ? 'Notifications'
              : 'Repyr.'}
           </h1>
         </Link>
@@ -238,9 +289,9 @@ const MainLayout = () => {
                   to="/" 
                   onClick={(e) => {
                     setIsMobileMenuOpen(false);
-                    if (location.pathname === '/') {
+                    if (location.pathname === '/diagnose') {
                       e.preventDefault();
-                      window.location.href = '/';
+                      window.location.href = '/diagnose';
                     }
                   }}
                 >
@@ -268,14 +319,14 @@ const MainLayout = () => {
                       to={item.path}
                       onClick={(e) => {
                         setIsMobileMenuOpen(false);
-                        if (isGuest && item.path !== '/') {
+                        if (isGuest && item.path !== '/diagnose') {
                           e.preventDefault();
                           setGuestRestrictedFeature(item.name);
                           return;
                         }
-                        if (location.pathname === item.path && item.path === '/') {
+                        if (location.pathname === item.path && item.path === '/diagnose') {
                           e.preventDefault();
-                          window.location.href = '/';
+                          window.location.href = '/diagnose';
                         }
                       }}
                       className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
@@ -289,6 +340,48 @@ const MainLayout = () => {
                     </Link>
                   );
                 })}
+
+                <div className="pt-4 mt-4 border-t border-border">
+                  <h3 className="px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                    Popular OBD Codes
+                  </h3>
+                  <div className="space-y-1">
+                    {[
+                      { code: 'P0300', title: 'Random Misfire' },
+                      { code: 'P0420', title: 'Catalyst Efficiency' },
+                      { code: 'P0171', title: 'System Too Lean' },
+                      { code: 'P0455', title: 'Evap Gross Leak' },
+                      { code: 'P0113', title: 'Intake Air Temp' },
+                      { code: 'P0135', title: 'O2 Sensor Heater' },
+                      { code: 'P0101', title: 'MAF Sensor Circuit' },
+                      { code: 'P0340', title: 'Camshaft Position' },
+                      { code: 'P0401', title: 'EGR Flow Insufficient' },
+                      { code: 'P0700', title: 'Transmission Control' }
+                    ].map((item) => (
+                      <Link
+                        key={item.code}
+                        to={`/obd/${item.code}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-foreground/80 hover:bg-secondary hover:text-primary group"
+                      >
+                        <div className="w-6 h-6 shrink-0 flex items-center justify-center bg-primary/10 text-primary text-xs font-black rounded border border-primary/20">
+                          {item.code.charAt(1)}
+                        </div>
+                        <div className="overflow-hidden">
+                          <span className="text-sm font-bold block">{item.code}</span>
+                          <span className="text-xs text-muted-foreground truncate block">{item.title}</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link 
+                    to="/obd" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 mt-4 mb-4 text-xs font-bold text-primary hover:underline"
+                  >
+                    View all codes →
+                  </Link>
+                </div>
               </nav>
 
               <div className="p-4 border-t border-border bg-muted/50">

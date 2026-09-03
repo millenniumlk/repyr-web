@@ -7,6 +7,7 @@ import { useAuth } from '../lib/AuthContext';
 import { useDiagnosticAI } from '../hooks/useDiagnosticAI';
 import DiagnosticChat from '../components/DiagnosticChat';
 import ChatInputBar from '../components/ChatInputBar';
+import { useToast } from '../lib/ToastContext';
 
 import { Skeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -14,16 +15,43 @@ import { Button } from '../components/ui/Button';
 import { VEHICLE_CATEGORIES, SUBSCRIPTION_LIMITS } from '../lib/constants';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+const TimelineInput = ({ label, placeholder, value, onChange, isLast }: any) => (
+  <div className="flex gap-4 relative w-full">
+    <div className="flex flex-col items-center">
+      <div className="w-4 h-4 rounded-full border-[3px] border-border bg-background mt-2 z-10" />
+      {!isLast && <div className="w-0.5 bg-border/50 flex-1 my-1" />}
+    </div>
+    <div className="flex-1 pb-6">
+      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">
+        {label}
+      </label>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full bg-transparent border-b border-border focus:border-primary text-xl font-medium outline-none py-1 transition-colors placeholder:text-muted-foreground/30"
+      />
+    </div>
+  </div>
+);
+
 const Home = () => {
   const navigate = useNavigate();
   const { isSidebarCollapsed } = useOutletContext<{ isSidebarCollapsed: boolean }>() || { isSidebarCollapsed: false };
-  const { user, guestVehicle, subscriptionTier } = useAuth();
+  const { user, guestVehicle, subscriptionTier, setGuestMode } = useAuth();
+  const { showToast } = useToast();
   
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVehicleSelectorOpen, setIsVehicleSelectorOpen] = useState(false);
   
+  const [guestMake, setGuestMake] = useState('');
+  const [guestModel, setGuestModel] = useState('');
+  const [guestYear, setGuestYear] = useState('');
+  const [guestMileage, setGuestMileage] = useState('');
+
   const [inputValue, setInputValue] = useState('');
   const [category, setCategory] = useState('');
   const [isChatActive, setIsChatActive] = useState(false);
@@ -204,18 +232,24 @@ const Home = () => {
       setIsProcessingGuestChat(false);
     }
     
-    if (user && !isLoading && selectedVehicle && !isChatActive) {
+    if (!isLoading && !isChatActive) {
       const pendingChatRaw = localStorage.getItem('pending_guest_chat');
       if (pendingChatRaw) {
         try {
           const pendingChat = JSON.parse(pendingChatRaw);
-          if (pendingChat.needsProfileComplete) {
-            navigate('/complete-profile');
+          
+          if (user && selectedVehicle && pendingChat.needsProfileComplete) {
+            navigate('/diagnose/complete-profile');
             return;
           }
+          
           if (pendingChat.symptoms) {
             setInputValue(pendingChat.symptoms);
-            setShouldAutoStart(true);
+            // Only auto-start if they have a vehicle (either user or guest with vehicle)
+            if (selectedVehicle) {
+              setShouldAutoStart(true);
+            }
+            
             delete pendingChat.symptoms;
             if (Object.keys(pendingChat).length === 0) {
               localStorage.removeItem('pending_guest_chat');
@@ -248,6 +282,22 @@ const Home = () => {
 
   const handleStartOrReply = useCallback(async () => { // 🔴 Bug fix: useCallback prevents stale closure in the auto-start effect
     if (!selectedVehicle) {
+      if (!user) {
+        if (!guestMake || !guestModel || !guestYear) {
+          showToast('Please fill in your vehicle Year, Make, and Model to continue.', 'error');
+          return;
+        }
+
+        setGuestMode(true, {
+          id: 'guest-vehicle',
+          make: guestMake,
+          model: guestModel,
+          year: guestYear,
+          mileage: parseInt(guestMileage, 10) || 0
+        } as any);
+        setShouldAutoStart(true);
+        return;
+      }
       setIsProcessingGuestChat(false);
       return;
     }
@@ -262,12 +312,7 @@ const Home = () => {
         return;
       }
       
-      // If the user is a guest, intercept the chat and show the signup overlay
-      if (!user) {
-        setIsProcessingGuestChat(false);
-        setGuestRedirectMessage(true);
-        return;
-      }
+      // We removed the guest signup intercept overlay so guests can chat freely
       
       // NOTE: This client-side limit check is a UX optimization only.
       // The authoritative enforcement happens server-side in the diagnostic-ai edge function,
@@ -275,7 +320,33 @@ const Home = () => {
       // (e.g., by manipulating subscriptionTier), the edge function will still reject the request.
       let limitReached = false;
       
-      if (subscriptionTier !== 'Pro') {
+      if (!user) {
+        // Guest limit check
+        const todayDateString = new Date().toISOString().split('T')[0];
+        const guestUsageRaw = localStorage.getItem('guest_usage');
+        let guestUsage = { date: todayDateString, count: 0 };
+        
+        if (guestUsageRaw) {
+          try {
+            const parsed = JSON.parse(guestUsageRaw);
+            if (parsed.date === todayDateString) {
+              guestUsage = parsed;
+            }
+          } catch (e) {}
+        }
+        
+        if (guestUsage.count >= 3) {
+          showToast('You have reached the daily limit of 3 free diagnostics.', 'error');
+          setIsProcessingGuestChat(false);
+          return; // Stop guest completely
+        }
+        
+        // Increment usage
+        guestUsage.count += 1;
+        localStorage.setItem('guest_usage', JSON.stringify(guestUsage));
+
+      } else if (subscriptionTier !== 'Pro') {
+        // Authenticated user limit check
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
         const { count, error } = await supabase
@@ -314,7 +385,7 @@ const Home = () => {
       if (limitReached) {
         if (subscriptionTier === 'Trial') {
           setIsProcessingGuestChat(false);
-          navigate('/settings/subscription');
+          navigate('/diagnose/settings/subscription');
           return;
         } else {
           setIsChatActive(true);
@@ -334,7 +405,7 @@ const Home = () => {
       handleSendReply(inputValue);
       setInputValue('');
     }
-  }, [selectedVehicle, shouldAutoStart, isChatActive, inputValue, category, user, subscriptionTier, navigate, startInvestigation, handleSendReply, resetDiagnosis]);
+  }, [selectedVehicle, shouldAutoStart, isChatActive, inputValue, category, user, subscriptionTier, navigate, startInvestigation, handleSendReply, resetDiagnosis, guestMake, guestModel, guestYear, guestMileage, setGuestMode, showToast]);
 
   useEffect(() => {
     if (shouldAutoStart && (inputValue || category)) {
@@ -375,13 +446,48 @@ const Home = () => {
             className="flex-1 flex flex-col justify-center pb-32"
           >
             {vehicles.length === 0 ? (
-              <EmptyState 
-                icon={Car}
-                title="Welcome to Repyr"
-                description="Add your first vehicle to get started with AI-powered diagnostics and personalized maintenance tracking."
-                actionLabel="Add Vehicle"
-                onAction={() => navigate('/garage/add')}
-              />
+              user ? (
+                <EmptyState 
+                  icon={Car}
+                  title="Welcome to Repyr"
+                  description="Add your first vehicle to get started with AI-powered diagnostics and personalized maintenance tracking."
+                  actionLabel="Add Vehicle"
+                  onAction={() => navigate('/diagnose/garage/add')}
+                />
+              ) : (
+                <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
+                  <div className="mb-10 w-full">
+                    <h1 className="text-3xl md:text-4xl font-normal text-foreground tracking-tight leading-tight mb-8">
+                      Let's fix your car.
+                    </h1>
+                    
+                    <div className="flex flex-col ml-2">
+                      <TimelineInput label="YEAR" placeholder="e.g. 2018" value={guestYear} onChange={(e: any) => setGuestYear(e.target.value)} />
+                      <TimelineInput label="MAKE" placeholder="e.g. Toyota" value={guestMake} onChange={(e: any) => setGuestMake(e.target.value)} />
+                      <TimelineInput label="MODEL" placeholder="e.g. Camry" value={guestModel} onChange={(e: any) => setGuestModel(e.target.value)} />
+                      <TimelineInput label="MILEAGE" placeholder="e.g. 45000 (Optional)" value={guestMileage} onChange={(e: any) => setGuestMileage(e.target.value)} isLast={true} />
+                    </div>
+                  </div>
+                  
+                  {/* Common Issue Prompts */}
+                  <div className="flex flex-wrap justify-start gap-3 w-full">
+                    {VEHICLE_CATEGORIES.map((cat, i) => (
+                      <Button
+                        key={i}
+                        variant="outline"
+                        size="chip"
+                        onClick={() => setCategory(category === cat ? '' : cat)}
+                        className={category === cat
+                          ? 'border-primary/20 text-primary shadow-glow-primary bg-primary/5'
+                          : 'border-border text-muted-foreground shadow-sm bg-card hover:border-border'
+                        }
+                      >
+                        {cat}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )
             ) : (
               <div className="mt-8 flex flex-col items-start justify-start text-left max-w-2xl mx-auto px-6 w-full">
                 <div className="mb-6 w-full">
@@ -421,7 +527,7 @@ const Home = () => {
           >
             <DiagnosticChat 
               hasAccess={hasAccess ?? undefined}
-              handleUpgrade={() => navigate('/settings/subscription')}
+              handleUpgrade={() => navigate('/diagnose/settings/subscription')}
               isUpgrading={false}
               exitChat={exitChat}
               probabilities={probabilities}
@@ -434,7 +540,7 @@ const Home = () => {
       </AnimatePresence>
 
       {/* Input Bar */}
-      {vehicles.length > 0 && (
+      {(vehicles.length > 0 || !user) && (
         <ChatInputBar 
           isChatActive={isChatActive}
           isTyping={isTyping}
@@ -508,7 +614,7 @@ const Home = () => {
                 variant="outline"
                 onClick={() => {
                   setIsVehicleSelectorOpen(false);
-                  navigate('/garage/add');
+                  navigate('/diagnose/garage/add');
                 }}
                 className="w-full mt-4 rounded-full border-dashed border-primary/40 text-primary hover:bg-primary/10"
               >
