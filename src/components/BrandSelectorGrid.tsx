@@ -31,22 +31,22 @@ const BRAND_ABBREVIATIONS: Record<string, string> = {
 };
 
 const BRAND_LOGOS: Record<string, string> = {
-  Audi: 'https://www.carlogos.org/car-logos/audi-logo.png',
-  BMW: 'https://www.carlogos.org/car-logos/bmw-logo.png',
-  Chevrolet: 'https://www.carlogos.org/car-logos/chevrolet-logo.png',
-  'Citroën': 'https://www.carlogos.org/car-logos/citroen-logo.png',
-  Fiat: 'https://www.carlogos.org/car-logos/fiat-logo.png',
-  Ford: 'https://www.carlogos.org/car-logos/ford-logo.png',
-  GMC: 'https://www.carlogos.org/car-logos/gmc-logo.png',
-  Honda: 'https://www.carlogos.org/car-logos/honda-logo.png',
-  Hyundai: 'https://www.carlogos.org/car-logos/hyundai-logo.png',
-  Kia: 'https://www.carlogos.org/car-logos/kia-logo.png',
-  Mercedes: 'https://www.carlogos.org/car-logos/mercedes-benz-logo.png',
-  Nissan: 'https://www.carlogos.org/car-logos/nissan-logo.png',
-  Porsche: 'https://www.carlogos.org/car-logos/porsche-logo.png',
-  Subaru: 'https://www.carlogos.org/car-logos/subaru-logo.png',
-  Toyota: 'https://www.carlogos.org/car-logos/toyota-logo.png',
-  Volkswagen: 'https://www.carlogos.org/car-logos/volkswagen-logo.png',
+  Audi: '/logos/audi.png',
+  BMW: '/logos/bmw.png',
+  Chevrolet: '/logos/chevrolet.png',
+  'Citroën': '/logos/citroen.png',
+  Fiat: '/logos/fiat.png',
+  Ford: '/logos/ford.png',
+  GMC: '/logos/gmc.png',
+  Honda: '/logos/honda.png',
+  Hyundai: '/logos/hyundai.png',
+  Kia: '/logos/kia.png',
+  Mercedes: '/logos/mercedes.png',
+  Nissan: '/logos/nissan.png',
+  Porsche: '/logos/porsche.png',
+  Subaru: '/logos/subaru.png',
+  Toyota: '/logos/toyota.png',
+  Volkswagen: '/logos/volkswagen.png',
 };
 
 const gridContainerVariants: Variants = {
