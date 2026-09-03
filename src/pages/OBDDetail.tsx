@@ -255,7 +255,7 @@ export default function OBDDetail() {
               {dynamicImage && (
                 <div className="rounded-3xl overflow-hidden border border-border bg-white flex items-center justify-center shadow-sm">
                   <img 
-                    src={dynamicImage} 
+                    src={`https://cqhsvdipojpqhucfrdfx.supabase.co/functions/v1/proxy-image?url=${encodeURIComponent(dynamicImage)}`}
                     alt={`${safeMake !== 'Generic' ? safeMake + ' ' : ''}${safeCode} - ${cleanTitle} Auto Part`}
                     title={`${safeMake !== 'Generic' ? safeMake + ' ' : ''}${safeCode} ${cleanTitle}`}
                     className="w-full h-80 md:h-[400px] object-contain p-4"
