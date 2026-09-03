@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { make, model, year, category, rawQuery, rawCacheKey } = await req.json()
-    const cacheKey = rawCacheKey || `diagram_v3_${year}_${make}_${model}_${category}`.toLowerCase().replace(/\s+/g, '_')
+    const cacheKey = rawCacheKey || `diagram_v4_${year}_${make}_${model}_${category}`.toLowerCase().replace(/\s+/g, '_')
 
     // Initialize Supabase Client
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
@@ -56,8 +56,8 @@ serve(async (req) => {
     })
     const imgData = await imgRes.json()
     
-    // Extract top 10 image URLs, prioritizing the original source URL to avoid Bing strict proxy blocks
-    const images = imgData.results.slice(0, 10).map((r: any) => r.image || r.thumbnail)
+    // Extract top 10 image URLs, prioritizing Bing thumbnails because our edge proxy reliably fetches them
+    const images = imgData.results.slice(0, 10).map((r: any) => r.thumbnail || r.image)
 
     // 3. Save to Supabase Cache
     if (images.length > 0) {
