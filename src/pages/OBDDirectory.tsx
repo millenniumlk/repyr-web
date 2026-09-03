@@ -53,7 +53,7 @@ export default function OBDDirectory() {
 
   const fetchCodes = async (pageIndex: number, search: string = '') => {
     setIsLoading(true);
-    let query = supabase.from('obd_codes').select('code, title, make');
+    let query = supabase.from('obd_codes').select('code, title, make').neq('make', '_Invalid_Generic');
 
     if (isCategory) {
       // Show ALL codes for this category letter, regardless of Make

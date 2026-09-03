@@ -45,11 +45,18 @@ async function run() {
     }
   }
 
-  // OBD Codes
-  const { data: obdCodes } = await supabase.from('obd_codes').select('code').limit(10000); 
-  if (obdCodes) {
-    for (const c of obdCodes) {
-      urls.push(`<url><loc>${BASE_URL}/obd/${c.code}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+  // OBD Codes - Paginated because Supabase limits to 1000 per request
+  let hasMore = true;
+  let offset = 0;
+  while (hasMore) {
+    const { data: obdCodes } = await supabase.from('obd_codes').select('code').eq('make', 'Generic').range(offset, offset + 999);
+    if (obdCodes && obdCodes.length > 0) {
+      for (const c of obdCodes) {
+        urls.push(`<url><loc>${BASE_URL}/obd/${c.code}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+      }
+      offset += 1000;
+    } else {
+      hasMore = false;
     }
   }
 
