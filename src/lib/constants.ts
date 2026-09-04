@@ -6,7 +6,7 @@ export const VEHICLE_CATEGORIES = [
 
 export const SUBSCRIPTION_LIMITS = {
   PLUS_MAX_SESSIONS: 5,
-  TRIAL_MAX_SESSIONS: 1
+  TRIAL_MAX_SESSIONS: 5
 };
 
 export const SERVICE_TYPES = [

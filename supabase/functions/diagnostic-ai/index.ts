@@ -78,7 +78,7 @@ serve(async (req) => {
               }
             }
 
-            const maxSessions = tier === 'Plus' ? 5 : 1;
+            const maxSessions = 5;
             if (adjustedCount >= maxSessions) {
               return new Response(JSON.stringify({ error: 'Daily limit reached.' }), {
                 status: 403,

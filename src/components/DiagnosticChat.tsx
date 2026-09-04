@@ -48,10 +48,8 @@ const DiagnosticChat = ({
         <h2 className="text-center font-bold mb-3 text-2xl">Limit Reached</h2>
         <p className="text-center text-muted-foreground mb-8 px-4 text-sm max-w-sm">
           {isGuestUser
-            ? "You've used your 3 free diagnostic sessions. Sign up for a free account to continue."
-            : trialTier === 'Trial' 
-              ? "You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access."
-              : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
+            ? "You've used your 3 free diagnostic sessions. Sign up for a free account to get 5 more free sessions."
+            : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
         </p>
         <Button 
           onClick={isGuestUser ? () => navigate('/auth') : handleUpgrade} 
@@ -59,7 +57,7 @@ const DiagnosticChat = ({
           isLoading={isUpgrading && !isGuestUser}
           className="w-full max-w-[240px] font-medium"
         >
-          {isGuestUser ? "Sign Up for Free" : trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro"}
+          {isGuestUser ? "Sign Up for Free" : "View Subscription Plans"}
         </Button>
         <Button variant="ghost" onClick={exitChat} className="mt-6 font-medium text-muted-foreground hover:text-foreground hover:bg-transparent">
           Back to Home
@@ -193,8 +191,8 @@ const DiagnosticChat = ({
                </h4>
                <p className="text-indigo-100 text-sm mb-4 relative z-10 leading-relaxed">
                  {!user 
-                   ? "Sign up for a free account to save this diagnosis, add vehicles to your virtual garage, and get personalized repair advice."
-                   : "You've used your free chat! Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance."}
+                   ? "Sign up for a free account to save this diagnosis and get 5 more free sessions."
+                   : "Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance."}
                </p>
                <Button 
                  onClick={() => !user ? navigate('/auth') : navigate('/diagnose/settings/subscription')}
