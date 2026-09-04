@@ -200,11 +200,9 @@ export default function HomePage() {
               <h3 className="font-bold text-lg mb-4 text-foreground">OBD Codes by Make</h3>
               <ul className="space-y-3">
                 {[
-                  "Acura", "Audi", "BMW", "Buick", "Cadillac", "Chevrolet", 
-                  "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Infiniti", 
-                  "Jaguar", "Jeep", "Kia", "Lexus", "Lincoln", "Mazda", 
-                  "Mercedes", "Mercury", "Mitsubishi", "Nissan", "Oldsmobile", 
-                  "Plymouth", "Pontiac", "Saturn", "Subaru", "Toyota", "Volkswagen"
+                  "Ford", "Chevrolet", "Toyota", "Honda", "Nissan", 
+                  "Jeep", "BMW", "Mercedes", "Audi", "Volkswagen", 
+                  "Subaru", "Kia", "Mazda", "Dodge", "GMC"
                 ].map(make => (
                   <li key={make}>
                     <Link to={`/obd/make/${make.toLowerCase()}`} className="text-foreground hover:text-primary transition-colors flex items-center text-sm font-medium">
