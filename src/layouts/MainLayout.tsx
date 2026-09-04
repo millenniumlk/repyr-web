@@ -196,7 +196,9 @@ const MainLayout = () => {
       {/* Standard Responsive Mobile Header */}
       {!MOBILE_HEADER_EXCLUDED_ROUTES.some(route => location.pathname.includes(route)) && (
         <header className={`md:hidden flex items-center justify-between px-4 h-16 bg-transparent ${location.pathname === '/diagnose' ? 'sticky top-0 z-30' : ''}`}>
-        <Link to="/diagnose" onClick={(e) => { if (location.pathname === '/diagnose') { e.preventDefault(); window.location.href = '/diagnose'; } }}>
+        <Link 
+          to={location.pathname === '/diagnose' ? "/" : "/diagnose"} 
+        >
           <h1 className={location.pathname === '/diagnose' ? "text-xl font-black text-foreground tracking-tighter" : "text-lg font-bold text-foreground tracking-tight"}>
             {location.pathname === '/diagnose' ? 'Repyr.' 
              : location.pathname.startsWith('/diagnose/garage') ? 'Garage'
