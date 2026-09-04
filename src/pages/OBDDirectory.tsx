@@ -6,6 +6,14 @@ import { supabase } from '../lib/supabase';
 import { HomeHeader } from '../components/HomeHeader';
 import { Button } from '../components/ui/Button';
 
+const ALL_MAKES = [
+  "Generic", "Acura", "Audi", "BMW", "Buick", "Cadillac", "Chevrolet", 
+  "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Infiniti", "Jaguar", 
+  "Jeep", "Kia", "Lexus", "Lincoln", "Mazda", "Mercedes", "Mercury", 
+  "Mitsubishi", "Nissan", "Oldsmobile", "Plymouth", "Pontiac", 
+  "Saturn", "Subaru", "Toyota", "Volkswagen"
+];
+
 export default function OBDDirectory() {
   const { category, make } = useParams();
   const navigate = useNavigate();
@@ -19,7 +27,7 @@ export default function OBDDirectory() {
   const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'all' | 'generic' | 'manufacturer'>('all');
+  const [makeFilter, setMakeFilter] = useState<string>('all');
   const [totalCount, setTotalCount] = useState<number | null>(null);
 
   const itemsPerPage = 50;
@@ -63,10 +71,8 @@ export default function OBDDirectory() {
       // Show ALL codes for this category letter, regardless of Make
       query = query.like('code', dbFilter);
       
-      if (typeFilter === 'generic') {
-        query = query.eq('make', 'Generic');
-      } else if (typeFilter === 'manufacturer') {
-        query = query.neq('make', 'Generic');
+      if (makeFilter !== 'all') {
+        query = query.eq('make', makeFilter);
       }
     } else if (isMake) {
       // For Make pages, we query by make case-insensitively to support BMW, GMC, etc.
@@ -98,7 +104,7 @@ export default function OBDDirectory() {
   useEffect(() => {
     setPage(0);
     fetchCodes(0, debouncedSearch);
-  }, [category, make, debouncedSearch, typeFilter]);
+  }, [category, make, debouncedSearch, makeFilter]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -146,13 +152,14 @@ export default function OBDDirectory() {
           
           {isCategory && (
             <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value as 'all' | 'generic' | 'manufacturer')}
+              value={makeFilter}
+              onChange={(e) => setMakeFilter(e.target.value)}
               className="px-4 py-3 border border-border rounded-xl bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
             >
-              <option value="all">All Codes</option>
-              <option value="generic">Generic Only</option>
-              <option value="manufacturer">Manufacturer Specific</option>
+              <option value="all">All Makes</option>
+              {ALL_MAKES.map(m => (
+                <option key={m} value={m}>{m === 'Generic' ? 'Generic (All Makes)' : m}</option>
+              ))}
             </select>
           )}
         </div>
