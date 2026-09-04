@@ -19,6 +19,8 @@ export default function OBDDirectory() {
   const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'generic' | 'manufacturer'>('all');
+  const [totalCount, setTotalCount] = useState<number | null>(null);
 
   const itemsPerPage = 50;
 
@@ -53,11 +55,19 @@ export default function OBDDirectory() {
 
   const fetchCodes = async (pageIndex: number, search: string = '') => {
     setIsLoading(true);
-    let query = supabase.from('obd_codes').select('code, title, make').neq('make', '_Invalid_Generic');
+    let query = supabase.from('obd_codes')
+      .select('code, title, make', { count: 'exact' })
+      .neq('make', '_Invalid_Generic');
 
     if (isCategory) {
       // Show ALL codes for this category letter, regardless of Make
       query = query.like('code', dbFilter);
+      
+      if (typeFilter === 'generic') {
+        query = query.eq('make', 'Generic');
+      } else if (typeFilter === 'manufacturer') {
+        query = query.neq('make', 'Generic');
+      }
     } else if (isMake) {
       // For Make pages, we query by make case-insensitively to support BMW, GMC, etc.
       query = query.ilike('make', make);
@@ -67,7 +77,7 @@ export default function OBDDirectory() {
       query = query.or(`code.ilike.%${search}%,title.ilike.%${search}%`);
     }
 
-    const { data, error } = await query
+    const { data, error, count } = await query
       .order('code', { ascending: true })
       .range(pageIndex * itemsPerPage, (pageIndex + 1) * itemsPerPage - 1);
 
@@ -76,6 +86,7 @@ export default function OBDDirectory() {
     } else {
       if (pageIndex === 0) {
         setCodes(data || []);
+        if (count !== null) setTotalCount(count);
       } else {
         setCodes(prev => [...prev, ...(data || [])]);
       }
@@ -87,7 +98,7 @@ export default function OBDDirectory() {
   useEffect(() => {
     setPage(0);
     fetchCodes(0, debouncedSearch);
-  }, [category, make, debouncedSearch]);
+  }, [category, make, debouncedSearch, typeFilter]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -119,18 +130,38 @@ export default function OBDDirectory() {
           </p>
         </div>
 
-        <div className="mb-8 relative max-w-xl">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-muted-foreground" />
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-grow max-w-xl">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Filter codes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Filter codes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          
+          {isCategory && (
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as 'all' | 'generic' | 'manufacturer')}
+              className="px-4 py-3 border border-border rounded-xl bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
+            >
+              <option value="all">All Codes</option>
+              <option value="generic">Generic Only</option>
+              <option value="manufacturer">Manufacturer Specific</option>
+            </select>
+          )}
         </div>
+
+        {totalCount !== null && !isLoading && page === 0 && (
+          <div className="mb-4 text-sm font-medium text-muted-foreground">
+            Found <strong className="text-foreground">{totalCount}</strong> {totalCount === 1 ? 'code' : 'codes'}
+          </div>
+        )}
 
         <div className="bg-card rounded-2xl border border-border overflow-hidden mb-8">
           {codes.length === 0 && !isLoading ? (
