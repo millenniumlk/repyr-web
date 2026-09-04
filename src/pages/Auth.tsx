@@ -35,11 +35,17 @@ const AnimatedInput = React.forwardRef<HTMLInputElement, any>(({ icon: Icon, rig
   );
 });
 
-const Auth = () => {
+export interface AuthProps {
+  isModal?: boolean;
+  onClose?: () => void;
+  defaultIsSignUp?: boolean;
+}
+
+const Auth = ({ isModal = false, onClose, defaultIsSignUp = false }: AuthProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const isSignUpParam = searchParams.get('signup') === 'true';
+  const isSignUpParam = searchParams.get('signup') === 'true' || defaultIsSignUp;
   const fromGuestChatParam = searchParams.get('fromGuestChat') === 'true';
   
   // Clear stale pending guest chat if we navigated here directly (not from the guest chat intercept overlay)
@@ -172,7 +178,12 @@ const Auth = () => {
               }
             } catch (e) {}
           }
-          navigate(shouldCompleteProfile ? '/complete-profile' : '/');
+          
+          if (isModal && onClose && !shouldCompleteProfile) {
+            onClose();
+          } else {
+            navigate(shouldCompleteProfile ? '/complete-profile' : '/');
+          }
         } else {
           handleToggleState('login');
           setSuccessMsg('Account created successfully! Please check your email to verify your account.');
@@ -192,7 +203,11 @@ const Auth = () => {
           } catch (e) {}
         }
         
-        navigate(shouldCompleteProfile ? '/complete-profile' : '/');
+        if (isModal && onClose && !shouldCompleteProfile) {
+          onClose();
+        } else {
+          navigate(shouldCompleteProfile ? '/complete-profile' : '/');
+        }
       }
     } catch (err: any) {
       handleError(err);
@@ -317,40 +332,62 @@ const Auth = () => {
         : !email || !password;
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-background flex flex-col md:items-center md:justify-center relative font-sans">
+    <div className={
+      isModal 
+        ? "fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans" 
+        : "h-[100dvh] overflow-hidden bg-background flex flex-col md:items-center md:justify-center relative font-sans"
+    }>
       
       {/* Desktop Background Image */}
-      <div className="hidden md:block absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${authBg})` }} />
+      {!isModal && <div className="hidden md:block absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${authBg})` }} />}
 
       {/* Desktop Overlay */}
-      <div className="hidden md:block absolute inset-0 bg-black/50 backdrop-blur-sm z-0"></div>
+      {!isModal && <div className="hidden md:block absolute inset-0 bg-black/50 backdrop-blur-sm z-0"></div>}
       
       {/* Top Right Close/Skip Button */}
-      <div className="absolute top-6 right-6 z-50">
-        <Button 
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (isForgotPassword) {
-              if (forgotStep === 'new_password' || forgotStep === 'otp') {
-                setForgotStep('email');
-                setOtp('');
-                setNewPassword('');
-                setConfirmNewPassword('');
+      {!isModal && (
+        <div className="absolute top-6 right-6 z-50">
+          <Button 
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (isForgotPassword) {
+                if (forgotStep === 'new_password' || forgotStep === 'otp') {
+                  setForgotStep('email');
+                  setOtp('');
+                  setNewPassword('');
+                  setConfirmNewPassword('');
+                } else {
+                  handleToggleState(isSignUp ? 'signup' : 'login');
+                }
               } else {
-                handleToggleState(isSignUp ? 'signup' : 'login');
+                navigate('/guest-intake');
               }
-            } else {
-              navigate('/guest-intake');
-            }
-          }}
-          className="hover:bg-gray-200/50 md:bg-white/10 md:hover:bg-white/20 md:backdrop-blur-md transition-colors"
-        >
-          <X className="w-6 h-6 text-primary md:text-white" strokeWidth={2.5} />
-        </Button>
-      </div>
+            }}
+            className="hover:bg-gray-200/50 md:bg-white/10 md:hover:bg-white/20 md:backdrop-blur-md transition-colors"
+          >
+            <X className="w-6 h-6 text-primary md:text-white" strokeWidth={2.5} />
+          </Button>
+        </div>
+      )}
 
-      <div className="flex-1 md:flex-none w-full max-w-md px-8 py-8 mt-8 md:mt-0 md:bg-card md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar max-h-[100dvh] md:max-h-[90dvh]">
+      <div className={`flex-1 md:flex-none w-full max-w-md px-8 py-8 md:bg-card md:shadow-2xl md:rounded-[32px] flex flex-col justify-center relative z-10 overflow-y-auto no-scrollbar md:max-h-[90dvh] ${
+        isModal ? 'bg-card shadow-2xl rounded-[32px] max-h-[90dvh]' : 'mt-8 md:mt-0 max-h-[100dvh]'
+      }`}>
+        {isModal && (
+          <div className="absolute top-4 right-4 z-50">
+            <Button 
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              className="hover:bg-gray-200/50 transition-colors"
+            >
+              <X className="w-5 h-5 text-muted-foreground" strokeWidth={2.5} />
+            </Button>
+          </div>
+        )}
         <AnimatePresence mode="wait">
           <motion.div 
             key={isForgotPassword ? `forgot-${forgotStep}` : isSignUp ? 'signup' : 'login'}
