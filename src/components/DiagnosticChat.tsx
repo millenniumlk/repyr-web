@@ -38,7 +38,7 @@ const DiagnosticChat = ({
   }, [displayMessages, isTyping, probabilities]);
 
   if (hasAccess === false) {
-    const isGuestUser = !subscriptionTier;
+    const isGuestUser = !user;
     
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-12">
