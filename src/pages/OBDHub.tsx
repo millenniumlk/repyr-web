@@ -156,7 +156,7 @@ export default function OBDHub() {
 
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className="font-bold text-lg mb-4 text-foreground">OBD Codes by Make</h3>
-              <ul className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+              <ul className="space-y-3">
                 {[
                   "Acura", "Audi", "BMW", "Buick", "Cadillac", "Chevrolet", 
                   "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Infiniti", 
