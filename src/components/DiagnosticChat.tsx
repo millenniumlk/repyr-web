@@ -29,7 +29,7 @@ const DiagnosticChat = ({
 }: DiagnosticChatProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { subscriptionTier } = useAuth();
+  const { subscriptionTier, user } = useAuth();
   
   const trialTier = subscriptionTier || 'Trial';
 
@@ -38,6 +38,8 @@ const DiagnosticChat = ({
   }, [displayMessages, isTyping, probabilities]);
 
   if (hasAccess === false) {
+    const isGuestUser = !subscriptionTier;
+    
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-12">
         <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-5">
@@ -45,17 +47,19 @@ const DiagnosticChat = ({
         </div>
         <h2 className="text-center font-bold mb-3 text-2xl">Limit Reached</h2>
         <p className="text-center text-muted-foreground mb-8 px-4 text-sm max-w-sm">
-          {trialTier === 'Trial' 
-            ? "You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access."
-            : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
+          {isGuestUser
+            ? "You've used your 3 free diagnostic sessions. Sign up for a free account to continue."
+            : trialTier === 'Trial' 
+              ? "You've used your free diagnostic. Upgrade to Repyr Pro for unlimited access."
+              : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
         </p>
         <Button 
-          onClick={handleUpgrade} 
-          disabled={isUpgrading}
-          isLoading={isUpgrading}
+          onClick={isGuestUser ? () => navigate('/auth') : handleUpgrade} 
+          disabled={isUpgrading && !isGuestUser}
+          isLoading={isUpgrading && !isGuestUser}
           className="w-full max-w-[240px] font-medium"
         >
-          {trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro"}
+          {isGuestUser ? "Sign Up for Free" : trialTier === 'Trial' ? "View Subscription Plans" : "Upgrade to Pro"}
         </Button>
         <Button variant="ghost" onClick={exitChat} className="mt-6 font-medium text-muted-foreground hover:text-foreground hover:bg-transparent">
           Back to Home
@@ -185,16 +189,18 @@ const DiagnosticChat = ({
                </div>
                <h4 className="font-bold text-lg mb-2 relative z-10 flex items-center gap-2">
                  <Sparkles className="w-5 h-5 text-indigo-200" />
-                 Want Unlimited Diagnostics?
+                 {!user ? 'Save Your Diagnosis' : 'Want Unlimited Diagnostics?'}
                </h4>
                <p className="text-indigo-100 text-sm mb-4 relative z-10 leading-relaxed">
-                 You've used your free chat! Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance.
+                 {!user 
+                   ? "Sign up for a free account to save this diagnosis, add vehicles to your virtual garage, and get personalized repair advice."
+                   : "You've used your free chat! Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance."}
                </p>
                <Button 
-                 onClick={() => navigate('/settings/subscription')}
+                 onClick={() => !user ? navigate('/auth') : navigate('/diagnose/settings/subscription')}
                  className="w-full bg-card text-indigo-700 hover:bg-indigo-50 py-3 rounded-xl shadow-lg hover:text-indigo-800"
                >
-                 Start 7-Day Free Trial
+                 {!user ? 'Create Free Account' : 'Start 7-Day Free Trial'}
                </Button>
             </div>
           )}

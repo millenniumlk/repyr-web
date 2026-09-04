@@ -336,9 +336,11 @@ const Home = () => {
         }
         
         if (guestUsage.count >= 3) {
-          showToast('You have reached the daily limit of 3 free diagnostics.', 'error');
           setIsProcessingGuestChat(false);
-          return; // Stop guest completely
+          setIsChatActive(true);
+          setInputValue('');
+          setHasAccess(false);
+          return;
         }
         
         // Increment usage
