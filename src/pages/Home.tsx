@@ -8,10 +8,12 @@ import { useDiagnosticAI } from '../hooks/useDiagnosticAI';
 import DiagnosticChat from '../components/DiagnosticChat';
 import ChatInputBar from '../components/ChatInputBar';
 import { useToast } from '../lib/ToastContext';
-
+import { lazy, Suspense } from 'react';
 import { Skeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Button } from '../components/ui/Button';
+
+const Auth = lazy(() => import('./Auth'));
 import { VEHICLE_CATEGORIES, SUBSCRIPTION_LIMITS } from '../lib/constants';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -58,6 +60,7 @@ const Home = () => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [guestRedirectMessage, setGuestRedirectMessage] = useState(false);
   const [shouldAutoStart, setShouldAutoStart] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProcessingGuestChat, setIsProcessingGuestChat] = useState(() => {
     const raw = localStorage.getItem('pending_guest_chat');
     if (raw) {
@@ -536,6 +539,7 @@ const Home = () => {
               displayMessages={displayMessages}
               isTyping={isTyping}
               isDiagnosisComplete={isDiagnosisComplete}
+              onOpenAuth={() => setIsAuthOpen(true)}
             />
           </motion.div>
         )}
@@ -673,6 +677,12 @@ const Home = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {isAuthOpen && (
+        <Suspense fallback={null}>
+          <Auth isModal={true} onClose={() => setIsAuthOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 };

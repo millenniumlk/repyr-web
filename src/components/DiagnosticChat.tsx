@@ -15,6 +15,7 @@ interface DiagnosticChatProps {
   displayMessages: ChatMessage[];
   isTyping: boolean;
   isDiagnosisComplete: boolean;
+  onOpenAuth?: () => void;
 }
 
 const DiagnosticChat = ({
@@ -26,6 +27,7 @@ const DiagnosticChat = ({
   displayMessages,
   isTyping,
   isDiagnosisComplete,
+  onOpenAuth,
 }: DiagnosticChatProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ const DiagnosticChat = ({
             : "You've reached your daily limit of 5 diagnostics. Upgrade to Repyr Pro for unlimited access."}
         </p>
         <Button 
-          onClick={isGuestUser ? () => navigate('/auth') : handleUpgrade} 
+          onClick={isGuestUser ? (onOpenAuth ? onOpenAuth : () => navigate('/auth')) : handleUpgrade} 
           disabled={isUpgrading && !isGuestUser}
           isLoading={isUpgrading && !isGuestUser}
           className="w-full max-w-[240px] font-medium"
@@ -195,7 +197,7 @@ const DiagnosticChat = ({
                    : "Upgrade to Pro to get unlimited diagnostics, personalized maintenance schedules, and expert repair guidance."}
                </p>
                <Button 
-                 onClick={() => !user ? navigate('/auth') : navigate('/diagnose/settings/subscription')}
+                 onClick={() => !user ? (onOpenAuth ? onOpenAuth() : navigate('/auth')) : navigate('/diagnose/settings/subscription')}
                  className="w-full bg-card text-indigo-700 hover:bg-indigo-50 py-3 rounded-xl shadow-lg hover:text-indigo-800"
                >
                  {!user ? 'Create Free Account' : 'Start 7-Day Free Trial'}
