@@ -156,17 +156,17 @@ export default function OBDHub() {
 
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className="font-bold text-lg mb-4 text-foreground">OBD Codes by Make</h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                 {[
-                  'Ford', 'Chevrolet', 'Toyota', 'Honda', 
-                  'Nissan', 'Jeep', 'BMW', 'Mercedes-Benz', 
-                  'Audi', 'Volkswagen', 'Hyundai', 'Kia',
-                  'Subaru', 'Lexus', 'Mazda', 'Dodge',
-                  'GMC', 'Chrysler', 'Volvo', 'Porsche'
+                  "Acura", "Audi", "BMW", "Buick", "Cadillac", "Chevrolet", 
+                  "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Infiniti", 
+                  "Jaguar", "Jeep", "Kia", "Lexus", "Lincoln", "Mazda", 
+                  "Mercedes", "Mercury", "Mitsubishi", "Nissan", "Oldsmobile", 
+                  "Plymouth", "Pontiac", "Saturn", "Subaru", "Toyota", "Volkswagen"
                 ].map(make => (
                   <li key={make}>
                     <Link to={`/obd/make/${make.toLowerCase()}`} className="text-foreground hover:text-primary transition-colors flex items-center text-sm font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary/50 mr-3"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary/50 mr-3 shrink-0"></span>
                       {make} Codes
                     </Link>
                   </li>
