@@ -7,7 +7,6 @@
     "dev": "vite",
     "prebuild": "node generate_sitemap.cjs",
     "build": "tsc -b && vite build",
-    "postbuild": "node generate_obd_html.cjs",
     "sitemap": "node generate_sitemap.cjs",
     "lint": "oxlint",
     "preview": "vite preview"
